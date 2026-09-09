@@ -1,0 +1,831 @@
+# Rules: Svipall site
+
+Written during the interview and gates 3 and 4, at the moment each decision was made.
+Never reconstructed afterwards. The parity loop verifies the built site against this file.
+English only: these asserts are grepped by the verifier and read by later agents.
+
+Format:
+
+```
+R-<block><question>-<n>   source <origin>
+  assert  <one testable sentence>
+  verify  <GREP | VISUAL | AUDIT>  <what exactly to check>
+```
+
+---
+
+## Prohibitions from the truth ledger
+
+Generated from every item left unchecked in B1. These are the highest-priority rules in
+the file.
+
+```
+R-B1-01   source Q-B1
+  assert  No testimonial, pull quote, avatar or attributed praise appears anywhere.
+  verify  GREP + VISUAL
+
+R-B1-02   source Q-B1
+  assert  No client or user logo wall appears anywhere.
+  verify  GREP + VISUAL
+
+R-B1-03   source Q-B1
+  assert  No user count, customer count or install count appears anywhere.
+  verify  GREP + VISUAL
+
+R-B1-04   source Q-B1
+  assert  No GitHub star, fork, watcher or package download counter is rendered. The
+          repository is linked; the number is not shown. Verified 2026-09-09: 0 stars,
+          0 forks, 0 watchers.
+  verify  GREP + VISUAL
+
+R-B1-05   source Q-B1
+  assert  No security or compliance badge appears (SOC 2, ISO 27001 and equivalents).
+  verify  GREP + VISUAL
+
+R-B1-06   source Q-B1
+  assert  No team page, org chart, headshot or biography appears. The maintainer handle
+          `ilien` linked to github.com/ilien-dev is the only identity claim permitted.
+  verify  GREP + VISUAL
+
+R-B1-07   source Q-B1
+  assert  No physical address or legal entity appears.
+  verify  GREP + VISUAL
+
+R-B1-08   source Q-B1
+  assert  No price, plan, tier, "free tier", commercial licence or support offer appears.
+  verify  GREP + VISUAL
+
+R-B1-09   source Q-B1
+  assert  Nothing on the site offers to run Svipall in the browser, and no section
+          promises trying it without installing. Recorded NOT YET.
+  verify  GREP + VISUAL
+
+R-B1-10   source Q-B1
+  assert  The 160/160 automation-tell probe result does not appear. Declined by the author.
+  verify  GREP
+
+R-B1-11   source Q-B1
+  assert  The historical public31 figures (93 cells, 59, 44) do not appear. Declined by
+          the author.
+  verify  GREP
+
+R-B1-12   source gate 2
+  assert  The phrase "confidence index", "confidence score", "trust score", and any
+          wording implying Svipall ranks pages by trustworthiness or filters out pages,
+          appears nowhere. It labels what arrived; it does not discard.
+  verify  GREP + AUDIT
+
+R-B1-13   source gate 2
+  assert  Wherever the site mentions percentiles or calibration, it carries the stated
+          limit: below 30 local observations no percentile is returned, and these are not
+          validated confidence intervals nor a representative sample of the web.
+  verify  AUDIT
+
+R-B2-01   source Q-B2
+  assert  Every number on the site resolves to a row of the truth ledger in BRIEF.md
+          section B, and carries the method or source that produced it.
+  verify  AUDIT  each rendered figure traced to a ledger row
+
+R-B2-02   source gate 2   the comparison's honesty
+  assert  In the section 2 before-and-after, every claim on the "without Svipall" side
+          describes documented behaviour of a client's built-in fetch and is as defensible
+          as every claim on the Svipall side. No strawman, no invented failure, no
+          unattributed "most tools" claim.
+  verify  AUDIT  each left-panel line traced to a source, exactly as the right-panel lines
+```
+
+---
+
+## Surface and structure
+
+```
+R-A2b-01   source Q-A2b
+  assert  This build is a PERSUADE surface. Gate 7 runs interface-audit.md alone. Gate 6
+          scores five criteria. The docs section is a separate READ surface, built later
+          through extend mode, inheriting this ledger and adding its own R-A2b entry.
+  verify  AUDIT  the parity report names the audit file and the criteria count
+
+R-C2-01   source Q-C2, revised gate 2
+  assert  The home contains exactly these eight sections, in this order: hero with the turn
+          and the install block; before and after; what you ask then what it does then what
+          it hands back; the four problems in plain words; things you can ask for; why you
+          can believe it; if you open a terminal; final CTA with licence and disclaimer.
+  verify  GREP + VISUAL
+
+R-C2-02   source gate 2   the jargon line
+  assert  Sections 1 to 6 contain none of: tier, MCP, server, JSON, HTTP, API, CLI,
+          endpoint, header, status code, field name, crate, binary, Rust, headless,
+          stealth, fingerprint. "Markdown" appears only with a plain gloss on first use.
+          Section 7 and the footer are exempt: that is where the technical reader is
+          addressed.
+  verify  GREP  case-insensitive, scoped to sections 1-6
+
+  ONE EXCEPTION, added at gate 5 with its reason. The hero's demonstration shows a single
+  real command line, `svipall fetch example.com/pricing`. A command is jargon by any
+  reading of this rule. It is permitted because the macrostructure is demonstration-first
+  and the author asked for the product to be shown rather than described, and because
+  every other line in that block is a plain sentence. The exception binds to that one
+  line in section 1. It does not license a second command anywhere in sections 1-6.
+
+R-C5-01   source Q-C5
+  assert  One primary CTA: a copyable block pointing at docs/install.md. One lighter
+          secondary: "How it was measured" pointing at /docs/proof. No third CTA of
+          comparable weight; Docs and GitHub sit in the nav without CTA styling.
+  verify  GREP + VISUAL
+
+R-C6-01   source Q-C6
+  assert  Every string that ships on screen is English.
+  verify  GREP
+
+R-G3-02   source gate 3
+  assert  The macrostructure is DEMONSTRATION-FIRST: the real thing works at full width
+          before any argument is made. No other page in this project reuses it without a
+          recorded reason; the docs surface uses REFERENCE.
+  verify  VISUAL  the section rhythm matches the recorded skeleton
+```
+
+---
+
+## Idiom
+
+Rewritten at gate 3 pass 3, on 2026-09-09, after the Interleaf direction was built and
+rejected. The full record of why it died is in DIRECTION.md; it is kept rather than deleted
+so no later session revives it.
+
+```
+R-G3-03   source gate 3 pass 3
+  assert  The idiom is CELL GRID: a page of drawn rules where every block is a cell with an
+          edge. It is present in the nav, the bands, the cells, the controls and the empty
+          states, not in one place.
+  verify  VISUAL  a reviewer given the captures and no source names a ruled board of cells
+
+R-G3-04   source gate 3 pass 3   non-negotiable 1
+  assert  Every block is a cell with a drawn 1px edge. Nothing carries a fill without an
+          edge, and nothing carries a shadow except the one overlay value.
+  verify  GREP  every filled block declares a border; VISUAL  nothing reads as floating
+
+R-G3-05   source gate 3 pass 3   non-negotiable 2   amended at gate 5
+  assert  The accent appears only as a solid fill, never as a tint, a border, or text.
+          It is permitted in exactly two roles: the call to action, and a <mark> highlight
+          behind a key phrase. At most TWO highlights per band, and exactly ONE accent
+          fill on the page is a control. Highlights mark; only the call to action acts.
+  verify  GREP  no color: var(--color-accent) and no border-color: var(--color-accent)
+          outside the accent cell variant; count of <mark> per section <= 2; VISUAL
+
+  WHY IT WAS AMENDED. The author asked for accents in the copy so the text would not read
+  flat, naming the URL specifically. The accent cannot be text: that is a measurement, not
+  a preference, and R-G3-14 records it. A highlight is the same fill with ink on top, which
+  is the one pairing that reaches 12.64:1 in both themes, so the request is satisfied
+  without touching the contrast floor. The cap is what keeps scarcity meaning something:
+  without it the accent stops being the thing the eye goes to.
+
+R-G3-06   source gate 3 pass 3   non-negotiable 3
+  assert  No backdrop-filter, no blur, and no translucent surface exists anywhere in the
+          project. Every surface is opaque.
+  verify  GREP  zero occurrences of backdrop-filter and blur(
+
+R-G3-07   source gate 3 pass 3   border widths
+  assert  Border widths are exactly 1px, used for every rule in the grid, and 2px, used
+          solely for the focus ring. No other edge weight appears.
+  verify  GREP  ptah-check border-width-literal against scales.borderWidth
+
+R-G3-08   source gate 3 pass 3   the depth model
+  assert  A shadow means "this can be closed". Exactly one shadow value exists and it is
+          bound to menus. A cell never casts one.
+  verify  GREP  shadow-literal against scales.shadow; VISUAL
+
+R-G3-09   source gate 3 pass 3   the signature
+  assert  The signature is the NUMBERED BAND HEADER: a two-digit number and a mono label
+          in the same corner of every band, set in Commit Mono, small and tracked. It
+          appears once per Row and at least once per section, and never inside a Cell, on
+          a control, or in the nav. The numbering is the real section order.
+  verify  GREP  ptah-check idiom-unrealised against row__num; VISUAL
+
+R-G3-10   source gate 3 pass 3, amended at gate 5   component vocabulary
+  assert  The project builds only these primitives: Row, Cell, Terminal, Clients,
+          InstallBlock (including its two-way switch), Panel, Lamp, Nav, ThemeToggle,
+          Mark. No accordion, modal, card grid, icon tile or badge exists.
+  verify  AUDIT + GREP
+
+  WHAT WAS ADDED, AND WHY, rather than smuggled in.
+  Terminal  — C2 section 1 needed a demonstration, and the macrostructure is
+              demonstration-first. It became the project's one orchestrated moment.
+  Clients   — the harnesses it installs into, at the author's direction, as marks on a
+              moving belt. Recorded twice over in the accepted-against-advice table.
+  A tab set inside InstallBlock — the original rule refused one outright. There are two
+              real install paths, both documented in the README and neither a variant of
+              the other: the pasteable prompt any agent can follow, and the Claude Code
+              plugin commands. A control is what a genuine either/or earns; the refusal
+              was aimed at tabs used to hide content that should have been on the page.
+              The active tab is marked with ink and a rule, never with the accent, because
+              exactly one accent fill on the page is allowed to be a control.
+
+R-G3-11   source gate 3 pass 3   alignment
+  assert  Rows are full-bleed; their content sits on one centred rail with a minimum
+          gutter so the rail's vertical rules are always inset and visible. Content inside
+          the rail is flush left. No text is centre-aligned.
+  verify  GREP  no text-align: center outside the panel lamp legends; VISUAL
+
+R-G3-12   source gate 3 pass 3   the type semantic
+  assert  Commit Mono sets only band numbers and labels, eyebrows, nav links, values,
+          units, panel legends and code. It never sets a heading. Archivo sets everything
+          a person reads, including the hero.
+  verify  GREP  no font-family resolving to Commit Mono on h1-h6
+
+R-G3-13   source gate 3 pass 3   what must not appear
+  assert  No radial glow, no gradient of any kind, no coloured box-shadow, no texture and
+          no image sits behind any section. The ground is flat.
+  verify  GREP + VISUAL
+
+R-G3-14   source gate 3 pass 3
+  assert  The accent never sets text. Links are ink with a rule underneath; the accent is
+          the CTA fill and nothing else in the first screen.
+  verify  GREP + VISUAL
+
+R-E4-01   source Q-E4, revised gate 3 pass 3
+  assert  The neutral leans cool, away from the accent.
+  verify  GREP  no achromatic grey and no warm neutral is declared
+
+  WHY E4 CHANGED. The interview answered "neutral leaning toward the accent" when the
+  accent was magenta. The author later chose yellow. A neutral warmed toward yellow is
+  cream, which is the paper look the author banned outright in the first message. Leaning
+  cool also makes the yellow read harder by simultaneous contrast. The reason is recorded
+  because the ledger must not appear to contradict itself silently.
+```
+
+---
+
+## Licences
+
+None in force. Cap is three per project.
+
+The craft floor is never licensable. One floor rule was tested against this brief and held:
+the docs measure was proposed at ~78ch in the interview and corrected to ~72ch, because
+45–75ch is craft floor rather than taste.
+
+---
+
+## Foundations
+
+```
+R-E1-01   source Q-E1
+  assert  Every font-size resolves to the declared fluid type scale. Resolved endpoints:
+          11/12, 13/14, 15/17, 18/21, 22/27, 28/36, 36/52, 46/76 px between 390px and
+          1440px viewport.
+  verify  GREP  no font-size literal outside the token declarations
+
+R-E2-01   source Q-E2
+  assert  Every padding, margin and gap resolves to the 4-point scale:
+          4 8 12 16 24 40 64 96 128 px.
+  verify  GREP  no spacing literal outside the token declarations
+
+R-E2b-01   source Q-E2b
+  assert  Border-radius is 0, 2px or 50%. 2px binds to inputs and inline code chips only;
+          50% binds to the tier-panel status lamp only. No pill radius exists anywhere.
+  verify  GREP  radius-literal against scales.radius; VISUAL  the only curve on the page
+          is the lamp
+
+R-E2b-02   source Q-E2b
+  assert  Exactly one box-shadow value exists in the project, bound to the search dialog
+          and menus. Everything else separates with a 1px hairline plus a surface-value
+          shift. If it has a shadow, it can be closed.
+  verify  GREP  shadow-literal against scales.shadow
+
+R-E2b-03   source Q-E2b
+  assert  Every z-index is one of 0, 10, 100, 1000, 1100.
+  verify  GREP  z-index-literal against scales.zIndex
+
+R-E2b-04   source Q-E2b
+  assert  Every transition and animation duration is 90ms, 180ms or 320ms, outside
+          prefers-reduced-motion blocks.
+  verify  GREP  duration-literal against scales.duration
+
+R-E3-01   source Q-E3
+  assert  The semantic colour set (ok, caution, blocked) appears only where a state is
+          being reported: lamps, verdict rows, status badges. It never appears as
+          decoration, section colour or illustration fill.
+  verify  GREP + VISUAL
+
+R-E4-01   source Q-E4
+  assert  Every neutral token carries 3–6% of the accent's chroma. No achromatic grey
+          (#888, #666, gray-500 and equivalents) is declared.
+  verify  GREP  colour literals resolved against palette
+
+R-E5-01   source Q-E5
+  assert  Display and code are Commit Mono; body is Archivo. No face this project refused
+          appears as a primary family. Generic fallbacks at the end of a stack are the
+          craft floor being met, not the refusal being broken.
+  verify  GREP  the first family in every font-family declaration
+
+R-E5-02   source Q-E5
+  assert  Every declared face has a real fallback stack: Commit Mono falls back to
+          ui-monospace, SFMono-Regular, monospace; Archivo falls back to system-ui,
+          sans-serif.
+  verify  GREP
+
+R-E6-01   source Q-E6
+  assert  Only transform and opacity are animated. No `transition: all` appears.
+  verify  GREP
+
+R-E6-02   source Q-E6
+  assert  prefers-reduced-motion is honoured: the tier panel renders its final state and
+          the Replay control is hidden or inert.
+  verify  GREP + VISUAL
+
+R-E6-03   source Q-E6
+  assert  Nothing rests at opacity 0 waiting for an observer. No IntersectionObserver
+          drives an entrance anywhere on the site.
+  verify  GREP + VISUAL  first frame with JS disabled shows all content
+
+R-E6-04   source Q-E6, revised gate 5
+  assert  The one orchestrated moment is the HERO's demonstration replay, triggered on load
+          and by its own Replay control, and by nothing else. Section 2's lamps are static.
+          The whole transcript is present in the HTML at rest, so a reader with no
+          JavaScript or with prefers-reduced-motion sees the finished state rather than an
+          empty frame; the replay only hides what is already there and brings it back.
+  verify  GREP + VISUAL  first frame with JS disabled shows every transcript line
+
+  WHY IT MOVED. E6 allows one orchestrated moment. The author asked for the hero to show
+  the tool working, animated. Two orchestrated moments would be two, so the lamps gave
+  theirs up. They still carry section 2: five lit against five struck through.
+
+R-E6-05   source gate 5   the demonstration is not evidence
+  assert  The hero demonstration carries its caption stating that it is an illustration
+          and not a recording, in view and not in a tooltip, and it contains no figure of
+          any kind. A terminal frame reads as evidence whether or not it is one.
+  verify  GREP + VISUAL
+
+R-E7-01   source Q-E7
+  assert  All eighteen declared contrast pairs meet WCAG AA in both themes. APCA is
+          computed and reported separately; an AA pass that fails APCA is a warning.
+  verify  AUDIT
+
+R-E8-01   source Q-E8
+  assert  Measure stays within 45–75ch in both density settings. Home targets ~68ch,
+          docs ~72ch.
+  verify  GREP + VISUAL
+```
+
+---
+
+## Art direction
+
+```
+R-D2-01   source Q-D2
+  assert  No rune, knotwork background, horn, raven, parchment texture, gold gradient or
+          saga lettering appears. The knotwork inside the existing mark is the only
+          knotwork on the site.
+  verify  GREP + VISUAL
+
+R-D2-02   source Q-D2
+  assert  No sparkle, wand, star-burst or violet AI gradient appears, and no copy
+          anthropomorphises the agent.
+  verify  GREP + VISUAL
+
+R-D2-03   source Q-D2
+  assert  No phosphor green, glitch effect, skull, hooded silhouette other than the mark,
+          code rain or scanline appears.
+  verify  GREP + VISUAL
+
+R-D5-01   source Q-D5
+  assert  The mark renders monochrome: --svipall-ink and --svipall-rust both resolve to
+          the ink token, --svipall-bone to the ground token, and --svipall-amber to the
+          accent token. The eye is the only saturated point in the mark.
+  verify  GREP + VISUAL
+
+R-D5-03   source Q-D5, reversed at gate 5 at the author's direction, then widened
+  assert  The palette is derived from the logo, not only the accent. In dark the ground
+          is the logo's navy #0B1A2B exactly, the cell is one step up from it, and the ink
+          warms toward the logo's bone. The accent is #FFB03A, the logo's amber lifted
+          until it clears. The logo's rust #A7472C is the "blocked" signal, which is what
+          it already meant on the mark. D5 recorded the original palette as refused for
+          the site; that refusal is lifted, deliberately and in full.
+
+  WHAT DID NOT COME ACROSS, and why it is a measurement rather than taste.
+    bone as a light ground   1.15:1 against the light theme's own ground: it disappears.
+                             It is also the paper colour the author banned in the first
+                             message. The light theme stays cool and deliberately not
+                             cream; bone survives only as the warm cast of the dark ink.
+    navy as an accent        it is the ink; a thing cannot be both.
+    rust as the accent       3.09:1 with dark ink. It works with white ink, which would
+                             mean two inks on accents. It became the blocked signal
+                             instead, where it is doing more work than it would have as
+                             an accent.
+
+  THE COLLISION, resolved rather than left as a note. Caution was an amber and the accent
+  is now an amber: two ambers meaning different things is a state nobody can read. Caution
+  moved to a blue. The accent did not move off the logo to make room for a signal.
+  status  A REVERSAL, recorded rather than quietly overwritten.
+
+  WHAT WAS MEASURED BEFORE REVERSING, since the constraint is not a matter of taste.
+  The accent is fill-only and needs a strong pair with dark ink at one hex in both themes.
+    amber #DF8D27, the logo's own   6.87:1, Lc 52   passes AA, sits where the rejected
+                                                    magenta sat, so the CTA label becomes
+                                                    the weakest text on the page again
+    rust  #A7472C                   3.09:1 with dark ink; needs white ink instead
+    bone  #EAD9C4                   13.12:1 with ink, but 1.15:1 against the light ground,
+                                    so it vanishes in light theme; and it is the paper
+                                    colour the author banned in the first message
+    navy  #0B1A2B                   cannot be an accent: it is the ink
+    #FFB03A, same hue family        9.93:1, Lc 69   shipped
+  Two of the four brand colours are unusable as a fill-only accent for reasons that hold
+  regardless of preference. The shipped value is the logo's amber lifted until it clears.
+
+  A COLLISION TO WATCH, recorded now rather than discovered later. --signal-caution is an
+  amber (#F2C14E dark, #8A6100 light) and the accent is now also an amber. Nothing uses
+  caution today, so nothing is broken; the moment something does, caution must be
+  distinguishable from the accent by form as well as hue, or it changes hue.
+  verify  GREP  the palette; VISUAL  the mark's eye is amber in both themes
+
+R-D5-02   source Q-D5
+  assert  None of the original brand hexes (#0B1A2B, #A7472C, #EAD9C4, #DF8D27, #12161F)
+          appears as a literal anywhere in the site source.
+  verify  GREP
+
+R-D6-01   source Q-D6
+  assert  Every token is declared in bare :root before any media or attribute block
+          redefines it. Dark is redefined under both
+          @media (prefers-color-scheme: dark) guarded as :root:not([data-theme="light"])
+          and :root[data-theme="dark"]. body carries an explicit background token.
+  verify  GREP
+
+R-D7-01   source Q-D7, revised gate 2
+  assert  The one aesthetic risk is the before-and-after in section 2, rendered as two
+          facing annunciator panels, and nowhere else. Every other section is composed
+          quietly, and no second panel appears anywhere on the site.
+  verify  VISUAL
+
+R-D7-02   source Q-D7   from D4
+  assert  In both panels an unlit lamp remains legible: its label meets the UI contrast
+          target against the panel surface. The off state is designed, because half the
+          argument is what is missing on the left.
+  verify  AUDIT + VISUAL
+
+R-D7-03   source gate 2
+  assert  The six tier names (HTTP, BROWSER, STEALTH, REAL, WARM, NATIVE) appear nowhere
+          on the home. On the home the ladder exists only as a plain phrase such as
+          "it tries six ways"; the named tiers live in /docs.
+  verify  GREP
+
+R-D8-01   source Q-D8
+  assert  Home copy is second person and contains no exclamation mark. Docs copy is
+          declarative, avoids second person, and preserves the hedges the source
+          documents use ("heuristic", "not proof", "does not guarantee").
+  verify  GREP + VISUAL
+
+R-G3-01   source gate 3
+  assert  A third-party mark may keep its own brand colour, and ONLY that: the exception
+          is one hex per mark, bound to the element that shows the mark, never reused for
+          anything else and never added to the project palette. Today that is #D97757,
+          Claude's own, on the plugin tab.
+          Recoloring someone else's mark to fit a palette is worse than showing it as it
+          is, which is why this exception exists rather than a tinted version of the mark.
+          Otherwise the palette is exactly: #0D0B10 #1A1720 #14111A #F2EFF4 #BDB4C2 #FF66A8
+          #5CD6A0 #F2C14E #FF6B6B #DED7DE #EFEBEF #FFFFFF #16131A #5D5566 #C4005F
+          #12855C #8A6100 #C0392B, plus the four declared rgba() compositions
+          (--color-underlayer-ink, --color-sheet, --color-hairline in each theme). No
+          other colour literal appears outside src/styles/tokens.css.
+  verify  GREP  ptah-check color-literal against palette
+```
+
+---
+
+## Copy
+
+```
+R-H1-01   source gate 4   PENDING
+  assert  Section copy matches COPY.md word for word.
+  verify  GREP
+
+R-H1-02   source gate 4
+  assert  None of the banned words appear: revolutionize, supercharge, unlock,
+          effortless, seamless, "the future of", "game-changing", "blazingly fast",
+          "just works", "magic".
+  verify  GREP
+
+R-H1-03   source Q-A4, Q-B3
+  assert  No claim of guaranteed success against any anti-bot vendor appears. Every
+          capability statement that the source documents hedge is hedged here too.
+  verify  AUDIT
+```
+
+---
+
+## Interface
+
+```
+R-AU-01   source gate 7
+  assert  Zero MUST violations in the interface audit.
+  verify  AUDIT
+```
+
+---
+
+## Session flags
+
+| Flag | Value |
+|------|-------|
+| Surface | persuade (home). Docs = read surface, later, via extend mode |
+| Macrostructure | demonstration-first |
+| Idiom | interleaf — the acetate overlay sheet, and the transparency on a light table |
+| Register | committed |
+| Non-negotiables | ① real legible content behind every sheet, never a flat fill ② running text on its own opaque patch ③ one blur radius and one alpha in the whole project |
+| Signature | the aperture: an unblurred window cut through every sheet, bottom-left |
+| humanizer | will run (detected at ~/.agents/skills/humanizer) |
+| Trust level | 2 — Builds |
+| Licences in force | none. Three refused defaults landed on (glass, `01 02 03`, mono labels) and all three are named by the idiom before the code |
+| Warnings accepted against advice | **2.** (i) Third-party marks are shown as icons. The trademark and implied-endorsement objection was raised twice and overruled twice; R-B1-14 records what survives of it. (ii) The client strip auto-scrolls. `slop-catalog.md` lists the auto-scrolling marquee with an earn of "nothing: it hides content and takes attention", and E6's one orchestrated moment was already spent on the hero demonstration. The author was given both costs and chose it anyway. Recorded here rather than written as a licence, because the catalogue admits none for this. Gate 8 will report it on every run, and that report is correct. |
+| Rules rewritten to be testable | docs measure 78ch → 72ch, to stay inside the craft floor |
+| Changed by measurement at gate 3 | hairline alpha .22→.42 dark and .16→.52 light; accent #D6006B→#C4005F light; muted ink #A79FAE→#BDB4C2 dark; accent barred from body-size text |
+| Contrast status at gate 3 | 0 WCAG AA failures in both themes; 8 APCA-only warnings, all dark, two of them named for gate 6 to look at |
+| Checks disabled, and why | none disabled. One craft-floor item is **failing and reported**: R-B1-15, the marquee's stop affordance — the visible control removed at gate 5 and pause-on-hover at gate 6, both at the author's direction. It is not disabled, licensed or reworded — it fails, and the report says so. |
+| Baseline findings (adopt mode only) | n/a — build mode |
+
+---
+
+## Licences (written at gate 5)
+
+```
+R-LIC-01   source gate 5   licence  (kind A)
+  claims   viewport-height-hero: a full-viewport opening section
+  earns    A5. The single job of this page is that the visitor copies one line and pastes
+           it into their agent. That block lives in the hero, and a hero the reader has to
+           scroll to finish puts the page's only job below the first frame. The earn is the
+           brief line, not the author's request for it.
+  binds    src/pages/index.astro, the .hero rule only. Every other section is sized to what
+           it holds. Implemented as min-height with svh, never height and never vh, so the
+           section grows rather than clipping when the content does not fit.
+  verify   VISUAL  the install block and its copy control are fully inside the first frame
+           at 1440, 768 and 390; and at 390 the hero is taller than the viewport rather
+           than clipped
+```
+
+Licences in force: **1 of a maximum 3.**
+
+---
+
+## Motion between states (added at gate 5)
+
+```
+R-E6-06   source gate 5, from a correction requested twice
+  assert  A change between two views of the same thing transitions; it does not cut.
+          Tab panels, switch options and any menu that swaps content cross-fade over
+          --dur-reveal, and any indicator that marks which option is current moves rather
+          than jumping. This is a state change, not an orchestrated moment, so it does not
+          spend E6's budget of one.
+  bounds  Only transform and opacity are animated. An indicator is moved with transform,
+          never with width, left or top: those are layout properties and animating them
+          forces a reflow on every frame. Under prefers-reduced-motion everything lands in
+          its final state with no transition.
+  verify  GREP  no transition or animation naming a layout property; VISUAL  switching a
+          tab shows a fade and a moving marker
+
+  WHY IT IS A RULE AND NOT A PREFERENCE. It was asked for twice: once for the terminal,
+  where the take was switching with a hard cut, and again for the install switch. A cut
+  between two states reads as a glitch rather than as a change, because nothing tells the
+  eye that the second thing is the same thing in another state.
+```
+
+---
+
+## Narrow-width verification (gate 6, run 2026-09-09)
+
+The responsive check that gate 5 deferred rather than asserting from the CSS. Both
+widths were rendered in a real browser at the site's own build output, not reasoned
+about. It found two defects that only exist below 900px, which is the whole reason
+the check was not allowed to be a reading of the source.
+
+```
+R-G6-01   source gate 6, measured
+  assert  R-LIC-01's licence verifies at all three widths.
+  evidence  install block copy control, bottom edge against the viewport:
+            1440x900   838 <= 900   inside the first frame
+             768x1024  652 <= 1024  inside the first frame
+             390x844   702 <=  844  inside the first frame
+            hero height 962 / 1321 / 1374 against viewports 900 / 1024 / 844: the
+            section grows past the frame at every width rather than clipping, which
+            is what min-height with svh was chosen to do.
+  status  PASS
+```
+
+```
+R-G6-02   source gate 6, a defect found and fixed
+  assert  The terminal transcript fills its panel at every width.
+  found   .term__stage carries justify-content: center for its flex layout, where it
+          centres the takes vertically. When .is-cycling switches it to grid, that same
+          property centres the column track instead, and an implicit grid track is
+          max-content. At 1440 the longest line was wider than the panel, so the
+          centring had nothing to move and the bug was invisible. At 768 the transcript
+          floated 90px in from the panel's left edge with the verdicts stranded in the
+          middle.
+  fix     One explicit track, grid-template-columns: minmax(0, 1fr), so it fills and can
+          still shrink rather than overflow.
+  measure take left/width against the stage's content box: 172/410 inside 82/589 before,
+          98/557 after, which is the padding edge exactly.
+  status  FIXED
+```
+
+```
+R-G6-03   source gate 6, a truth defect found at a width
+  assert  Copy that describes the layout stays true when the layout changes.
+  found   Section 2's lede read "On the left, what a plain fetch brings back. On the
+          right, the same request through Svipall." At 768 and below the two panels
+          stack, so the sentence described an arrangement that was not on the screen.
+          A spatial claim is still a claim, and B's honesty constraint does not stop at
+          the desktop breakpoint.
+  fix     "First, what a plain fetch brings back. Then the same request through Svipall.
+          Both panels ..." — an order rather than a direction, true at every width.
+  status  FIXED
+```
+
+```
+R-G6-04   source gate 6, at the author's direction — R-B1-15 widened
+  was     The belt paused on hover and on focus-within.
+  now     It does not pause for the pointer. Requested directly: the motion is to be
+          continuous.
+  and     :focus-within was removed with it rather than kept. Nothing inside the belt can
+          take focus - the items are list elements holding aria-hidden SVGs, with no link,
+          no control and no tabindex - so that selector could never have matched. Keeping
+          it would have left an accommodation that reads as present in the source and does
+          nothing on the screen, which is worse than not having one.
+  cost    A reader who is not covered by prefers-reduced-motion but still finds moving
+          logos distracting now has no way to stop them. That is the actual price and it
+          is the author's to pay, not mine to hide.
+  stands  prefers-reduced-motion still halts the belt outright. That one is craft floor
+          and is not waivable by anyone, including on request.
+  status  R-B1-15 remains FAILING, now for two removals rather than one.
+```
+
+---
+
+## The docs surface (extend mode, 2026-09-09)
+
+```
+R-A2b-02   source gate 1 of the docs extend
+  assert  The docs are a READ surface. They inherit this ledger, the tokens and the
+          cell grid idiom, and change register and density rather than idiom: compact
+          spacing, 72ch measure, report register, no second person.
+  binds   src/content/docs/*.md (twelve pages), src/layouts/Docs.astro,
+          src/pages/docs/. The home stays a PERSUADE surface and keeps R-C2-02's
+          jargon rule; the docs are explicitly exempt from it, which is the whole
+          reason they are a separate surface.
+  verify  VISUAL + the sidebar, prose and on-this-page list read as three cells of
+          one ruled board
+```
+
+```
+R-A2b-03   source gate 1 of the docs extend
+  assert  Every docs page names, in its front matter and at its foot, the file in the
+          product repository it was written from.
+  why     B's honesty constraint applies here exactly as on the home. A docs page
+          with no source is a page someone invented, and twelve of them is a surface
+          nobody can check. The foot also states which one wins on a disagreement:
+          the repository file, because it ships with the code and this does not.
+  verify  GREP  the collection schema requires `source:`, so a page without one fails
+          the build rather than shipping unattributed
+```
+
+```
+R-G9-01   source gate 9
+  assert  An internal link that points at a page which does not exist fails the build.
+  why     The home shipped for a while linking to /docs, /docs/proof, /docs/privacy
+          and /docs/limits before any of them was written. Nothing caught it: a static
+          build has no opinion about an href. Four dead links were found by reading
+          the page and remembering what had not been built yet, which is not a method.
+  binds   .ptah/check-links.mjs, run over dist/ after every build. Anchors are checked
+          too: a link to a renamed heading is the same failure, quieter.
+  verify  node .ptah/check-links.mjs  ->  14 routes, no broken internal links
+```
+
+---
+
+## Gate 7 and 8, run 2026-09-09
+
+The static checker went from **64 violations to 24**. Below is what it found, what was
+wrong with the checker's own inputs, and why each of the twenty-four that remain
+stands.
+
+### Real defects it found, and fixed
+
+```
+R-G8-01   the licence licensed a mechanism that is not in the build
+  found   R-LIC-01 claimed `viewport-height-hero` and bound it to "the .hero rule in
+          src/pages/index.astro, implemented as min-height with svh". There is no
+          .hero rule. There is no `svh` anywhere in the home. The mechanism died with
+          the Interleaf redesign and the licence was never withdrawn.
+  worse   R-G6-01, written earlier the same day, reported that licence as PASS and
+          cited measurements for it. The measurements were real, but they verified a
+          CONSEQUENCE - the copy control sits inside the first frame - of a mechanism
+          that is not there. A licence is a claim about how a thing is built, and that
+          claim was false. R-G6-01 is corrected here rather than deleted.
+  fix     The licence is withdrawn. `licences: []`. The hero is sized by its content
+          like every other band, which is what it was actually doing all along.
+  status  FIXED. Licences in force: 0 of a maximum 3.
+```
+
+```
+R-G8-02   the dark theme failed the APCA body floor while passing WCAG AA
+  found   --color-ink-muted, which sets nearly all body text, measured Lc 58.2 on the
+          cell and Lc 59.7 on the ground in the dark theme, against a body floor of
+          75. It passes WCAG at 7.39:1 - which is exactly the case where WCAG 2
+          misjudges light text on a dark ground. The earlier claim of "0 failures in
+          both themes" was a WCAG claim reported as though it covered both measures.
+  also    --signal-blocked measured Lc 43.9 against a UI floor of 45.
+  and     the light theme had never been measured against this floor either:
+          --color-ink-muted on the ground was Lc 70.7, also short of 75. The checker
+          did not report it, because it labels both themes and computes the dark pair
+          twice. That labelling bug is why the light failure went unseen; the fix here
+          does not depend on the checker, because the values were measured directly.
+  fix     Measured, not adjusted by eye. Searched along the logo's own bone family so
+          the ink and the muted ink stay one family rather than one warm and one cool:
+            light  --ds-ink-600  #46525F -> #3B4550   Lc 87.6 cell / 75.6 ground
+            dark   --ds-ink-600  #A8B4C2 -> #DAD5CA   Lc 78.5 cell / 80.0 ground
+            dark   --ds-red-700  #F0705A -> #FE775F   Lc 48.7 cell / 50.1 ground
+  cost    On a dark ground the floor allows only a small step between ink and muted:
+          11.5 Lc, where the old palette took 31.8. "Muted" on dark is now a quieter
+          warmth rather than a quieter grey. That is what the measurement permits, and
+          the alternative is body text below the legibility floor.
+  status  FIXED
+```
+
+```
+R-G8-03   the skip link animated a layout property
+  found   .skip parked itself off-screen with a negative `top` and transitioned `top`.
+          A reflow on every frame of the one movement a keyboard user sees before
+          anything else, and it contradicts R-E6-06's own bounds.
+  fix     Parked with transform: translateY(), transitioned on transform.
+  status  FIXED
+```
+
+```
+R-G8-04   a colour literal outside the token layer
+  found   #D97757, Anthropic's orange, written inline twice in index.astro for the
+          Claude Code plugin mark.
+  fix     Declared as --brand-claude in tokens.css, with what it is and what it may
+          never be used for. It is a third party's colour and not part of this
+          palette; it lives in the token layer only so that layer stays the single
+          place a raw value exists.
+  status  FIXED
+```
+
+```
+R-G8-05   a forbidden-evidence pattern that could never match
+  found   The endorsement pattern was written in rules.json as "\b(endorsed|...)\b".
+          In JSON, \b is a backspace character, not a regex word boundary, so the
+          pattern carried two literal 0x08 bytes and matched nothing, ever.
+  weight  That is the pattern guarding R-B1-14 - third-party marks must never imply
+          endorsement - on a page carrying eleven third-party marks at the author's
+          instruction. It has been dead the whole time.
+  fix     "\\b(...)\\b". All sixteen patterns now compile, and that is asserted.
+  note    This is the SECOND silent hole of this kind in this file. The first was
+          nineteen patterns carrying an inline (?i) prefix, which the checker's
+          `new RegExp(pat, "i")` threw on and a bare `catch { continue }` discarded. A
+          pattern file that fails open is worse than no pattern file, because it
+          reports clean.
+  status  FIXED
+```
+
+### Patterns that were wrong, not code that was wrong
+
+Four patterns banned things the ledger does not forbid. Each is narrowed to what its
+rule actually says, rather than the code being contorted to satisfy a bad pattern.
+
+```
+R-G8-06   over-broad patterns, corrected
+  /\bpublic31\b/            R-B1-11 forbids the historical public31 FIGURES - 93
+                            cells, 59, 44 - not the name of the list. The proof page
+                            has to name the list in order to report the figures the
+                            author did allow. Narrowed to the three figures.
+
+  /\b(HTTP|BROWSER|STEALTH|REAL|WARM|NATIVE)\b.*\btier\b/
+                            banned the documented tier ladder across the whole site,
+                            including the docs, whose subject is that ladder. The home
+                            is already covered where it belongs: R-C2-02's jargon rule,
+                            scoped to sections 1-6. Removed.
+
+  /#0B1A2B/ /#A7472C/ /#DF8D27/
+                            the logo's hexes, forbidden when D5 refused the brand
+                            palette. The author reversed that decision (R-D5-03) and
+                            those colours ARE the palette now. Removed. #EAD9C4 and
+                            #12161F remain refused and remain in the list.
+
+  /\b(pricing|per month|...)\b/
+                            "pricing" matched a user's own words - "summarise the
+                            pricing" - and a curl example's query string. Narrowed to
+                            price-shaped evidence. The first narrowing still matched
+                            `$1` inside a JavaScript replacement string, so it now
+                            requires two digits or a decimal.
+```
+
+### The twenty-four that remain, and why each stands
+
+Reported every run rather than silenced. `disabledChecks` is still empty.
+
+| count | finding | why it stands |
+|---|---|---|
+| 3 | `font-no-fallback` on the @font-face rules | A `@font-face` descriptor binds a name to a file; it cannot carry a fallback stack by construction. The stacks live on `--font-body` and `--font-mono`, which is where a fallback can exist. |
+| 6 | `all-caps-body` and `wide-tracking-body` in prose.css | The three selectors are `h4`, `th`, and a `blockquote` label. All three are labels rather than running text, and they use the same mono-uppercase eyebrow the rest of the site uses. |
+| 5 | `measure` below 45ch | Every one is a heading: `.claim__title`, `.problem__title`, `.beat__head` and two hero headings, all at `--text-lg` or larger. The 45-75ch window is a body measure; a heading ragged at 24ch is a decision. |
+| 4 | `color-literal` `#000` in Clients.astro | Inside `mask-image`. A mask reads the alpha channel only, so `#000` there means "opaque" rather than a colour. A token for it would name something that is not a colour decision. |
+| 2 | `rest-opacity-zero` in Terminal and InstallBlock | Both `opacity: 0` rules sit under a class JavaScript adds (`.is-cycling`). With no JS, and under `prefers-reduced-motion`, every take and every panel is visible and finished. The checker cannot see the guard. |
+| 4 | `img-no-alt` and `img-no-dimensions` in Mark.astro line 5 | Line 5 is a comment explaining why the mark must NOT be loaded through `<img src>`. The scanner matched the `<img>` written inside the prose of that comment, and reports it twice. There is no image element in the file. |

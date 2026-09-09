@@ -1,0 +1,317 @@
+---
+/*
+ * The docs shell. A READ surface, not a persuade one: it inherits the ledger
+ * and the tokens, and changes register and density rather than idiom.
+ *
+ * The cell grid holds. The sidebar, the prose and the on-this-page list are
+ * three cells of one ruled board, divided by the same hairlines as the home,
+ * and the rail's vertical rules continue the lines the nav already draws.
+ *
+ * Taken from the Stripe reference recorded in D-REF: a persistent left rail,
+ * and a right-hand column that stays put while the prose scrolls.
+ */
+import Base from './Base.astro';
+import { docsNav } from '../lib/docs-nav';
+import Search from '../components/Search.astro';
+import '../styles/prose.css';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  title: string;
+  summary: string;
+  source: string;
+  slug: string;
+  headings?: Heading[];
+}
+
+const { title, summary, source, slug, headings = [] } = Astro.props;
+
+const nav = await docsNav();
+
+// Only h2 and h3. A list that mirrors every heading depth stops being a map
+// and becomes the document again.
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
+---
+
+<Base title={`${title} — Svipall docs`} description={summary} surface="docs">
+  <div class="docs">
+    <div class="docs__rail">
+      <aside class="docs__side">
+        <div class="side">
+          <Search />
+
+          <nav class="side__nav" aria-label="Documentation">
+          {
+            nav.map((group) => (
+              <div class="side__group">
+                <p class="side__heading">{group.name}</p>
+                <ul>
+                  {group.pages.map((page) => (
+                    <li>
+                      <a
+                        class="side__link"
+                        href={`/docs/${page.id}`}
+                        aria-current={page.id === slug ? 'page' : undefined}
+                      >
+                        {page.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+          </nav>
+        </div>
+      </aside>
+
+      <article class="docs__main">
+        <header class="docs__head">
+          <h1>{title}</h1>
+          <p class="docs__summary">{summary}</p>
+        </header>
+
+        <div class="prose" data-pagefind-body>
+          <slot />
+        </div>
+
+        <footer class="docs__foot">
+          <p>
+            Written from <a href={`${repo}${source}`}><code>{source}</code></a> in
+            the product repository. Where this page and that file disagree, the
+            file is right: it ships with the code and this does not.
+          </p>
+        </footer>
+      </article>
+
+      <nav class="docs__toc" aria-label="On this page">
+        {
+          toc.length > 0 && (
+            <div class="toc">
+              <p class="toc__heading">On this page</p>
+              <ul>
+                {toc.map((h) => (
+                  <li class={`toc__item toc__item--${h.depth}`}>
+                    <a href={`#${h.slug}`}>{h.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+      </nav>
+    </div>
+  </div>
+</Base>
+
+<style>
+  /* Density: compact. The home is comfortable; the docs are a reference and
+     a reference that spaces like a landing page wastes the reader's scroll. */
+  .docs {
+    --measure: var(--measure-docs);
+    font-size: var(--text-xs);
+  }
+
+  .docs__rail {
+    display: grid;
+    grid-template-columns: var(--docs-sidebar) minmax(0, 1fr) var(--docs-toc);
+    width: 100%;
+    max-width: var(--rail);
+    margin-inline: auto;
+    /* The seams are the 1px gaps, showing the container's own background,
+       the same technique the home's lists use. */
+    gap: var(--border-hair);
+    background: var(--color-hairline);
+    border-inline: var(--border-hair) solid var(--color-hairline);
+  }
+
+  .docs__side,
+  .docs__main,
+  .docs__toc {
+    background: var(--color-ground);
+  }
+
+  /* --- sidebar ---------------------------------------------------------- */
+
+  .docs__side {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .side {
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-5));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    /* The scroll belongs to the list, NOT to this element. The search results
+       are absolutely positioned inside it, and an overflow: auto ancestor
+       clips an absolute child - the panel would open and be cut off at the
+       first line. */
+    max-height: calc(100svh - var(--nav-height) - var(--space-8));
+  }
+
+  .side__nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    /* Its own scroll when the list outgrows the window, so a long sidebar
+       never traps the page. */
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .side__heading {
+    margin: 0 0 var(--space-2);
+    max-width: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .side__link {
+    display: block;
+    padding: var(--space-2) var(--space-3);
+    color: var(--color-ink-muted);
+    text-decoration: none;
+    /* The marker is a drawn edge, not a fill: the accent is spent on the
+       home's one control and on marks, and a sidebar of accent bars would
+       make every page look like the call to action. R-G3-05. */
+    border-left: var(--border-hair) solid transparent;
+    transition:
+      color var(--dur-state) var(--ease-out),
+      border-color var(--dur-state) var(--ease-out);
+  }
+
+  .side__link:hover {
+    color: var(--color-ink);
+    border-left-color: var(--color-hairline);
+  }
+
+  .side__link[aria-current='page'] {
+    color: var(--color-ink);
+    border-left-color: var(--color-ink);
+    background: var(--color-cell);
+  }
+
+  /* --- the page --------------------------------------------------------- */
+
+  .docs__main {
+    min-width: 0;
+    padding: var(--space-7) var(--space-6) var(--space-8);
+  }
+
+  .docs__head {
+    padding-bottom: var(--space-5);
+    margin-bottom: var(--space-6);
+    border-bottom: var(--border-hair) solid var(--color-hairline);
+  }
+
+  .docs__head h1 {
+    font-size: var(--text-xl);
+  }
+
+  .docs__summary {
+    margin-top: var(--space-3);
+    color: var(--color-ink-muted);
+    font-size: var(--text-sm);
+  }
+
+  .docs__foot {
+    margin-top: var(--space-7);
+    padding-top: var(--space-4);
+    border-top: var(--border-hair) solid var(--color-hairline);
+    color: var(--color-ink-muted);
+    font-size: var(--text-2xs);
+  }
+
+  /* --- on this page ----------------------------------------------------- */
+
+  .docs__toc {
+    padding: var(--space-7) var(--space-4);
+  }
+
+  .toc {
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-5));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .toc__heading {
+    margin: 0 0 var(--space-1);
+    max-width: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .toc a {
+    display: block;
+    padding-block: var(--space-1);
+    color: var(--color-ink-muted);
+    text-decoration: none;
+    font-size: var(--text-2xs);
+    line-height: var(--leading-snug);
+  }
+
+  .toc a:hover {
+    color: var(--color-ink);
+  }
+
+  .toc__item--3 a {
+    padding-left: var(--space-3);
+  }
+
+  /* --- narrow ------------------------------------------------------------ */
+
+  /* The on-this-page list goes first, because it is the one column that stops
+     being useful when it is not beside the prose. The sidebar stays: it is
+     how a reader moves between pages, and hiding it behind a control they
+     have to find is worse than a list they can scroll past. */
+  @media (max-width: 1180px) {
+    .docs__rail {
+      grid-template-columns: var(--docs-sidebar) minmax(0, 1fr);
+    }
+
+    .docs__toc {
+      display: none;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .docs__rail {
+      grid-template-columns: minmax(0, 1fr);
+      border-inline: 0;
+    }
+
+    .side {
+      position: static;
+      max-height: none;
+      overflow: visible;
+    }
+
+    .side__nav {
+      overflow: visible;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: var(--space-5);
+    }
+
+    .docs__main {
+      padding: var(--space-6) var(--space-4) var(--space-7);
+    }
+  }
+</style>

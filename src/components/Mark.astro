@@ -1,0 +1,55 @@
+---
+/*
+ * Mark — the Svipall logo, inlined.
+ *
+ * It MUST be inlined rather than loaded through <img src>: an SVG in an <img>
+ * is a separate document and cannot inherit this page's custom properties, so
+ * it would fall back to the brand's original hexes. Those are refused for this
+ * site (R-D5-02) and the palette rule would fail on the very first page.
+ *
+ * Inlined, the four fills resolve through --svipall-* in tokens.css to two ink
+ * values plus the accent on the eye. R-D5-01.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  size?: number;
+  title?: string;
+}
+
+const { size = 28, title = 'Svipall' } = Astro.props;
+
+const source = fs.readFileSync(
+  path.resolve('src/assets/brand/svipall-mark.svg'),
+  'utf8'
+);
+
+// Strip the file's own sizing and title so this component controls both.
+const inner = source
+  .replace(/<\?xml[^>]*\?>/g, '')
+  .replace(/<svg[^>]*>/, '')
+  .replace(/<\/svg>\s*$/, '')
+  .replace(/<title>[\s\S]*?<\/title>/g, '')
+  // Strip the var() fallbacks. They are dead code here because tokens.css
+  // declares every --svipall-* in bare :root, and leaving them in would put
+  // the refused brand hexes into the shipped HTML. R-D5-02.
+  .replace(/var\((--svipall-[a-z]+),\s*#[0-9A-Fa-f]{6}\)/g, 'var($1)');
+---
+
+<svg
+  class="mark"
+  viewBox="142 51 970 1151"
+  width={Math.round((size * 970) / 1151)}
+  height={size}
+  role="img"
+  aria-label={title}
+  set:html={inner}
+/>
+
+<style>
+  .mark {
+    flex: none;
+    display: block;
+  }
+</style>

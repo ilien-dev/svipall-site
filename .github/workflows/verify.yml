@@ -1,0 +1,38 @@
+name: verify
+
+# Three gates, in the order that fails cheapest first. The rule check runs on
+# source and needs no build; the link check needs dist, so it runs after it.
+#
+# The rule check is NOT allowed to fail the build today: it reports 24 findings
+# that are triaged and recorded in .ptah/RULES.md. Its job here is to make a
+# NEW finding visible in the log. Turning it into a hard gate needs those 24 to
+# be resolved or explicitly baselined first, and baselining them silently is
+# how a check stops meaning anything.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Ledger rules
+        run: node .ptah/ptah-check.mjs --all
+        continue-on-error: true
+
+      - name: Build
+        run: npm run build
+
+      - name: Internal links
+        run: node .ptah/check-links.mjs

@@ -1,0 +1,190 @@
+---
+import '../styles/tokens.css';
+import '../styles/base.css';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import Mark from '../components/Mark.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  /* Which rail this page's cells sit in. The nav has to adopt it: the idiom's
+     whole claim is that the rail's two vertical rules run unbroken from the
+     nav to the foot of the page, and a nav on a 1120 rail above a docs body
+     on a 1360 one draws four lines instead of two. */
+  surface?: 'page' | 'docs';
+}
+
+const { title, description, surface = 'page' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <link
+      rel="preload"
+      href="/fonts/archivo-variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/commitmono-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <script is:inline>
+      // Runs before first paint: a stored choice must not arrive after the
+      // wrong theme has already been drawn.
+      (() => {
+        try {
+          const stored = localStorage.getItem('svipall-theme');
+          if (stored === 'light' || stored === 'dark') {
+            document.documentElement.dataset.theme = stored;
+          }
+        } catch {
+          // Site data blocked. The system preference decides, which is fine.
+        }
+      })();
+    </script>
+  </head>
+
+  <body class={surface === 'docs' ? 'surface-docs' : undefined}>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="nav">
+      <div class="nav__rail">
+        <a class="nav__home" href="/">
+          <Mark size={34} />
+          <span>Svipall</span>
+        </a>
+
+        <nav class="nav__links" aria-label="Main">
+          <a href="/docs">Docs</a>
+          <a href="https://github.com/ilien-dev/svipall">Source</a>
+        </nav>
+
+        <ThemeToggle />
+      </div>
+    </header>
+
+    <main id="main" class="page">
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style>
+  /* The docs carry three columns, so their rail is wider. Redeclaring --rail
+     here rather than on the docs container means the nav picks it up too and
+     the two vertical rules stay continuous. */
+  body.surface-docs {
+    --rail: var(--rail-docs);
+  }
+
+  .skip {
+    position: absolute;
+    left: var(--space-4);
+    top: var(--space-4);
+    z-index: var(--z-toast);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-cell);
+    border: var(--border-hair) solid var(--color-hairline);
+    text-decoration: none;
+    /* Parked off-screen with a transform, not with `top`. Animating `top` is
+       animating a layout property, which forces a reflow on every frame of
+       the one movement a keyboard user sees first. */
+    transform: translateY(calc(-100% - var(--space-6)));
+    transition: transform var(--dur-state) var(--ease-out);
+  }
+
+  .skip:focus-visible {
+    transform: translateY(0);
+  }
+
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    /* Opaque. Nothing on this page is see-through. */
+    background: var(--color-ground);
+    padding-inline: var(--space-6);
+    border-bottom: var(--border-hair) solid var(--color-hairline);
+  }
+
+  .nav__rail {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    width: 100%;
+    max-width: var(--rail);
+    min-height: var(--nav-height);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    border-inline: var(--border-hair) solid var(--color-hairline);
+  }
+
+  .nav__home {
+    display: flex;
+    align-items: center;
+    /* 34px, not 24: the mark has knotwork and a single eye in it and neither
+       survived the smaller size. It stays under the 44px the theme control
+       already occupies, so the bar's 64px is untouched. */
+    gap: var(--space-3);
+    margin-right: auto;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--text-sm);
+    letter-spacing: -0.01em;
+  }
+
+  .nav__links {
+    display: flex;
+    gap: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .nav__links a {
+    color: var(--color-ink-muted);
+    text-decoration: none;
+    padding-block: var(--space-3);
+  }
+
+  .nav__links a:hover {
+    color: var(--color-ink);
+  }
+
+  .page {
+    display: flex;
+    flex-direction: column;
+    /* Bands touch, so the vertical rules run unbroken from the nav down. */
+    gap: 0;
+  }
+
+  @media (max-width: 760px) {
+    .nav {
+      padding-inline: 0;
+    }
+
+    .nav__rail {
+      padding-inline: var(--space-4);
+      gap: var(--space-4);
+      border-inline: 0;
+    }
+
+    .nav__links {
+      gap: var(--space-4);
+    }
+  }
+</style>

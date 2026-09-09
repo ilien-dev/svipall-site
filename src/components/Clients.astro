@@ -1,0 +1,160 @@
+---
+/*
+ * Clients — the harnesses Svipall installs into. C2 section 1.
+ *
+ * No frame: the marks sit straight on the ground under a plain label, because
+ * the page already has enough boxes and this is a belt, not a cell.
+ *
+ * TWO DECISIONS TAKEN AGAINST ADVICE, both recorded in RULES.md rather than
+ * dressed up as licences:
+ *   1. Third-party marks. The trademark and implied-endorsement objection was
+ *      raised twice and overruled twice. The marks are the official ones,
+ *      downloaded as files and never redrawn, under a label that states
+ *      compatibility rather than endorsement.
+ *   2. It auto-scrolls, which the catalogue refuses outright, and it is the
+ *      second orchestrated moment in a budget of one.
+ *
+ * AND ONE CRAFT-FLOOR ITEM THAT IS NOW NOT MET, named rather than hidden: the
+ * visible pause control was removed at the author's direction, and so, later,
+ * was pause on hover. Autoplaying motion beyond five seconds is supposed to
+ * carry a way to stop it. What remains is the full stop under
+ * prefers-reduced-motion, which is the part that actually protects the readers
+ * who need it, and which is not the author's to waive or mine. A reader who
+ * merely finds the movement distracting now has nothing, and that is the cost.
+ * The parity report names this every run.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+
+interface Client {
+  name: string;
+  icon: string;
+}
+
+interface Props {
+  label: string;
+  clients: Client[];
+}
+
+const { label, clients } = Astro.props;
+
+const marks = clients.map((client) => ({
+  name: client.name,
+  svg: fs
+    .readFileSync(path.resolve(`src/assets/clients/${client.icon}.svg`), 'utf8')
+    .replace(/<title>[\s\S]*?<\/title>/g, '')
+    .replace('<svg ', '<svg aria-hidden="true" focusable="false" '),
+}));
+
+// Twice through, so the loop closes on itself with no visible seam.
+const belt = [...marks, ...marks];
+---
+
+<div class="agents">
+  <p class="agents__label">{label}</p>
+
+  <div class="agents__viewport">
+    <ul class="agents__belt">
+      {
+        belt.map((mark, i) => (
+          <li
+            class="agents__item"
+            aria-hidden={i >= marks.length ? 'true' : undefined}
+          >
+            <span class="agents__mark" set:html={mark.svg} />
+            {i < marks.length && <span class="visually-hidden">{mark.name}</span>}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>
+
+<style>
+  .agents {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  .agents__label {
+    margin: 0;
+    max-width: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: var(--leading-body);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .agents__viewport {
+    overflow: hidden;
+    /* The two ends fade so marks enter and leave rather than being chopped.
+       A mask, not a painted gradient: nothing is drawn over the ground. */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--space-6),
+      #000 calc(100% - var(--space-7)),
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--space-6),
+      #000 calc(100% - var(--space-7)),
+      transparent
+    );
+  }
+
+  .agents__belt {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    margin: 0;
+    /* -50%, because the belt holds the set twice: at half the travel the
+       second copy sits exactly where the first started, so there is no seam. */
+    animation: belt 22s linear infinite;
+  }
+
+  /* The belt does not stop for the pointer. Removed at the author's direction:
+     they want the motion continuous. The :focus-within half went with it
+     rather than being kept for appearances, because nothing inside the belt
+     can take focus - no link, no control, no tabindex - so that selector
+     could never have matched and was an accommodation on paper only.
+     prefers-reduced-motion below is the one that actually fires. */
+
+  .agents__item {
+    flex: none;
+    padding-inline: var(--space-6);
+  }
+
+  .agents__mark {
+    display: block;
+    color: var(--color-ink);
+  }
+
+  .agents__mark :global(svg) {
+    display: block;
+    width: 30px;
+    height: 30px;
+    fill: currentColor;
+  }
+
+  @keyframes belt {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .agents__belt {
+      animation: none;
+    }
+  }
+</style>

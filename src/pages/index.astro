@@ -1,0 +1,584 @@
+---
+import Base from '../layouts/Base.astro';
+import Row from '../components/Row.astro';
+import InstallBlock from '../components/InstallBlock.astro';
+import Terminal from '../components/Terminal.astro';
+import Clients from '../components/Clients.astro';
+import Panel from '../components/Panel.astro';
+import Flow from '../components/Flow.astro';
+import ProblemRow from '../components/ProblemRow.astro';
+import AskList from '../components/AskList.astro';
+import ClaimList from '../components/ClaimList.astro';
+const conditions = [
+  { legend: 'asked once only' },
+  { legend: 'a wall came back as a success' },
+  { legend: 'the whole page handed over' },
+  { legend: 'arrival unreported' },
+  { legend: 'repeat undetected' },
+];
+---
+
+<Base
+  title="Svipall: your agent doesn't read the web. It tries to."
+  description="Svipall runs on your machine and gives your AI assistant the page, or the reason it never arrived. No account, no key, nothing sent anywhere else."
+>
+  {/* ---- 1 · Hero -------------------------------------------------------- */}
+  <Row num="01" label="What this is" class="hero">
+    <div class="hero__grid">
+      <div class="hero__tell">
+      <div class="hero__say">
+        <h1 class="hero__turn">
+          Your agent doesn't read the web.<br />It tries to.
+        </h1>
+        <p class="hero__lede">
+          Some pages let it in. Others hand it <mark>a wall</mark> and let it
+          believe that was the article. Svipall tells it which one just
+          happened.
+        </p>
+      </div>
+      <div class="hero__act">
+        <InstallBlock
+          id="hero-install"
+          variants={[
+            {
+              id: 'prompt',
+              tab: 'Any agent',
+              icon: 'prompt',
+              label: 'the install prompt',
+              lead: 'Install and configure Svipall by following the instructions here:',
+              url: 'https://raw.githubusercontent.com/ilien-dev/svipall/main/docs/install.md',
+            },
+            {
+              id: 'plugin',
+              tab: 'Claude plugin',
+              icon: 'claude',
+              iconColor: 'var(--brand-claude)',
+              label: 'the plugin commands',
+              lines: [
+                [
+                  { text: '/plugin', kind: 'cmd' },
+                  { text: 'marketplace add', kind: 'sub' },
+                  { text: 'ilien-dev/svipall', kind: 'key' },
+                ],
+                [
+                  { text: '/plugin', kind: 'cmd' },
+                  { text: 'install', kind: 'sub' },
+                  { text: 'svipall@svipall', kind: 'cmd' },
+                ],
+                [{ text: '/svipall:setup', kind: 'cmd' }],
+              ],
+            },
+          ]}
+        />
+      </div>
+      </div>
+
+      <div class="hero__show">
+      <Clients
+        label="Runs in any MCP client, including"
+        clients={[
+          { name: 'Claude Code', icon: 'claude' },
+          { name: 'Cursor', icon: 'cursor' },
+          { name: 'Codex', icon: 'openai' },
+          { name: 'opencode', icon: 'opencode' },
+          { name: 'Zed', icon: 'zedindustries' },
+          { name: 'Windsurf', icon: 'windsurf' },
+          { name: 'Cline', icon: 'cline' },
+          { name: 'VS Code', icon: 'visualstudiocode' },
+          { name: 'Warp', icon: 'warp' },
+          { name: 'JetBrains IDEs', icon: 'jetbrains' },
+          { name: 'Any MCP client', icon: 'modelcontextprotocol' },
+        ]}
+      />
+
+      <Terminal
+        caption="Illustrations of what happens, written plainly. Not recordings: the real runs, with the command and the log behind every number, are in the docs."
+        takes={[
+          {
+            title: 'A page that refuses',
+            lines: [
+              { kind: 'cmd', text: 'svipall fetch example.com/pricing' },
+              { kind: 'try', text: 'asked the ordinary way', result: 'refused', tone: 'blocked' },
+              { kind: 'try', text: 'opened a real browser', result: 'refused', tone: 'blocked' },
+              { kind: 'try', text: 'waited the check out', result: 'opened', tone: 'ok' },
+              { kind: 'ok', text: 'the page arrived complete' },
+              { kind: 'ok', text: 'substance, not filler' },
+              { kind: 'note', text: 'your agent gets the reading, not the page' },
+            ],
+          },
+          {
+            title: 'A whole site, kept out of the way',
+            lines: [
+              { kind: 'cmd', text: 'svipall crawl docs.example.com' },
+              { kind: 'try', text: 'followed the links it was allowed to', result: 'read', tone: 'ok' },
+              { kind: 'ok', text: 'marked the pages that were the same page twice' },
+              { kind: 'ok', text: 'written to a file, not into the answer' },
+              { kind: 'note', text: 'your agent opens the file when it needs a page' },
+            ],
+          },
+          {
+            title: 'Looking something up',
+            lines: [
+              { kind: 'cmd', text: 'svipall search "how to read a lease"' },
+              { kind: 'try', text: 'asked three search engines', result: 'no account', tone: 'ok' },
+              { kind: 'ok', text: 'kept what they agreed on' },
+              { kind: 'ok', text: 'said where they disagreed' },
+              { kind: 'note', text: 'nothing to sign up for, nothing to paste' },
+            ],
+          },
+        ]}
+      />
+      </div>
+    </div>
+
+    <div class="hero__foot">
+      <p class="hero__note">
+        It installs itself and sets itself up. You never open a terminal.
+      </p>
+      <p class="hero__secondary">
+        <a href="/docs/proof">How it was measured</a>
+      </p>
+    </div>
+  </Row>
+
+  {/* ---- 2 · Before and after ------------------------------------------- */}
+  <Row num="02" label="Before and after">
+    <div class="beat">
+      <h2 class="beat__head">The same page, twice.</h2>
+      <p class="beat__lede">
+        First, what a plain fetch brings back. Then the same request through
+        Svipall. Both panels describe behaviour that is documented, and both
+        are held to the same standard.
+      </p>
+    </div>
+
+    <div class="compare">
+      <Panel title="A plain fetch" conditions={conditions} faulted={true} />
+      <Panel title="With Svipall" conditions={conditions} faulted={false} />
+    </div>
+
+    <p class="beat__hedge">
+      Some pages still refuse. You will know which ones, and why.
+    </p>
+  </Row>
+
+  {/* ---- 3 · What you ask, what it does, what you get -------------------- */}
+  <Row num="03" label="How it goes">
+    <div class="beat">
+      <h2 class="beat__head">Three steps, and you only do the first one.</h2>
+    </div>
+
+    <Flow
+      beats={[
+        {
+          num: '01',
+          title: 'You ask',
+          quote: '"Read this page and tell me what it costs."',
+          body: 'You say it the way you would say it to a person. Nothing changes about how you work.',
+        },
+        {
+          num: '02',
+          title: 'It goes and gets it',
+          body: 'A page that opens gets read. A page that refuses gets asked again a different way, up to six times. When it still refuses, Svipall stops and says so instead of making something up.',
+        },
+        {
+          num: '03',
+          title: 'Your assistant gets the reading',
+          body: 'The part a person would have read, without the menus, the cookie banner and the footer. With it come three plain facts: whether it arrived complete, whether it is substance or filler, and whether it is the same thing you already looked at.',
+        },
+      ]}
+    />
+  </Row>
+
+  {/* ---- 4 · Four things that go wrong ----------------------------------- */}
+  <Row num="04" label="What goes wrong">
+    <div class="beat">
+      <h2 class="beat__head">You have had all four of these already.</h2>
+    </div>
+
+    <ProblemRow
+      problems={[
+        {
+          title: 'The wall it never mentioned',
+          wrong:
+            'A page can refuse and still look like it worked. Your assistant reads the refusal, sums it up, and hands you an answer with nothing wrong on the surface.',
+          instead:
+            'Svipall names the wall rather than summarising it, including who put it there when that can be identified.',
+        },
+        {
+          title: 'The whole page, poured into the answer',
+          wrong:
+            'One page can be tens of thousands of words of things nobody reads: navigation, scripts, repeated footers. All of it competes with your actual question.',
+          instead:
+            'Svipall hands over the reading, and can write long results to a file so a thousand rows never pass through the conversation.',
+        },
+        {
+          title: 'Filler that nobody labelled',
+          wrong:
+            'Not every page that arrives is worth having. Some are a shell, some are cut off halfway, some are the same thing you fetched twenty minutes ago.',
+          instead:
+            'Svipall labels what came back so your assistant can tell those apart. It labels and keeps everything: it does not throw pages away and it does not rank them by how much it trusts them.',
+        },
+        {
+          title: 'Looking something up should not need an account',
+          wrong:
+            'No plan, no signup, nothing to register for, and no key to paste before you can search.',
+          instead:
+            'Svipall searches three engines and can merge what they agree on.',
+        },
+      ]}
+    />
+  </Row>
+
+  {/* ---- 5 · Things you can ask for -------------------------------------- */}
+  <Row num="05" label="Things you can ask for">
+    <div class="beat">
+      <h2 class="beat__head">Said the way you would actually say it.</h2>
+    </div>
+
+    <AskList
+      note="Your assistant picks the right one by itself. There are no commands to learn."
+      asks={[
+        'Read this page and summarise the pricing.',
+        'Crawl these docs and write me a file my assistant can read later.',
+        'Get me every row of that table as a spreadsheet.',
+        'Watch this listing and tell me when the price moves.',
+        'Find the three best sources on this and tell me where they disagree.',
+        'Log me in once, then keep reading the pages behind it.',
+        'Read this PDF the same way you read a web page.',
+      ]}
+    />
+  </Row>
+
+  {/* ---- 6 · Why you can believe any of this ----------------------------- */}
+  <Row num="06" label="Why you can believe it">
+    <div class="beat">
+      <h2 class="beat__head">Three reasons, and none of them is a promise.</h2>
+    </div>
+
+    <ClaimList
+      claims={[
+        {
+          title: 'It runs on your machine',
+          body: 'No account, no key, no service in the middle. The pages you read stay between you and the site. Nothing about what you looked at is sent anywhere else, and nothing tracks what you use it for.',
+          link: { label: 'What leaves your machine', href: '/docs/privacy' },
+        },
+        {
+          title: 'Everything claimed here was measured',
+          body: 'Including the results that came out badly. Three independent collections of pages were used to score how well it reads, and the best and the worst are both published. Each number carries the command and the log that reproduce it.',
+          link: { label: 'How it was measured', href: '/docs/proof' },
+        },
+        {
+          title: 'What it cannot do is written down too',
+          body: 'Some sites will refuse it, and no amount of trying changes that. Those situations have their own page, kept beside everything else rather than buried at the bottom of a FAQ.',
+          link: { label: "What it can't do", href: '/docs/limits' },
+        },
+      ]}
+    />
+  </Row>
+
+  {/* ---- 7 · If you open a terminal --------------------------------------
+       The one band where jargon is allowed. R-C2-02 binds sections 1 to 6;
+       this is where the technical reader is addressed, in one place. */}
+  <Row num="07" label="If you open a terminal">
+    <div class="beat">
+      <h2 class="beat__head">
+        It is also a command-line tool, a local API, and readable source.
+      </h2>
+      <p class="beat__lede">
+        The same binary your assistant talks to answers on the command line,
+        and on a local HTTP API when you ask it to: nineteen routes, one per
+        tool, behind a key it generates for you. Written in Rust, shipped as a
+        single binary with no runtime to install, open source under AGPL-3.0.
+      </p>
+    </div>
+
+    <div class="shell">
+      <p class="shell__label">Three of the commands</p>
+      <pre class="shell__code">svipall fetch https://example.com/article
+svipall crawl https://docs.example/ --pages 50 --out pages.csv
+svipall search "rust async runtime" --engine all</pre>
+    </div>
+
+    <p class="beat__links">
+      <a href="/docs">Read the docs</a>
+      <span aria-hidden="true"> · </span>
+      <a href="https://github.com/ilien-dev/svipall">Source</a>
+    </p>
+  </Row>
+
+  {/* ---- 8 · Final CTA ---------------------------------------------------- */}
+  <Row num="08" label="Install it">
+    <div class="beat">
+      <h2 class="beat__head">One line, and your assistant does the rest.</h2>
+    </div>
+
+    <div class="close">
+      <InstallBlock
+        id="close-install"
+        variants={[
+          {
+            id: 'prompt',
+            tab: 'Any agent',
+            label: 'the install prompt',
+            icon: 'prompt',
+            lead: 'Install and configure Svipall by following the instructions here:',
+            url: 'https://raw.githubusercontent.com/ilien-dev/svipall/main/docs/install.md',
+          },
+          {
+            id: 'plugin',
+            tab: 'Claude plugin',
+            label: 'the plugin commands',
+            icon: 'claude',
+            iconColor: 'var(--brand-claude)',
+            lines: [
+              [
+                { text: '/plugin', kind: 'cmd' },
+                { text: 'marketplace add', kind: 'sub' },
+                { text: 'ilien-dev/svipall', kind: 'key' },
+              ],
+              [
+                { text: '/plugin', kind: 'cmd' },
+                { text: 'install', kind: 'sub' },
+                { text: 'svipall@svipall', kind: 'cmd' },
+              ],
+              [{ text: '/svipall:setup', kind: 'cmd' }],
+            ],
+          },
+        ]}
+      />
+
+      <div class="close__terms">
+        <p>
+          Svipall is free and open source under AGPL-3.0. The name and the logo
+          are not covered by that licence.
+        </p>
+        <p>
+          It gives you no authorisation over any system you point it at.
+          Complying with the law, with data-protection rules and with a site's
+          terms is yours, not the author's.
+        </p>
+        <p class="close__meta">
+          <a href="/docs">Docs</a>
+          <span aria-hidden="true"> · </span>
+          <a href="https://github.com/ilien-dev/svipall">Source</a>
+          <span aria-hidden="true"> · </span>
+          <a href="/docs/limits">What it can't do</a>
+          <span aria-hidden="true"> · </span>
+          <a href="/docs/privacy">Privacy</a>
+          <span aria-hidden="true"> · </span>
+          Maintained by <a href="https://github.com/ilien-dev">ilien</a>.
+        </p>
+      </div>
+    </div>
+  </Row>
+</Base>
+
+<style>
+  /* Shared by every band below the hero. */
+  .beat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .beat__head {
+    font-size: var(--text-xl);
+    letter-spacing: -0.02em;
+    max-width: 24ch;
+  }
+
+  .beat__lede {
+    font-size: var(--text-md);
+    color: var(--color-ink-muted);
+    max-width: 62ch;
+  }
+
+  /* The hedge does not move and is not a footnote: it is the sentence that
+     keeps the comparison honest. */
+  .beat__hedge {
+    max-width: var(--measure);
+    padding-top: var(--space-4);
+    border-top: var(--border-hair) solid var(--color-hairline);
+    font-size: var(--text-sm);
+    color: var(--color-ink);
+  }
+
+  .compare {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .beat__links,
+  .close__meta {
+    max-width: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .shell {
+    border: var(--border-hair) solid var(--color-hairline);
+    background: var(--color-cell);
+  }
+
+  .shell__label {
+    margin: 0;
+    max-width: none;
+    padding: var(--space-2) var(--space-4);
+    border-bottom: var(--border-hair) solid var(--color-hairline);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .shell__code {
+    margin: 0;
+    padding: var(--space-4);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-body);
+    color: var(--color-ink);
+  }
+
+  .close {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .close__terms {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    font-size: var(--text-xs);
+    color: var(--color-ink-muted);
+  }
+
+  @media (min-width: 900px) {
+    .close {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+      gap: var(--space-7);
+    }
+  }
+
+  @media (min-width: 860px) {
+    .compare {
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    /* The two panels share one rule down the middle rather than each drawing
+       its own: two edges at one seam is the thing this grid does not do. */
+    .compare > :global(.panel + .panel) {
+      border-left: 0;
+    }
+  }
+
+  /* The hero is a Row like every other band. Its own rules live here; the
+     Row's rail and rules come from the component. */
+  .hero__grid {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  /* Two columns once there is room for the demonstration beside the claim.
+     .term lives in Terminal.astro, so it carries that component's scope hash
+     and has to be reached with :global() or the rule is silently dead. */
+  @media (min-width: 1000px) {
+    .hero__grid {
+      grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+      align-items: stretch;
+      column-gap: var(--space-7);
+    }
+  }
+
+  /* Left: what the reader is told. Right: what they are shown. */
+  .hero__tell,
+  .hero__show {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+    min-width: 0;
+  }
+
+  .hero__say {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .hero__turn {
+    font-size: var(--text-3xl);
+    line-height: var(--leading-tight);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    max-width: 17ch;
+  }
+
+  .hero__lede {
+    font-size: var(--text-md);
+    color: var(--color-ink-muted);
+    max-width: 48ch;
+  }
+
+  .hero__act {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  /* Both feet on one line. The right column is the taller of the two, so the
+     paste block is pushed to the bottom of the left one rather than the
+     terminal being stretched past it. */
+  @media (min-width: 1000px) {
+    .hero__act {
+      margin-top: auto;
+    }
+  }
+
+  /* The note and the link sit below the grid, not inside it, so the two
+     columns end on the same line: the terminal stretches to the foot of the
+     paste block rather than to the foot of the text under it. */
+  .hero__foot {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .hero__note {
+    max-width: var(--measure);
+    font-size: var(--text-xs);
+    color: var(--color-ink-muted);
+  }
+
+  .hero__secondary {
+    max-width: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* At a short window the display steps down so the paste block stays in the
+     first frame. These come after the base rules on purpose: at equal
+     specificity the later rule wins. */
+  @media (max-height: 820px) {
+    .hero__turn {
+      font-size: var(--text-2xl);
+    }
+
+    .hero__lede {
+      font-size: var(--text-sm);
+    }
+
+    .hero__grid {
+      gap: var(--space-6);
+    }
+  }
+</style>

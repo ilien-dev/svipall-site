@@ -1,0 +1,170 @@
+/* ============================================================================
+   Prose: the rendered Markdown of a docs page.
+
+   Global, not scoped, because the content arrives through a slot and Astro's
+   scoping hash is never on it. Everything resolves to a token; the only job
+   here is to give Markdown's own elements the cell grid's manners.
+   ============================================================================ */
+
+.prose > * + * {
+  margin-top: var(--space-4);
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  /* Space above a heading, not below it: a heading belongs to what follows. */
+  margin-top: var(--space-7);
+  margin-bottom: var(--space-3);
+  scroll-margin-top: calc(var(--nav-height) + var(--space-4));
+}
+
+.prose h2 {
+  font-size: var(--text-md);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-hair) solid var(--color-hairline);
+}
+
+.prose h3 {
+  font-size: var(--text-sm);
+}
+
+.prose h4 {
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.prose p {
+  color: var(--color-ink-muted);
+}
+
+.prose strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+/* base.css strips list markers project-wide, because every list on the home
+   is a drawn cell. Prose is the exception: a numbered procedure with no
+   numbers is not a procedure. */
+.prose ul,
+.prose ol {
+  padding-left: var(--space-5);
+  color: var(--color-ink-muted);
+}
+
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li + li {
+  margin-top: var(--space-2);
+}
+
+.prose li::marker {
+  color: var(--color-ink-muted);
+}
+
+.prose a {
+  color: var(--color-ink);
+}
+
+/* --- code ---------------------------------------------------------------- */
+
+.prose :not(pre) > code {
+  padding: 0.1em 0.3em;
+  background: var(--color-cell);
+  border: var(--border-hair) solid var(--color-hairline);
+  color: var(--color-ink);
+}
+
+.prose pre {
+  padding: var(--space-4);
+  background: var(--color-cell);
+  border: var(--border-hair) solid var(--color-hairline);
+  /* Long commands scroll in their own box. The page never scrolls sideways. */
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  font-size: var(--text-2xs);
+  line-height: var(--leading-body);
+}
+
+.prose pre code {
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+/* --- tables -------------------------------------------------------------- */
+
+/* Wrapped by rehype below, so a wide table scrolls instead of pushing the
+   page sideways. */
+.prose .table-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: var(--border-hair) solid var(--color-hairline);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-2xs);
+}
+
+.prose th,
+.prose td {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: var(--border-hair) solid var(--color-hairline);
+}
+
+.prose th {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  background: var(--color-cell);
+  white-space: nowrap;
+}
+
+.prose td {
+  color: var(--color-ink-muted);
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* --- quotes and rules ---------------------------------------------------- */
+
+.prose blockquote {
+  padding-left: var(--space-4);
+  border-left: var(--border-hair) solid var(--color-hairline);
+  color: var(--color-ink-muted);
+}
+
+.prose hr {
+  margin-block: var(--space-6);
+  border: 0;
+  border-top: var(--border-hair) solid var(--color-hairline);
+}
+
+/* A limit, a refusal or a number that came out badly is set in a cell of its
+   own rather than buried in a paragraph. Used by the `> **Limit**` pattern. */
+.prose blockquote strong:first-child {
+  display: block;
+  margin-bottom: var(--space-1);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}

@@ -1,0 +1,131 @@
+---
+/*
+ * Panel — the one aesthetic risk. D7. Section 2 and nowhere else.
+ *
+ * A Cell whose contents are lamps rather than words. On a page of quiet cells
+ * that is the loudest thing available, which is the point.
+ *
+ * Both panels carry THE SAME five conditions in the same order. That is how an
+ * annunciator works and it is what makes the two readable against each other:
+ * on the left every condition is present, on the right none of them is. In a
+ * cockpit, all dark is all clear.
+ *
+ * Static. The lamps had the project's one orchestrated moment and gave it to
+ * the hero demonstration; five lit against five struck reads without motion.
+ */
+
+interface Condition {
+  legend: string;
+}
+
+interface Props {
+  title: string;
+  conditions: Condition[];
+  /* true: every condition is present. false: none of them is. */
+  faulted: boolean;
+}
+
+const { title, conditions, faulted } = Astro.props;
+---
+
+<div class="panel">
+  <p class="panel__title">{title}</p>
+
+  <ul class="panel__lamps">
+    {
+      conditions.map((condition) => (
+        <li class={`lamp ${faulted ? 'is-lit' : 'is-clear'}`}>
+          <span class="lamp__bulb" aria-hidden="true" />
+          <span class="lamp__legend">{condition.legend}</span>
+          <span class="visually-hidden">
+            {faulted ? 'present' : 'not present'}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    border: var(--border-hair) solid var(--color-hairline);
+    background: var(--color-cell);
+    border-radius: var(--radius-0);
+    min-width: 0;
+  }
+
+  .panel__title {
+    margin: 0;
+    max-width: none;
+    padding: var(--space-2) var(--space-4);
+    border-bottom: var(--border-hair) solid var(--color-hairline);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    line-height: var(--leading-body);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+
+  .panel__lamps {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .lamp {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: var(--leading-body);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    max-width: none;
+  }
+
+  .lamp + .lamp {
+    border-top: var(--border-hair) solid var(--color-hairline);
+  }
+
+  /* The only curve in the project: a real lamp is round. */
+  .lamp__bulb {
+    width: 10px;
+    height: 10px;
+    margin-top: 0.42em;
+    border-radius: var(--radius-dot);
+    border: var(--border-hair) solid currentColor;
+  }
+
+  /* Form carries the state before colour does: filled or hollow reads with no
+     colour at all, and the legend is struck through when the condition is
+     absent. Colour is the second signal, never the only one. */
+  .is-lit {
+    color: var(--signal-blocked);
+  }
+
+  .is-lit .lamp__bulb {
+    background: currentColor;
+  }
+
+  .is-clear {
+    color: var(--color-ink-muted);
+  }
+
+  .is-clear .lamp__bulb {
+    background: none;
+  }
+
+  .is-clear .lamp__legend {
+    /* The off state is designed: it stays legible rather than being dimmed
+       out of readability. Half the argument is what is missing here. */
+    text-decoration: line-through;
+    text-decoration-color: var(--color-hairline);
+  }
+</style>
