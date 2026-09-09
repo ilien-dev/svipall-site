@@ -1,0 +1,71 @@
+---
+/*
+ * ThemeToggle — D6. Dark is served when the system expresses no preference;
+ * this forces either one and remembers the choice.
+ *
+ * The no-flash script lives in the <head> of Base.astro, not here, because by
+ * the time a component renders the wrong theme has already painted.
+ */
+---
+
+<button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+  <span class="visually-hidden">Switch between light and dark</span>
+  <span class="theme-toggle__glyph" aria-hidden="true"></span>
+</button>
+
+<style>
+  .theme-toggle {
+    /* 24px minimum hit target, 44px on touch. Craft floor. */
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-0);
+    color: var(--color-ink-muted);
+    transition: color var(--dur-state) var(--ease-out);
+  }
+
+  .theme-toggle:hover {
+    color: var(--color-ink);
+  }
+
+  .theme-toggle__glyph {
+    width: 14px;
+    height: 14px;
+    border-radius: var(--radius-dot);
+    border: var(--border-hair) solid currentColor;
+    /* Half-filled: the glyph says "two states" without an icon set. */
+    background: linear-gradient(
+      to right,
+      currentColor 0 50%,
+      transparent 50% 100%
+    );
+  }
+</style>
+
+<script>
+  const KEY = 'svipall-theme';
+
+  function apply(theme: 'light' | 'dark') {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem(KEY, theme);
+    } catch {
+      // Private window, or site data blocked. The choice holds for this page.
+    }
+    for (const button of document.querySelectorAll('[data-theme-toggle]')) {
+      button.setAttribute('aria-pressed', String(theme === 'light'));
+    }
+  }
+
+  document.addEventListener('click', (event) => {
+    const button = (event.target as HTMLElement)?.closest('[data-theme-toggle]');
+    if (!button) return;
+    const current =
+      document.documentElement.dataset.theme ??
+      (window.matchMedia('(prefers-color-scheme: light)').matches
+        ? 'light'
+        : 'dark');
+    apply(current === 'dark' ? 'light' : 'dark');
+  });
+</script>

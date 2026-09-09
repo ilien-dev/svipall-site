@@ -1,0 +1,495 @@
+---
+/*
+ * InstallBlock — the primary CTA. C5, A5.
+ *
+ * Two real install paths, so a switch rather than a label. Both are documented
+ * in the product README: the pasteable prompt any agent can follow, and the
+ * Claude Code plugin commands. Neither is invented and neither is a variant of
+ * the other, which is what earns a control here instead of one default and a
+ * link to the rest.
+ *
+ * The switch is a tab set, which the component vocabulary refused. It is added
+ * to the vocabulary with this reason rather than smuggled in: R-G3-10.
+ *
+ * The active tab is marked with ink and a rule, not with the accent. The
+ * accent is fill only and exactly one accent fill on this page is a control:
+ * the copy button. A highlighted tab would be a second one.
+ */
+
+/*
+ * A command is written as tokens so its parts can carry different weight.
+ * `key` is the one token per panel that gets the accent fill: the accent is
+ * fill only and the copy control is already one, so a second is the limit
+ * before yellow stops meaning "this is the thing".
+ */
+interface Token {
+  text: string;
+  kind?: 'cmd' | 'sub' | 'key';
+}
+
+interface Variant {
+  id: string;
+  tab: string;
+  label: string;
+  /* 'prompt' draws a UI glyph in currentColor. Any other value is a slug in
+     src/assets/clients, drawn in the brand's own colour: recolouring someone
+     else's mark is worse than showing it as it is. */
+  icon?: 'prompt' | string;
+  iconColor?: string;
+  lead?: string;
+  url?: string;
+  lines?: Token[][];
+}
+
+interface Props {
+  id: string;
+  variants: Variant[];
+}
+
+import fs from 'node:fs';
+import path from 'node:path';
+
+const { id, variants } = Astro.props;
+
+// Built here rather than inline: a multi-line expression inside a <pre> is
+// where the compiler gives up, and a newline written in markup is whitespace
+// the parser is free to reinterpret.
+const NEWLINE = '\n';
+const iconSvg = (slug: string) =>
+  fs
+    .readFileSync(path.resolve(`src/assets/clients/${slug}.svg`), 'utf8')
+    .replace(/<title>[\s\S]*?<\/title>/g, '')
+    .replace('<svg ', '<svg aria-hidden="true" focusable="false" ');
+
+const rows = variants.map((variant) => ({
+  ...variant,
+  markSvg:
+    variant.icon && variant.icon !== 'prompt' ? iconSvg(variant.icon) : null,
+  // What is copied is the plain command, whatever the tokens are styled as.
+  code:
+    variant.lead ??
+    (variant.lines ?? [])
+      .map((line) => line.map((token) => token.text).join(' '))
+      .join(NEWLINE),
+}));
+---
+
+<div class="install">
+  <div class="install__frame">
+    <div class="install__tabs" role="tablist" aria-label="How to install">
+      <span class="install__marker" aria-hidden="true" data-install-marker></span>
+      {
+        rows.map((variant, i) => (
+          <button
+            class="install__tab"
+            type="button"
+            role="tab"
+            id={`${id}-tab-${variant.id}`}
+            aria-controls={`${id}-panel-${variant.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            data-install-tab={variant.id}
+          >
+            {variant.icon === 'prompt' && (
+              <svg
+                class="install__tabicon"
+                viewBox="0 0 16 16"
+                width="14"
+                height="14"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path
+                  d="M2.5 3.5 6 8l-3.5 4.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                />
+                <path
+                  d="M8 12.5h5.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                />
+              </svg>
+            )}
+            {variant.markSvg && (
+              <span
+                class="install__tabicon install__tabicon--brand"
+                style={`color: ${variant.iconColor}`}
+                set:html={variant.markSvg}
+              />
+            )}
+            {variant.tab}
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="install__panels">
+    {
+      rows.map((variant, i) => (
+        <div
+          class={`install__panel ${i === 0 ? 'is-current' : ''}`}
+          role="tabpanel"
+          id={`${id}-panel-${variant.id}`}
+          aria-labelledby={`${id}-tab-${variant.id}`}
+          data-install-panel={variant.id}
+        >
+          <div class="install__row">
+            {variant.lead ? (
+              <pre class="install__code" id={`${id}-code-${variant.id}`}>{variant.lead}{NEWLINE}<mark>{variant.url}</mark></pre>
+            ) : (
+              <pre class="install__code" id={`${id}-code-${variant.id}`}>{
+                (variant.lines ?? []).map((line, n) => (
+                  <span class="install__cmdline">{
+                    line.map((token, t) => (
+                      <span class={`install__tok install__tok--${token.kind ?? 'sub'}`}>{
+                        token.kind === 'key' ? <mark>{token.text}</mark> : token.text
+                      }{t < line.length - 1 ? ' ' : ''}</span>
+                    ))
+                  }{n < (variant.lines ?? []).length - 1 ? NEWLINE : ''}</span>
+                ))
+              }</pre>
+            )}
+
+            <button
+              class="install__copy"
+              type="button"
+              data-copy-target={`${id}-code-${variant.id}`}
+              aria-describedby={`${id}-tab-${variant.id}`}
+            >
+              <svg
+                class="install__glyph"
+                viewBox="0 0 16 16"
+                width="22"
+                height="22"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <rect
+                  x="5.5"
+                  y="1.5"
+                  width="9"
+                  height="11"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                />
+                <path
+                  d="M10.5 14.5h-9v-11"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                />
+              </svg>
+              <span class="visually-hidden install__copy-idle">
+                Copy {variant.label}
+              </span>
+              <span class="visually-hidden install__copy-done" hidden>Copied</span>
+              <span class="install__tick" aria-hidden="true" hidden>+</span>
+            </button>
+          </div>
+        </div>
+      ))
+    }
+    </div>
+  </div>
+</div>
+
+<style>
+  .install {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .install__frame {
+    border: var(--border-hair) solid var(--color-hairline);
+    background: var(--color-cell);
+  }
+
+  .install__tabs {
+    position: relative;
+    display: flex;
+    border-bottom: var(--border-hair) solid var(--color-hairline);
+  }
+
+  /* A filled bar rather than a border, because a bar can be moved with
+     transform alone: animating width or left would animate layout and force a
+     reflow every frame.
+     Ink, not accent. It was tried in amber and taken back: the accent is fill
+     only and exactly one accent fill on the page is a control, which is the
+     copy button. Marking the active tab in ink keeps that true. */
+  .install__marker {
+    position: absolute;
+    left: 0;
+    bottom: calc(var(--border-hair) * -1);
+    width: 100%;
+    height: 3px;
+    background: var(--color-ink);
+    transform-origin: left center;
+    transform: translateX(var(--marker-x, 0)) scaleX(var(--marker-s, 0));
+    transition: transform var(--dur-reveal) var(--ease-out);
+  }
+
+  .install__tab {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: var(--leading-body);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    transition: color var(--dur-state) var(--ease-out);
+  }
+
+  .install__tab + .install__tab {
+    border-left: var(--border-hair) solid var(--color-hairline);
+  }
+
+  .install__tab:hover {
+    color: var(--color-ink);
+  }
+
+  .install__tab[aria-selected='true'] {
+    color: var(--color-ink);
+  }
+
+  /* Every panel occupies the same cell of a one-cell grid, so the frame is
+     always as tall as the tallest option and the switch does not make the
+     page jump. visibility:hidden also takes the inactive panel out of the
+     accessibility tree and out of the tab order, which the hidden attribute
+     was doing before. */
+  .install__panels {
+    display: grid;
+  }
+
+  /* The two panels share one grid cell, so they cross-fade in place. The
+     visibility flip is delayed by the fade so the outgoing panel is still
+     painted while it leaves, and is gone from the accessibility tree and the
+     tab order the moment it finishes. */
+  .install__panel {
+    grid-area: 1 / 1;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--dur-reveal) var(--ease-out),
+      visibility 0s linear var(--dur-reveal);
+  }
+
+  .install__panel.is-current {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity var(--dur-reveal) var(--ease-out),
+      visibility 0s;
+  }
+
+  .install__tabicon {
+    flex: none;
+    display: block;
+  }
+
+  /* A brand mark keeps its own colour. It is decoration beside a text label
+     that already says which tab this is, so it carries no contrast duty. */
+  .install__tabicon--brand :global(svg) {
+    display: block;
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+  }
+
+  /* The panel fills its grid cell and the row fills the panel, so the copy
+     control is the full height of the frame on both tabs rather than the
+     height of whichever command happens to be shorter. */
+  .install__panel {
+    display: flex;
+  }
+
+  .install__row {
+    display: flex;
+    align-items: stretch;
+    flex: 1 1 auto;
+  }
+
+  .install__code {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-body);
+    white-space: pre-wrap;
+    /* Break the URL where it has to, not mid-word wherever it lands. */
+    overflow-wrap: anywhere;
+  }
+
+  /* Structure by weight and value, so the shape of a command reads without
+     spending the accent on every part of it. */
+  .install__tok--cmd {
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+
+  .install__tok--sub {
+    color: var(--color-ink-muted);
+  }
+
+  .install__copy {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    /* Hit target: 44px minimum on touch. Craft floor. */
+    min-height: 44px;
+    min-width: 88px;
+    padding: var(--space-3) var(--space-4);
+    border-left: var(--border-hair) solid var(--color-hairline);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    border-radius: var(--radius-0);
+    transition: opacity var(--dur-state) var(--ease-out);
+  }
+
+  .install__copy:hover {
+    opacity: 0.88;
+  }
+
+  .install__glyph {
+    flex: none;
+    /* The word came off the button, so the glyph carries the whole affordance
+       on its own. At 16px it read as a decoration. */
+    width: 22px;
+    height: 22px;
+  }
+
+  .install__tick {
+    font-family: var(--font-mono);
+    font-size: var(--text-md);
+    font-weight: 700;
+  }
+
+  /* Below this the button stops fitting beside wrapped lines of URL and goes
+     under them rather than squeezing the code to nothing. */
+  @media (max-width: 520px) {
+    .install__row {
+      flex-direction: column;
+    }
+
+    .install__copy {
+      width: 100%;
+      border-left: 0;
+      border-top: var(--border-hair) solid var(--color-hairline);
+    }
+  }
+</style>
+
+<script>
+  // --- the switch ---------------------------------------------------------
+  for (const frame of document.querySelectorAll<HTMLElement>('.install__frame')) {
+    const tabs = Array.from(frame.querySelectorAll<HTMLElement>('[data-install-tab]'));
+    const panels = Array.from(
+      frame.querySelectorAll<HTMLElement>('[data-install-panel]')
+    );
+    if (tabs.length < 2) continue;
+
+    const marker = frame.querySelector<HTMLElement>('[data-install-marker]');
+    const tablist = frame.querySelector<HTMLElement>('.install__tabs');
+
+    const placeMarker = () => {
+      if (!marker || !tablist) return;
+      const active = tabs.find((t) => t.getAttribute('aria-selected') === 'true');
+      if (!active) return;
+      const total = tablist.getBoundingClientRect().width;
+      if (!total) return;
+      marker.style.setProperty('--marker-x', `${active.offsetLeft}px`);
+      marker.style.setProperty(
+        '--marker-s',
+        String(active.getBoundingClientRect().width / total)
+      );
+    };
+
+    const select = (name: string, focus = false) => {
+      for (const tab of tabs) {
+        const on = tab.dataset.installTab === name;
+        tab.setAttribute('aria-selected', String(on));
+        tab.tabIndex = on ? 0 : -1;
+        if (on && focus) tab.focus();
+      }
+      for (const panel of panels) {
+        panel.classList.toggle('is-current', panel.dataset.installPanel === name);
+      }
+      placeMarker();
+    };
+
+    for (const tab of tabs) {
+      tab.addEventListener('click', () => select(tab.dataset.installTab ?? ''));
+    }
+
+    placeMarker();
+    // The bar is positioned from measured widths, so it has to be replaced
+    // when those widths change.
+    window.addEventListener('resize', placeMarker);
+    if (document.fonts?.ready) document.fonts.ready.then(placeMarker);
+
+    // Arrow keys, because a tablist that only answers the mouse is a row of
+    // buttons wearing tab roles.
+    frame.addEventListener('keydown', (event) => {
+      const key = (event as KeyboardEvent).key;
+      if (key !== 'ArrowLeft' && key !== 'ArrowRight') return;
+      const current = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+      const next = (current + (key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      select(tabs[next].dataset.installTab ?? '', true);
+      event.preventDefault();
+    });
+  }
+
+  // --- copy ---------------------------------------------------------------
+  document.addEventListener('click', async (event) => {
+    const button = (event.target as HTMLElement)?.closest<HTMLButtonElement>(
+      '[data-copy-target]'
+    );
+    if (!button) return;
+
+    const source = document.getElementById(button.dataset.copyTarget ?? '');
+    if (!source?.textContent) return;
+
+    try {
+      await navigator.clipboard.writeText(source.textContent);
+    } catch {
+      // Clipboard refused, usually an insecure context. Say nothing false:
+      // select the text so the reader can copy it themselves.
+      const range = document.createRange();
+      range.selectNodeContents(source);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      return;
+    }
+
+    const idle = button.querySelector<HTMLElement>('.install__copy-idle');
+    const done = button.querySelector<HTMLElement>('.install__copy-done');
+    const glyph = button.querySelector<HTMLElement>('.install__glyph');
+    const tick = button.querySelector<HTMLElement>('.install__tick');
+    if (!idle || !done) return;
+
+    idle.hidden = true;
+    done.hidden = false;
+    if (glyph) glyph.hidden = true;
+    if (tick) tick.hidden = false;
+
+    window.setTimeout(() => {
+      idle.hidden = false;
+      done.hidden = true;
+      if (glyph) glyph.hidden = false;
+      if (tick) tick.hidden = true;
+    }, 2000);
+  });
+</script>

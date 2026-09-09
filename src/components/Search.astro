@@ -1,0 +1,193 @@
+---
+/*
+ * Docs search, over the Pagefind index the build writes into /pagefind.
+ *
+ * Everything is local: the index ships with the site and the query never leaves
+ * the browser. That is the same claim the product makes, so a docs search that
+ * posted to a search service would be the site contradicting its own subject.
+ *
+ * REST STATE. With no JavaScript the field is not rendered at all, rather than
+ * rendered dead. A search box that does nothing when typed into is worse than
+ * no search box, because the reader spends a query finding out.
+ */
+---
+
+<div class="find" data-find hidden>
+  <label class="visually-hidden" for="docs-find">Search the documentation</label>
+  <input
+    class="find__input"
+    id="docs-find"
+    type="search"
+    placeholder="Search"
+    autocomplete="off"
+    spellcheck="false"
+    data-find-input
+  />
+
+  <div class="find__out" data-find-out hidden>
+    <p class="find__count" data-find-count aria-live="polite"></p>
+    <ul data-find-list></ul>
+  </div>
+</div>
+
+<style>
+  .find {
+    position: relative;
+  }
+
+  .find__input {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-cell);
+    border: var(--border-hair) solid var(--color-hairline);
+    border-radius: var(--radius-0);
+    font-size: var(--text-2xs);
+    transition: border-color var(--dur-state) var(--ease-out);
+  }
+
+  .find__input:hover {
+    border-color: var(--color-ink);
+  }
+
+  /* Results sit over the sidebar rather than pushing it down: a list that
+     shoves the navigation off the screen while you type makes the page jump
+     under the reader's eyes. This is the one place a shadow is allowed, and
+     it is the token that means "this can be closed". */
+  .find__out {
+    position: absolute;
+    z-index: var(--z-sticky);
+    top: calc(100% + var(--space-1));
+    left: 0;
+    width: max(100%, 260px);
+    max-height: 60svh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--space-3);
+    background: var(--color-cell);
+    border: var(--border-hair) solid var(--color-hairline);
+    box-shadow: var(--elev-overlay);
+  }
+
+  .find__count {
+    margin: 0 0 var(--space-2);
+    max-width: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .find__out :global(li + li) {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: var(--border-hair) solid var(--color-hairline);
+  }
+
+  .find__out :global(a) {
+    display: block;
+    text-decoration: none;
+    font-size: var(--text-2xs);
+    font-weight: 600;
+  }
+
+  .find__out :global(p) {
+    margin-top: var(--space-1);
+    max-width: none;
+    font-size: var(--text-2xs);
+    line-height: var(--leading-body);
+    color: var(--color-ink-muted);
+  }
+
+  .find__out :global(mark) {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-find]');
+  const input = document.querySelector<HTMLInputElement>('[data-find-input]');
+  const out = document.querySelector<HTMLElement>('[data-find-out]');
+  const count = document.querySelector<HTMLElement>('[data-find-count]');
+  const list = document.querySelector<HTMLElement>('[data-find-list]');
+
+  if (root && input && out && count && list) {
+    let pagefind: any = null;
+
+    // The index only exists in a built site. In dev there is nothing to load,
+    // so the field stays hidden rather than accepting queries it cannot answer.
+    const load = async () => {
+      if (pagefind) return pagefind;
+      try {
+        pagefind = await import(
+          /* @vite-ignore */ new URL('/pagefind/pagefind.js', location.origin).href
+        );
+        await pagefind.options({ excerptLength: 18 });
+        return pagefind;
+      } catch {
+        return null;
+      }
+    };
+
+    load().then((ok) => {
+      if (ok) root.hidden = false;
+    });
+
+    let run = 0;
+
+    const clear = () => {
+      out.hidden = true;
+      list.replaceChildren();
+      count.textContent = '';
+    };
+
+    input.addEventListener('input', async () => {
+      const term = input.value.trim();
+      if (term.length < 2) return clear();
+
+      // Every keystroke starts a query; only the newest may paint. Without
+      // this a slow early query lands after a fast later one and the reader
+      // watches the results go backwards.
+      const mine = ++run;
+      const pf = await load();
+      if (!pf || mine !== run) return;
+
+      const search = await pf.search(term);
+      if (mine !== run) return;
+
+      const found = await Promise.all(search.results.slice(0, 6).map((r: any) => r.data()));
+      if (mine !== run) return;
+
+      list.replaceChildren();
+      count.textContent =
+        search.results.length === 0
+          ? 'nothing found'
+          : `${search.results.length} ${search.results.length === 1 ? 'page' : 'pages'}`;
+
+      for (const item of found) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = item.url;
+        a.textContent = item.meta?.title ?? item.url;
+        const p = document.createElement('p');
+        p.innerHTML = item.excerpt;
+        li.append(a, p);
+        list.append(li);
+      }
+
+      out.hidden = false;
+    });
+
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        input.value = '';
+        clear();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!root.contains(event.target as Node)) clear();
+    });
+  }
+</script>

@@ -1,0 +1,328 @@
+---
+/*
+ * Terminal — the hero's demonstration. C2 section 1, demonstration-first.
+ *
+ * It cycles through several requests, continuously, because the author asked
+ * for constant movement and more than one example. That makes it autoplaying
+ * motion beyond five seconds, so it carries a real pause control: craft floor,
+ * and not the author's or mine to waive.
+ *
+ * TRUTH. The repo's own GIF is labelled "replayed from real runs". This is NOT
+ * that. Every transcript is an illustration written for a reader who does not
+ * know what any of this means, it says so on the page, and none of them
+ * carries an invented figure. The one quantity that appears, three search
+ * engines, is documented in the product README.
+ *
+ * REST STATE. Every transcript is in the HTML. With no JavaScript, or under
+ * prefers-reduced-motion, all of them are visible, stacked and finished. The
+ * cycling only ever hides what is already there.
+ */
+
+interface Line {
+  kind: 'cmd' | 'try' | 'ok' | 'note';
+  text: string;
+  result?: string;
+  tone?: 'ok' | 'blocked';
+}
+
+interface Take {
+  title: string;
+  lines: Line[];
+}
+
+interface Props {
+  caption: string;
+  takes: Take[];
+}
+
+const { caption, takes } = Astro.props;
+
+const sigil = (kind: Line['kind']) =>
+  kind === 'cmd' ? '$' : kind === 'ok' ? '+' : kind === 'try' ? '→' : '';
+---
+
+<figure class="term">
+  <div class="term__head">
+    <p class="term__label" data-term-heading>{takes[0].title}</p>
+    <button class="term__toggle" type="button" data-term-toggle hidden>
+      <span data-term-word>Pause</span>
+    </button>
+  </div>
+
+  <div class="term__stage">
+    {
+      takes.map((take, t) => (
+        <div class="term__take" data-term-take={t} data-term-title={take.title}>
+          {take.lines.map((line) => (
+            <p class={`term__line term__line--${line.kind}`} data-term-line>
+              <span class="term__sigil" aria-hidden="true">
+                {sigil(line.kind)}
+              </span>
+              <span class="term__text">{line.text}</span>
+              {line.result && (
+                <span class={`term__result term__result--${line.tone ?? 'ok'}`}>
+                  {line.result}
+                </span>
+              )}
+            </p>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+
+  <figcaption class="term__caption">{caption}</figcaption>
+</figure>
+
+<style>
+  .term {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    /* Grows to fill the column so its foot lands level with the block beside
+       it instead of stopping short and leaving a hole. */
+    flex: 1 1 auto;
+    border: var(--border-hair) solid var(--color-hairline);
+    background: var(--color-cell);
+    min-width: 0;
+  }
+
+  .term__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-4);
+    border-bottom: var(--border-hair) solid var(--color-hairline);
+  }
+
+  .term__label {
+    margin: 0 auto 0 0;
+    max-width: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: var(--leading-body);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .term__toggle {
+    min-height: 24px;
+    padding: var(--space-1) var(--space-2);
+    border: var(--border-hair) solid var(--color-hairline);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    transition: color var(--dur-state) var(--ease-out);
+  }
+
+  .term__toggle:hover {
+    color: var(--color-ink);
+  }
+
+  .term__stage {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-6);
+    padding: var(--space-4);
+    overflow: hidden;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-body);
+    color: var(--color-ink-muted);
+  }
+
+  /* Only once JS is driving it does one take hold the stage at a time. */
+  .term__stage.is-cycling {
+    display: grid;
+    align-content: center;
+    /* The stage carries justify-content: center for its flex layout, where it
+       centres the takes vertically. In grid that same property centres the
+       column track instead, and an implicit track is max-content, so the
+       transcript floated in the middle of the panel at any width where the
+       longest line was shorter than the panel. One explicit full-width track,
+       minmax so a long line can still shrink rather than overflow. */
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .term__stage.is-cycling .term__take {
+    grid-area: 1 / 1;
+    visibility: hidden;
+  }
+
+  .term__stage.is-cycling .term__take.is-current {
+    visibility: visible;
+  }
+
+  .term__stage.is-cycling .term__line {
+    opacity: 0;
+    /* A 4px drift, so a line leaving reads as wiped rather than switched off.
+       Declared here and not on .is-shown: a transition that only exists on the
+       visible state animates the entrance and cuts the exit. */
+    transform: translateX(-4px);
+    transition:
+      opacity var(--dur-reveal) var(--ease-out),
+      transform var(--dur-reveal) var(--ease-out);
+  }
+
+  .term__stage.is-cycling .term__take.is-current .term__line.is-shown {
+    opacity: 1;
+    transform: none;
+  }
+
+  .term__line {
+    display: grid;
+    grid-template-columns: 2ch 1fr auto;
+    gap: var(--space-3);
+    align-items: baseline;
+    margin: 0;
+    max-width: none;
+    padding-block: var(--space-1);
+  }
+
+  .term__line--cmd .term__text {
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+
+  .term__line--note {
+    padding-top: var(--space-3);
+  }
+
+  .term__sigil {
+    color: var(--color-ink-muted);
+  }
+
+  /* Semantic colour, never colour alone: the glyph carries the state too. */
+  .term__line--ok .term__sigil {
+    color: var(--signal-ok);
+  }
+
+  .term__line--ok .term__text {
+    color: var(--color-ink);
+  }
+
+  .term__result--ok {
+    color: var(--signal-ok);
+  }
+
+  .term__result--blocked {
+    color: var(--signal-blocked);
+  }
+
+  .term__caption {
+    padding: var(--space-3) var(--space-4);
+    border-top: var(--border-hair) solid var(--color-hairline);
+    font-size: var(--text-2xs);
+    line-height: var(--leading-body);
+    color: var(--color-ink-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .term__stage.is-cycling {
+      display: flex;
+    }
+
+    .term__stage.is-cycling .term__take {
+      visibility: visible;
+    }
+
+    .term__stage.is-cycling .term__line {
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  const LINE_MS = 240;   // stagger on the way in
+  const WIPE_MS = 90;    // stagger on the way out, faster than the way in
+  const HOLD_MS = 5200;  // doubled: long enough to actually read the take
+  const SETTLE_MS = 220; // one transition, so the swap lands on an empty stage
+
+  for (const figure of document.querySelectorAll<HTMLElement>('.term')) {
+    const stage = figure.querySelector<HTMLElement>('.term__stage');
+    const heading = figure.querySelector<HTMLElement>('[data-term-heading]');
+    const button = figure.querySelector<HTMLElement>('[data-term-toggle]');
+    const word = figure.querySelector<HTMLElement>('[data-term-word]');
+    const takes = Array.from(
+      figure.querySelectorAll<HTMLElement>('[data-term-take]')
+    );
+    if (!stage || !heading || !button || !word || takes.length === 0) continue;
+
+    // Under reduced motion every take stays visible and finished, so a pause
+    // control would be a button for motion that is not running.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) continue;
+
+    const titles = takes.map((take) => take.dataset.termTitle ?? '');
+    stage.classList.add('is-cycling');
+    button.hidden = false;
+
+    let index = 0;
+    let paused = false;
+    let timer = 0;
+
+    const wait = (ms: number) =>
+      new Promise<void>((resolve) => {
+        timer = window.setTimeout(resolve, ms);
+      });
+
+    const linesOf = (take: HTMLElement) =>
+      Array.from(take.querySelectorAll<HTMLElement>('[data-term-line]'));
+
+    async function show(i: number) {
+      const take = takes[i];
+      for (const other of takes) other.classList.remove('is-current');
+      take.classList.add('is-current');
+      if (titles[i] && heading) heading.textContent = titles[i];
+
+      const lines = linesOf(take);
+      for (const line of lines) line.classList.remove('is-shown');
+      for (const line of lines) {
+        if (paused) return;
+        line.classList.add('is-shown');
+        await wait(LINE_MS);
+      }
+      await wait(HOLD_MS);
+    }
+
+    // Wiped from the last line up, so it reads as the screen being cleared
+    // rather than the whole block blinking off at once.
+    async function wipe(i: number) {
+      const lines = linesOf(takes[i]).reverse();
+      for (const line of lines) {
+        if (paused) return;
+        line.classList.remove('is-shown');
+        await wait(WIPE_MS);
+      }
+      await wait(SETTLE_MS);
+    }
+
+    async function loop() {
+      for (;;) {
+        if (paused) {
+          await wait(200);
+          continue;
+        }
+        await show(index);
+        if (!paused) await wipe(index);
+        index = (index + 1) % takes.length;
+      }
+    }
+
+    button.addEventListener('click', () => {
+      paused = !paused;
+      word.textContent = paused ? 'Play' : 'Pause';
+      button.setAttribute('aria-pressed', String(paused));
+      if (!paused) return;
+      window.clearTimeout(timer);
+      // Paused shows the take finished rather than frozen half-written.
+      for (const line of linesOf(takes[index])) line.classList.add('is-shown');
+    });
+
+    loop();
+  }
+</script>

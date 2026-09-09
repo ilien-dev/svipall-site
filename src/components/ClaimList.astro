@@ -1,0 +1,92 @@
+---
+/*
+ * ClaimList — why any of this can be believed. C2 section 6.
+ *
+ * Each claim carries where to check it. That is the whole point of the band:
+ * there is no social proof anywhere on this site, so the only thing holding it
+ * up is that every claim is followed to something a reader can open.
+ */
+
+interface Claim {
+  title: string;
+  body: string;
+  link?: { label: string; href: string };
+}
+
+interface Props {
+  claims: Claim[];
+}
+
+const { claims } = Astro.props;
+---
+
+<ul class="claims">
+  {
+    claims.map((claim) => (
+      <li class="claim">
+        <h3 class="claim__title">{claim.title}</h3>
+        <p class="claim__body">{claim.body}</p>
+        {claim.link && (
+          <p class="claim__link">
+            <a href={claim.link.href}>{claim.link.label}</a>
+          </p>
+        )}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  /* The seams are the 1px gaps in the grid, showing the container's own
+     background. Drawing them with per-child borders needs nth-child rules
+     that only hold for one item count, and this list has seven. */
+  .claims {
+    margin: 0;
+    display: grid;
+    gap: var(--border-hair);
+    padding: var(--border-hair);
+    background: var(--color-hairline);
+  }
+
+  .claim {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--color-cell);
+    min-width: 0;
+  }
+
+  .claim__title {
+    font-size: var(--text-lg);
+    letter-spacing: -0.015em;
+    max-width: 26ch;
+  }
+
+  .claim__body {
+    max-width: var(--measure);
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .claim__link {
+    margin-top: auto;
+    padding-top: var(--space-2);
+    max-width: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 900px) {
+    .claims {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .claim + .claim {
+      border-top: 0;
+      border-left: var(--border-hair) solid var(--color-hairline);
+    }
+  }
+</style>

@@ -1,0 +1,87 @@
+---
+/*
+ * AskList — things you can ask for, in the reader's own words. C2 section 5.
+ *
+ * The densest band on the page (E8: this is where the rhythm compresses).
+ * Each ask is set in the mono face because it is something you type, not
+ * something the page is telling you.
+ */
+
+interface Props {
+  asks: string[];
+  note: string;
+}
+
+const { asks, note } = Astro.props;
+---
+
+<div class="asks">
+  <ul class="asks__list">
+    {
+      asks.map((ask) => (
+        <li class="asks__item">
+          <span class="asks__mark" aria-hidden="true">"</span>
+          <span class="asks__text">{ask}</span>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="asks__note">{note}</p>
+</div>
+
+<style>
+  .asks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  /* The seams are the 1px gaps in the grid, showing the container's own
+     background. Drawing them with per-child borders needs nth-child rules
+     that only hold for one item count, and this list has seven. */
+  .asks__list {
+    margin: 0;
+    display: grid;
+    gap: var(--border-hair);
+    padding: var(--border-hair);
+    background: var(--color-hairline);
+  }
+
+  .asks__item {
+    display: grid;
+    grid-template-columns: 2ch 1fr;
+    gap: var(--space-2);
+    /* space-3 rows: this is the one band that compresses. */
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-cell);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-body);
+    color: var(--color-ink);
+    max-width: none;
+  }
+
+  .asks__mark {
+    color: var(--color-ink-muted);
+  }
+
+  .asks__note {
+    max-width: var(--measure);
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+  }
+
+  @media (min-width: 900px) {
+    .asks__list {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* An odd count leaves the last slot empty, and an empty slot in this grid
+       is a hole showing the container's own background as a solid block. The
+       last item takes the whole row instead, so the count can change without
+       the layout breaking. */
+    .asks__item:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

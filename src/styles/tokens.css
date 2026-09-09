@@ -1,0 +1,238 @@
+/* ============================================================================
+   Svipall site — design tokens
+   The ONLY file in this project allowed to contain raw values.
+   Everything else uses the aliases declared here. See .ptah/DIRECTION.md.
+
+   Idiom: CELL GRID. The page is a modular grid of 1px rules. Every block is a
+   cell with a drawn edge. Nothing floats, nothing blurs, nothing has a radius.
+
+   Three layers, so a value change costs one line:
+     --ds-*      primitive: the raw value, named for what it is
+     --color-*   project alias: named for what it means
+     components  use the alias only, never the primitive, never a literal
+   ============================================================================ */
+
+@font-face {
+  font-family: 'Archivo';
+  src: url('/fonts/archivo-variable.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Commit Mono';
+  src: url('/fonts/commitmono-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Commit Mono';
+  src: url('/fonts/commitmono-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* --font-body
+     Everything a person reads: display, headings, prose, nav.
+     Do NOT use for cell labels, eyebrows, values or code. */
+  --font-body: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* --font-mono
+     What the machine touches: cell numbers and labels, eyebrows, values and
+     units, panel legends, code. Never sets a heading. R-G3-12. */
+  --font-mono: 'Commit Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* --- type scale: fluid, eight steps, clamp() between 390 and 1440 ------ */
+  --text-2xs: clamp(0.6875rem, 0.6667rem + 0.0952vw, 0.75rem);   /* 11 → 12 */
+  --text-xs:  clamp(0.8125rem, 0.7917rem + 0.0952vw, 0.875rem);  /* 13 → 14 */
+  --text-sm:  clamp(0.9375rem, 0.8958rem + 0.1905vw, 1.0625rem); /* 15 → 17 */
+  --text-md:  clamp(1.125rem, 1.0625rem + 0.2857vw, 1.3125rem);  /* 18 → 21 */
+  --text-lg:  clamp(1.375rem, 1.2708rem + 0.4762vw, 1.6875rem);  /* 22 → 27 */
+  --text-xl:  clamp(1.75rem, 1.5833rem + 0.7619vw, 2.25rem);     /* 28 → 36 */
+  --text-2xl: clamp(2.25rem, 1.9167rem + 1.5238vw, 3.25rem);     /* 36 → 52 */
+  --text-3xl: clamp(2.875rem, 2.25rem + 2.8571vw, 4.75rem);      /* 46 → 76 */
+
+  --leading-tight: 1.04;  /* display only */
+  --leading-snug: 1.22;   /* headings */
+  --leading-body: 1.55;   /* body; craft floor minimum is 1.4 */
+
+  /* --- spacing: 4-point, nine steps. Nothing off this scale. ------------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 40px;
+  --space-7: 64px;
+  --space-8: 96px;
+  --space-9: 128px;
+
+  /* --- shape: zero. The lamp is the only curve in the project. ----------- */
+  --radius-0: 0;
+  --radius-1: 2px;    /* inputs and inline code chips only */
+  --radius-dot: 50%;  /* the section 2 status lamp ONLY */
+
+  /* --border-hair
+     The grid rule. It is the structure of the page, not decoration, so it is
+     measured to clear 3:1 against both the cell and the ground. */
+  --border-hair: 1px;
+  --border-focus: 2px;
+
+  --z-base: 0;
+  --z-raised: 10;
+  --z-sticky: 100;
+  --z-overlay: 1000;
+  --z-toast: 1100;
+
+  --dur-state: 90ms;
+  --dur-reveal: 180ms;
+  --dur-event: 320ms;   /* the one orchestrated moment: the section 2 lamps */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+
+  /* --- the grid --------------------------------------------------------- */
+  /* --rail  The column every cell sits in. Rows are full-bleed; the rail's
+     vertical rules stack into two continuous lines down the page. */
+  --rail: 1120px;
+  --nav-height: var(--space-7);
+  --measure: 68ch;   /* craft floor window is 45-75ch */
+
+  /* The docs rail is wider because it carries three columns, not one: the
+     sidebar, the prose and the on-this-page list. The prose measure inside it
+     stays inside the same craft-floor window. D5 proposed ~78ch for the docs
+     and it was corrected down here: 45-75ch is floor, and floor is not
+     licensable by a density setting. */
+  --rail-docs: 1360px;
+  --measure-docs: 72ch;
+  --docs-sidebar: 232px;
+  --docs-toc: 208px;
+
+  /* --- colour primitives: light values, declared in bare :root first ----- */
+  /* The ink is the logo's navy. The dark theme inverts the relationship: the
+     navy becomes the ground and the ink warms toward the logo's bone. */
+  --ds-ink-950: #0B1A2B;
+  --ds-ink-600: #3B4550;
+  /* Not neutral grey and not cream: the logo's navy diluted, so the light
+     theme belongs to the same palette as the dark one instead of being a
+     different page that happens to share an accent. */
+  --ds-field-100: #DCE3EB;
+  --ds-field-000: #F4F7FA;
+  --ds-amber-400: #FFB03A;
+  --ds-green-700: #0F7A55;
+  /* Caution was an amber and the accent is now an amber. Two ambers with
+     different meanings is a state nobody can read, so caution moved to a blue
+     rather than the accent moving off the logo. */
+  --ds-sky-700: #175E8A;
+  /* Blocked is the logo's rust, exact. It already meant "refused" on the mark
+     and it means the same thing here. */
+  --ds-red-700: #A7472C;
+
+  /* --- aliases: what components use ------------------------------------- */
+
+  /* --color-ground  The page. What shows between and around cells. */
+  --color-ground: var(--ds-field-100);
+
+  /* --color-cell  A cell's fill. Do NOT use for a nested block: a cell inside
+     a cell is two edges at one corner, which this idiom does not have. */
+  --color-cell: var(--ds-field-000);
+
+  --color-ink: var(--ds-ink-950);
+  --color-ink-muted: var(--ds-ink-600);
+
+  /* --color-accent
+     FILL ONLY: the CTA, a highlight, the eye of the mark.
+     Identical in both themes, because a fill does not need to change value.
+     Brought back toward the logo's own amber at the author's direction. The
+     logo's exact #DF8D27 measures Lc 52 with this ink, which is where the
+     magenta sat before it was rejected; #FFB03A is the same hue family at
+     Lc 69. D5 recorded the original palette as refused for the site; that
+     decision was reversed here, deliberately, and the reason is in RULES.md.
+     Do NOT use as a text colour, a border, or a tint. R-G3-14. */
+  --color-accent: var(--ds-amber-400);
+  /* The logo's navy is the only ink permitted on the amber, which is the
+     pairing the mark itself uses. */
+  --color-on-accent: #0B1A2B;
+
+  /* --brand-claude
+     Anthropic's own orange, for the Claude Code plugin mark in the install
+     switch and nowhere else. It is a third party's colour, not part of this
+     palette: it is declared here only so the token layer stays the single
+     place a raw value lives, and it is exempt from the accent rules because
+     it is not an accent - it identifies a product. Never use it for a
+     surface, a rule, or any text of ours. */
+  --brand-claude: #D97757;
+
+  /* --color-hairline  Every rule in the grid. Measured, not eyeballed. */
+  --color-hairline: rgba(11, 26, 43, 0.49);
+
+  --color-focus: var(--ds-ink-950);
+
+  /* Semantic axis, separate from the accent. Appears ONLY where a state is
+     reported: lamps, verdict rows. It never decorates. */
+  --signal-ok: var(--ds-green-700);
+  --signal-caution: var(--ds-sky-700);
+  --signal-blocked: var(--ds-red-700);
+
+  /* --elev-overlay
+     The ONLY shadow in the project. A shadow means "this can be closed".
+     Bound to menus. A cell never casts one. */
+  --elev-overlay: 0 1px 2px rgba(0, 0, 0, 0.28), 0 8px 24px rgba(0, 0, 0, 0.24);
+
+  color-scheme: light dark;
+}
+
+/* --- dark: designed first, served when the system expresses no preference - */
+
+:root:not([data-theme='light']) {
+  --ds-ink-950: #EFE7DA;
+  --ds-ink-600: #DAD5CA;
+  --ds-field-100: #0B1A2B;
+  --ds-field-000: #122539;
+  --ds-green-700: #5CD6A0;
+  --ds-sky-700: #8FD0FF;
+  --ds-red-700: #FE775F;
+
+  --color-hairline: rgba(239, 231, 218, 0.38);
+  --color-focus: var(--ds-amber-400);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --ds-ink-950: #0B1A2B;
+    --ds-ink-600: #3B4550;
+    --ds-field-100: #DCE3EB;
+    --ds-field-000: #F4F7FA;
+    --ds-green-700: #0F7A55;
+    --ds-sky-700: #175E8A;
+    --ds-red-700: #A7472C;
+
+    --color-hairline: rgba(11, 26, 43, 0.49);
+    --color-focus: var(--ds-ink-950);
+  }
+}
+
+:root[data-theme='dark'] {
+  --ds-ink-950: #EFE7DA;
+  --ds-ink-600: #DAD5CA;
+  --ds-field-100: #0B1A2B;
+  --ds-field-000: #122539;
+  --ds-green-700: #5CD6A0;
+  --ds-sky-700: #8FD0FF;
+  --ds-red-700: #FE775F;
+
+  --color-hairline: rgba(239, 231, 218, 0.38);
+  --color-focus: var(--ds-amber-400);
+}
+
+/* The mark's four fills resolve to two ink values plus the accent on the eye.
+   R-D5-01. The original brand hexes never appear in this project. */
+:root {
+  --svipall-ink: var(--color-ink);
+  --svipall-rust: var(--color-ink);
+  --svipall-bone: var(--color-ground);
+  --svipall-amber: var(--color-accent);
+}

@@ -1,0 +1,93 @@
+---
+/*
+ * ProblemRow — one of the four failures. C2 section 4.
+ *
+ * A cell per problem, each with the same two fields in the same order: what
+ * goes wrong, then what happens instead. Same fields in the same order is what
+ * lets four of them be compared rather than just read.
+ */
+
+interface Problem {
+  title: string;
+  wrong: string;
+  instead: string;
+}
+
+interface Props {
+  problems: Problem[];
+}
+
+const { problems } = Astro.props;
+---
+
+<ul class="problems">
+  {
+    problems.map((problem) => (
+      <li class="problem">
+        <h3 class="problem__title">{problem.title}</h3>
+        <p class="problem__wrong">{problem.wrong}</p>
+        <p class="problem__instead">
+          <span class="problem__tag">Instead</span>
+          {problem.instead}
+        </p>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  /* The seams are the 1px gaps in the grid, showing the container's own
+     background. Drawing them with per-child borders needs nth-child rules
+     that only hold for one item count, and this list has seven. */
+  .problems {
+    margin: 0;
+    display: grid;
+    gap: var(--border-hair);
+    padding: var(--border-hair);
+    background: var(--color-hairline);
+  }
+
+  .problem {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--color-cell);
+    min-width: 0;
+  }
+
+  .problem__title {
+    font-size: var(--text-lg);
+    letter-spacing: -0.015em;
+    max-width: 28ch;
+  }
+
+  .problem__wrong {
+    max-width: var(--measure);
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .problem__instead {
+    max-width: var(--measure);
+    font-size: var(--text-sm);
+    color: var(--color-ink);
+  }
+
+  .problem__tag {
+    display: inline-block;
+    margin-right: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  @media (min-width: 860px) {
+    .problems {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
