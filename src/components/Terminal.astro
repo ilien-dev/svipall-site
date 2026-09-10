@@ -158,8 +158,12 @@ const sigil = (kind: Line['kind']) =>
     visibility: visible;
   }
 
+  /* ptah-allow: rest-opacity-zero - the rest state is the opposite of this.
+     .is-cycling is added by the script above; with no JavaScript, and under
+     prefers-reduced-motion, every take and every line is visible and finished.
+     Nothing here waits for an observer. */
   .term__stage.is-cycling .term__line {
-    opacity: 0;
+    opacity: 0; /* ptah-allow: rest-opacity-zero */
     /* A 4px drift, so a line leaving reads as wiped rather than switched off.
        Declared here and not on .is-shown: a transition that only exists on the
        visible state animates the entrance and cuts the exit. */

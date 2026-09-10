@@ -272,9 +272,12 @@ const rows = variants.map((variant) => ({
      visibility flip is delayed by the fade so the outgoing panel is still
      painted while it leaves, and is gone from the accessibility tree and the
      tab order the moment it finishes. */
+  /* ptah-allow: rest-opacity-zero - the first panel ships with .is-current in
+     the HTML, not applied by script, so the served page shows it with no
+     JavaScript at all. Verified in dist/index.html. */
   .install__panel {
     grid-area: 1 / 1;
-    opacity: 0;
+    opacity: 0; /* ptah-allow: rest-opacity-zero */
     visibility: hidden;
     transition:
       opacity var(--dur-reveal) var(--ease-out),

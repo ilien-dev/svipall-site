@@ -60,7 +60,9 @@ const { claims } = Astro.props;
   .claim__title {
     font-size: var(--text-lg);
     letter-spacing: -0.015em;
-    max-width: 26ch;
+    /* ptah-allow: measure - a heading, not body copy. The 45-75ch window is a
+       body measure; ragging a heading tighter is the point of setting it. */
+    max-width: 26ch; /* ptah-allow: measure */
   }
 
   .claim__body {

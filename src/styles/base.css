@@ -74,6 +74,17 @@ a:hover {
   text-decoration-color: var(--color-ink);
 }
 
+/* A link that stands on its own is a target, and a target is at least 24px.
+   `p > a:only-child` is a paragraph that is nothing but a link: the secondary
+   call to action, the link at the foot of each claim, a standalone link in
+   prose. A link INSIDE a sentence is deliberately not covered - it is exempt,
+   and padding it would break the line box of the text flowing around it. */
+p > a:only-child {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit-min);
+}
+
 /* One focus treatment, everywhere, never removed without a replacement. */
 :focus-visible {
   outline: var(--border-focus) solid var(--color-focus);

@@ -15,7 +15,6 @@ const count = nav.reduce((n, group) => n + group.pages.length, 0);
 <Base
   title="Svipall documentation"
   description="The command line, the local API, the MCP tools, and the measurements behind every number on this site."
-  surface="docs"
 >
   <Row num="00" label="Documentation">
     <div class="beat">
@@ -31,7 +30,10 @@ const count = nav.reduce((n, group) => n + group.pages.length, 0);
       nav.map((group) => (
         <section class="group">
           <h2 class="group__name">{group.name}</h2>
-          <ul class="group__list">
+          {/* The column count divides the group exactly, so no slot is ever
+              empty. The counts are known at build time; guessing with auto-fill
+              is what left a hole in the first place. */}
+          <ul class="group__list" style={`--cols: ${group.pages.length % 3 === 0 ? 3 : 2}`}>
             {group.pages.map((page) => (
               <li class="group__item">
                 <a class="group__link" href={`/docs/${page.id}`}>
@@ -54,7 +56,9 @@ const count = nav.reduce((n, group) => n + group.pages.length, 0);
 
   .beat__head {
     font-size: var(--text-2xl);
-    max-width: 18ch;
+    /* ptah-allow: measure - a heading, not body copy. The 45-75ch window is a
+       body measure; ragging a heading tighter is the point of setting it. */
+    max-width: 18ch; /* ptah-allow: measure */
   }
 
   .beat__lede {
@@ -80,33 +84,24 @@ const count = nav.reduce((n, group) => n + group.pages.length, 0);
   /* The seams are the 1px gaps in the grid, showing the container's own
      background. Per-child borders need nth-child rules that hold for exactly
      one item count, and these groups have four different ones. */
+  /* The seams are the 1px gaps showing the container's own background, so an
+     empty slot is a hole rather than a blank. Rather than let one appear and
+     then patch it - the last card used to span the row and lay its text out
+     differently from every card above it, which read as broken - the column
+     count is chosen per group so the grid always divides exactly. Groups of
+     three get three columns; everything else gets two. */
   .group__list {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr));
     gap: var(--border-hair);
     padding: var(--border-hair);
     background: var(--color-hairline);
   }
 
-  /* Two columns rather than auto-fill, and the last odd item spans, because an
-     empty slot in this grid is a hole showing the container's own background
-     as a solid block. auto-fill only collapses a track that is empty in every
-     row, so it does not help the last row of a group with an odd count. The
-     home's lists solve it exactly this way and the groups here run 2, 3, 3
-     and 4 items. */
-  .group__item:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-  }
-
-  /* A spanning card with a stacked title reads as a card with a missing
-     neighbour, because the whole right half is empty. Across the full width
-     it lays out as a row instead, which is a deliberate shape rather than a
-     gap. */
-  .group__item:last-child:nth-child(odd) .group__link {
-    display: grid;
-    grid-template-columns: 220px minmax(0, 1fr);
-    align-items: baseline;
-    gap: var(--space-5);
+  @media (max-width: 860px) {
+    .group__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   .group__item {
@@ -134,7 +129,9 @@ const count = nav.reduce((n, group) => n + group.pages.length, 0);
 
   .group__summary {
     max-width: 46ch;
-    font-size: var(--text-2xs);
+    /* Was --text-2xs, which set the same role two steps below the home's card
+       body at the same viewport. */
+    font-size: var(--text-xs);
     line-height: var(--leading-body);
     color: var(--color-ink-muted);
   }
