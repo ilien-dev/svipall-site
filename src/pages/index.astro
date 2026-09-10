@@ -29,7 +29,6 @@ const conditions = [
     <HeroVideo slot="media" />
 
     <div class="hero__grid">
-      <div class="hero__tell">
       <div class="hero__say">
         <h1 class="hero__turn">
           Your agent doesn't read the web.<br />It tries to.
@@ -40,60 +39,6 @@ const conditions = [
           happened.
         </p>
       </div>
-      <div class="hero__act">
-        <InstallBlock
-          id="hero-install"
-          variants={[
-            {
-              id: 'prompt',
-              tab: 'Any agent',
-              icon: 'prompt',
-              label: 'the install prompt',
-              lead: 'Install and configure Svipall by following the instructions here:',
-              url: 'https://raw.githubusercontent.com/ilien-dev/svipall/main/docs/install.md',
-            },
-            {
-              id: 'plugin',
-              tab: 'Claude plugin',
-              icon: 'claudecode-tile',
-              iconColor: 'var(--brand-claude)',
-              label: 'the plugin commands',
-              lines: [
-                [
-                  { text: '/plugin', kind: 'cmd' },
-                  { text: 'marketplace add', kind: 'sub' },
-                  { text: 'ilien-dev/svipall', kind: 'key' },
-                ],
-                [
-                  { text: '/plugin', kind: 'cmd' },
-                  { text: 'install', kind: 'sub' },
-                  { text: 'svipall@svipall', kind: 'cmd' },
-                ],
-                [{ text: '/svipall:setup', kind: 'cmd' }],
-              ],
-            },
-          ]}
-        />
-      </div>
-      </div>
-
-      <div class="hero__show">
-      <Clients
-        label="Runs in any MCP client, including"
-        clients={[
-          { name: 'Claude Code', icon: 'claudecode' },
-          { name: 'Cursor', icon: 'cursor' },
-          { name: 'Codex', icon: 'openai' },
-          { name: 'opencode', icon: 'opencode' },
-          { name: 'Zed', icon: 'zedindustries' },
-          { name: 'Windsurf', icon: 'windsurf' },
-          { name: 'Cline', icon: 'cline' },
-          { name: 'VS Code', icon: 'visualstudiocode' },
-          { name: 'Warp', icon: 'warp' },
-          { name: 'JetBrains IDEs', icon: 'jetbrains' },
-          { name: 'Any MCP client', icon: 'modelcontextprotocol' },
-        ]}
-      />
 
       <Terminal
         caption="Illustrations, not recordings. The real runs, with the command and the log behind every number, are in the docs."
@@ -132,17 +77,71 @@ const conditions = [
           },
         ]}
       />
+
+      <div class="hero__belt">
+      <Clients
+        label="Runs in any MCP client, including"
+        clients={[
+          { name: 'Claude Code', icon: 'claudecode' },
+          { name: 'Cursor', icon: 'cursor' },
+          { name: 'Codex', icon: 'openai' },
+          { name: 'opencode', icon: 'opencode' },
+          { name: 'Zed', icon: 'zedindustries' },
+          { name: 'Windsurf', icon: 'windsurf' },
+          { name: 'Cline', icon: 'cline' },
+          { name: 'VS Code', icon: 'visualstudiocode' },
+          { name: 'Warp', icon: 'warp' },
+          { name: 'JetBrains IDEs', icon: 'jetbrains' },
+          { name: 'Any MCP client', icon: 'modelcontextprotocol' },
+        ]}
+      />
+      <div class="hero__foot">
+        <p class="hero__note">
+          It installs itself and sets itself up. You never open a terminal.
+        </p>
+        <p class="hero__secondary">
+          <a href="/docs/proof">How it was measured<Glyph name="onward" class="hero__onward" /></a>
+        </p>
+      </div>
+      </div>
+
+      <div class="hero__act">
+        <InstallBlock
+          id="hero-install"
+          variants={[
+            {
+              id: 'prompt',
+              tab: 'Any agent',
+              icon: 'prompt',
+              label: 'the install prompt',
+              lead: 'Install and configure Svipall by following the instructions here:',
+              url: 'https://raw.githubusercontent.com/ilien-dev/svipall/main/docs/install.md',
+            },
+            {
+              id: 'plugin',
+              tab: 'Claude plugin',
+              icon: 'claudecode-tile',
+              iconColor: 'var(--brand-claude)',
+              label: 'the plugin commands',
+              lines: [
+                [
+                  { text: '/plugin', kind: 'cmd' },
+                  { text: 'marketplace add', kind: 'sub' },
+                  { text: 'ilien-dev/svipall', kind: 'key' },
+                ],
+                [
+                  { text: '/plugin', kind: 'cmd' },
+                  { text: 'install', kind: 'sub' },
+                  { text: 'svipall@svipall', kind: 'cmd' },
+                ],
+                [{ text: '/svipall:setup', kind: 'cmd' }],
+              ],
+            },
+          ]}
+        />
       </div>
     </div>
 
-    <div class="hero__foot">
-      <p class="hero__note">
-        It installs itself and sets itself up. You never open a terminal.
-      </p>
-      <p class="hero__secondary">
-        <a href="/docs/proof">How it was measured<Glyph name="onward" class="hero__onward" /></a>
-      </p>
-    </div>
   </Row>
 
   {/* ---- Before and after ------------------------------------------- */}
@@ -547,9 +546,10 @@ svipall search "rust async runtime" --engine all</pre>
     gap: var(--space-7);
   }
 
-  /* Two columns once there is room for the demonstration beside the claim.
-     .term lives in Terminal.astro, so it carries that component's scope hash
-     and has to be reached with :global() or the rule is silently dead. */
+  /* Two by two once there is room. Row one is the claim and the
+     demonstration, row two is where it runs and how to get it. The grid
+     stretches each row to its taller cell, which is what makes the terminal
+     exactly as tall as the heading and lede beside it. */
   @media (min-width: 1000px) {
     .hero__grid {
       grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
@@ -558,12 +558,15 @@ svipall search "rust async runtime" --engine all</pre>
     }
   }
 
-  /* Left: what the reader is told. Right: what they are shown. */
-  .hero__tell,
-  .hero__show {
+  /* The belt and the note under it are one cell, the same height as the
+     paste block beside it: the label starts on the tabs' line and the note
+     ends on the block's foot, so the row reads as two blocks of a kind rather
+     than a strip of marks floating beside a box. A wrapper, not a rule on
+     .agents: that class carries Clients.astro's scope hash. */
+  .hero__belt {
     display: flex;
     flex-direction: column;
-    gap: var(--space-7);
+    justify-content: space-between;
     min-width: 0;
   }
 
@@ -618,22 +621,15 @@ svipall search "rust async runtime" --engine all</pre>
     gap: var(--space-4);
   }
 
-  /* Both feet on one line. The right column is the taller of the two, so the
-     paste block is pushed to the bottom of the left one rather than the
-     terminal being stretched past it. */
-  @media (min-width: 1000px) {
-    .hero__act {
-      margin-top: auto;
-    }
-  }
-
-  /* The note and the link sit below the grid, not inside it, so the two
-     columns end on the same line: the terminal stretches to the foot of the
-     paste block rather than to the foot of the text under it. */
+  /* The note and the link, under the belt. The margin is the floor of the
+     space between them and the marks, so they read as the install row's
+     caption rather than as a third line of the belt; when the paste block
+     beside it is taller, space-between on .hero__belt adds the rest. */
   .hero__foot {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+    margin-top: var(--space-5);
   }
 
   /* The same treatment the claim links get: the arrow travels with the words
@@ -646,9 +642,11 @@ svipall search "rust async runtime" --engine all</pre>
     margin-left: 0.4em;
   }
 
+  /* Body size, not caption size: it is the left half of the install row
+     now, and at --text-xs it was a footnote beside a block of 14px mono. */
   .hero__note {
     max-width: var(--measure);
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
     color: var(--color-ink-muted);
   }
 
