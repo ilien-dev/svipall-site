@@ -7,14 +7,9 @@ import Mark from '../components/Mark.astro';
 interface Props {
   title: string;
   description: string;
-  /* Which rail this page's cells sit in. The nav has to adopt it: the idiom's
-     whole claim is that the rail's two vertical rules run unbroken from the
-     nav to the foot of the page, and a nav on a 1120 rail above a docs body
-     on a 1360 one draws four lines instead of two. */
-  surface?: 'page' | 'docs';
 }
 
-const { title, description, surface = 'page' } = Astro.props;
+const { title, description } = Astro.props;
 ---
 
 <!doctype html>
@@ -57,7 +52,7 @@ const { title, description, surface = 'page' } = Astro.props;
     </script>
   </head>
 
-  <body class={surface === 'docs' ? 'surface-docs' : undefined}>
+  <body>
     <a class="skip" href="#main">Skip to content</a>
 
     <header class="nav">
@@ -83,13 +78,6 @@ const { title, description, surface = 'page' } = Astro.props;
 </html>
 
 <style>
-  /* The docs carry three columns, so their rail is wider. Redeclaring --rail
-     here rather than on the docs container means the nav picks it up too and
-     the two vertical rules stay continuous. */
-  body.surface-docs {
-    --rail: var(--rail-docs);
-  }
-
   .skip {
     position: absolute;
     left: var(--space-4);

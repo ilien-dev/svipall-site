@@ -367,7 +367,7 @@ svipall search "rust async runtime" --engine all</pre>
           <span aria-hidden="true"> · </span>
           <a href="/docs/privacy">Privacy</a>
           <span aria-hidden="true"> · </span>
-          Maintained by <a href="https://github.com/ilien-dev">ilien</a>.
+          <span class="close__by">Maintained by <a href="https://github.com/ilien-dev">ilien</a>.</span>
         </p>
       </div>
     </div>
@@ -375,17 +375,33 @@ svipall search "rust async runtime" --engine all</pre>
 </Base>
 
 <style>
-  /* Shared by every band below the hero. */
+  /* Shared by every band below the hero.
+     Two columns, not one: with the heading alone on the left, every band left
+     its whole right half empty above the content and then filled it edge to
+     edge, so all six read as the same shape stacked six times. The lede moves
+     into that space and the header becomes asymmetric - 5 to 7, not half and
+     half - which is the one thing the eye can use to tell the bands apart. */
   .beat {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
+    display: grid;
+    gap: var(--space-4) var(--space-6);
+    align-items: end;
+  }
+
+  @media (min-width: 900px) {
+    .beat:has(.beat__lede) {
+      grid-template-columns: 5fr 7fr;
+    }
+
+    .beat:has(.beat__lede) .beat__head {
+      grid-row: span 2;
+      align-self: start;
+    }
   }
 
   .beat__head {
     font-size: var(--text-xl);
     letter-spacing: -0.02em;
-    max-width: 24ch;
+    max-width: 24ch; /* ptah-allow: measure - a section heading, not body copy */
   }
 
   .beat__lede {
@@ -396,8 +412,18 @@ svipall search "rust async runtime" --engine all</pre>
 
   /* The hedge does not move and is not a footnote: it is the sentence that
      keeps the comparison honest. */
+  /* Kept whole: it was wrapping after "MAINTAINED" and leaving a two-word
+     orphan under a row of links. */
+  .close__by {
+    white-space: nowrap;
+  }
+
   .beat__hedge {
-    max-width: var(--measure);
+    /* The rule is the band's rule and runs the whole rail. It was inheriting
+       the paragraph measure from base.css, so it stopped at 662px while every
+       other rule in the design ran full width. The TEXT still holds its
+       measure; only the rule was wrong. */
+    max-width: none;
     padding-top: var(--space-4);
     border-top: var(--border-hair) solid var(--color-hairline);
     font-size: var(--text-sm);
@@ -518,7 +544,7 @@ svipall search "rust async runtime" --engine all</pre>
     line-height: var(--leading-tight);
     font-weight: 700;
     letter-spacing: -0.03em;
-    max-width: 17ch;
+    max-width: 17ch; /* ptah-allow: measure - the hero turn, display size */
   }
 
   .hero__lede {
@@ -555,6 +581,16 @@ svipall search "rust async runtime" --engine all</pre>
     max-width: var(--measure);
     font-size: var(--text-xs);
     color: var(--color-ink-muted);
+  }
+
+  /* Rows of several standalone links: section 7's pair and the footer's row.
+     Same 24px target as the single-link paragraphs above; :only-child cannot
+     reach them because each row holds more than one. */
+  .beat__links a,
+  .close__meta a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--hit-min);
   }
 
   .hero__secondary {

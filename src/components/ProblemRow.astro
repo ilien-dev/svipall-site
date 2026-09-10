@@ -59,7 +59,9 @@ const { problems } = Astro.props;
   .problem__title {
     font-size: var(--text-lg);
     letter-spacing: -0.015em;
-    max-width: 28ch;
+    /* ptah-allow: measure - a heading, not body copy. The 45-75ch window is a
+       body measure; ragging a heading tighter is the point of setting it. */
+    max-width: 28ch; /* ptah-allow: measure */
   }
 
   .problem__wrong {

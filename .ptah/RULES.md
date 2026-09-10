@@ -829,3 +829,181 @@ Reported every run rather than silenced. `disabledChecks` is still empty.
 | 4 | `color-literal` `#000` in Clients.astro | Inside `mask-image`. A mask reads the alpha channel only, so `#000` there means "opaque" rather than a colour. A token for it would name something that is not a colour decision. |
 | 2 | `rest-opacity-zero` in Terminal and InstallBlock | Both `opacity: 0` rules sit under a class JavaScript adds (`.is-cycling`). With no JS, and under `prefers-reduced-motion`, every take and every panel is visible and finished. The checker cannot see the guard. |
 | 4 | `img-no-alt` and `img-no-dimensions` in Mark.astro line 5 | Line 5 is a comment explaining why the mark must NOT be loaded through `<img src>`. The scanner matched the `<img>` written inside the prose of that comment, and reports it twice. There is no image element in the file. |
+
+---
+
+## Gate 8, second run: the check is clean
+
+**0 violations, 16 suppressed with `ptah-allow`.** `disabledChecks` is still empty:
+nothing is switched off. Every suppression carries its rule id on the line it
+applies to, is printed under "Suppressed (visible on purpose)" on every run, and is
+listed below with its reason.
+
+The twenty-four findings of the first run resolved as eight real fixes and sixteen
+false positives.
+
+### Fixed at the source, not suppressed
+
+```
+R-G8-07   the mask channel was a colour literal
+  found   #000 four times in Clients.astro, inside mask-image.
+  think   A CSS mask reads the alpha channel only, so that value means "opaque"
+          and its hue is never seen. It is not a colour decision. But the project's
+          own rule is that the token layer is the ONE place a raw value lives, and
+          a raw value in a component is a raw value whatever it means.
+  fix     Declared --mask-on in tokens.css, saying in as many words that it is not
+          a colour and must never be painted with. Four literals gone.
+  status  FIXED
+```
+
+```
+R-G8-08   a comment was being read as markup
+  found   img-no-alt and img-no-dimensions on Mark.astro line 5 - a line inside the
+          file's opening comment, which explained why the mark must NOT be loaded
+          through an image element and spelled the tag out to say so. The scanner
+          matched the tag inside the prose.
+  fix     The comment says "loaded through an image element" now. The false
+          positive is gone because the thing that caused it is gone, which is
+          better than a suppression that would have to be explained forever.
+  status  FIXED
+```
+
+### The sixteen suppressions, each with the reason on its own line
+
+| count | rule | where | why the code is right and the check is wrong |
+|---|---|---|---|
+| 3 | `font-no-fallback` | `tokens.css` @font-face | A `@font-face` descriptor binds a name to a file. It cannot carry a fallback stack: that is what the syntax is. The stacks live on `--font-body` and `--font-mono`, which is the only place a fallback can exist. |
+| 6 | `all-caps-body`, `wide-tracking-body` | `prose.css` `h4`, `th`, callout lead-in | All three are labels, set in the same mono eyebrow the rest of the site uses. The check matches them only through the `.prose` ancestor in its body-selector pattern; none of the three is running text. |
+| 5 | `measure` | five headings | `.claim__title`, `.problem__title`, `.beat__head` twice and the hero turn, all at `--text-lg` or larger. The 45-75ch window is a **body** measure. Ragging a heading tighter than that is the reason for setting it at all. |
+| 1 | `rest-opacity-zero` | `Terminal.astro` | The rule sits under `.is-cycling`, which the component's own script adds. With no JavaScript, and under `prefers-reduced-motion`, every take and every line is visible and finished. The rest state is the opposite of what the check reads. |
+| 1 | `rest-opacity-zero` | `InstallBlock.astro` | The first panel ships with `is-current` **in the HTML**, not applied by script. Verified by grepping `dist/index.html`: two occurrences, one per install block. The served page shows the prompt with JavaScript switched off entirely. |
+
+The two `rest-opacity-zero` cases are the ones worth checking again if this component
+changes, because the check is asking a real question - *does the first frame read?* -
+and the answer only stays yes while the rest state ships visible.
+
+---
+
+## Gate 7: the interface audit found what a screenshot cannot
+
+```
+R-G7-01   hit targets below the floor on both surfaces
+  found   Eleven links on the home and eight in the docs measured 13px and 23px
+          tall against a 24px minimum. Every one was display: inline, so it was
+          only as tall as its own text. The static check does not catch this and
+          neither does a screenshot: the link looks fine, it is the target around
+          it that is not there.
+  which   The secondary call to action; the link at the foot of each of the three
+          claims in band 6; band 7's "Read the docs / Source" pair; the four
+          footer links; and every entry of the docs "on this page" list, which
+          came to 23px - one pixel short.
+  not     "Maintained by ilien" is left alone. It sits inside a sentence, which is
+          the documented exemption, and padding it would break the line box of the
+          text flowing around it. Exempt is not the same as overlooked, so it is
+          named here.
+  fix     --hit-min: 24px in the token layer. In base.css, `p > a:only-child` -
+          a paragraph that is nothing but a link is a standalone target, and that
+          is a structural test rather than a list of class names to keep in step.
+          Rows holding several links are matched by their own selectors, because
+          :only-child cannot reach them. The docs list got min-height.
+  measure Re-measured in the browser after the fix: home 25 targets, docs 30
+          targets, undersized zero on both.
+  status  FIXED
+```
+
+```
+R-G7-02   focus, measured rather than assumed
+  assert  One focus treatment, present, never removed without a replacement.
+  measure Read back from a focused element in the built page: outline solid,
+          width 2px, offset 4px. Present.
+  status  PASS
+```
+
+---
+
+## Gate 6: the visual loop, scored by someone else
+
+Scored by a separate reviewer given `DIRECTION.md`, the sixteen captures and the
+rubric, and explicitly **not** the source. The protocol says the agent that built a
+thing is the worst available judge of it, and that a reviewer who can read the code
+scores the intention. That was worth the cost: the first run came back **FAIL**,
+with eight of eleven criteria below 4, and almost every finding was something the
+static check cannot see and I had stopped noticing.
+
+### Run 1 — FAIL
+
+| surface | criterion | score |
+|---|---|---|
+| Home | Composition | 3 |
+| Home | Typography | 4 |
+| Home | Colour and contrast | 3 |
+| Home | Visual identity | 3 |
+| Home | Polish | 2 (capped) |
+| Docs | Composition | 3 |
+| Docs | Typography | 4 |
+| Docs | Colour and contrast | 3 |
+| Docs | Visual identity | 3 |
+| Docs | Polish | 2 (capped) |
+| Docs | Navigability | 4 |
+
+The findings worth keeping, in the reviewer's own terms:
+
+- **The rhythm was metronomic.** In six consecutive bands the eyebrow sat at y=133,
+  the heading's first line at y=204 and the content at y=311 — the same three
+  numbers every time — and each band closed with the same ~96px of empty ground.
+  Asymmetry happened once, in the hero, and never again.
+- **Every band left its whole right half empty** above the content and then filled
+  it edge to edge.
+- **Three of eight bands are bordered card walls**, which the direction's own
+  component list names under "Not built: card grid".
+- **The docs rail sat 32px off the home's** at the same viewport, so the two
+  vertical rules — the single device this idiom rests on — jumped the moment a
+  reader clicked DOCS.
+- **The signature was missing from the docs pages.** `NN / LABEL` appeared on the
+  index and then never again, so the one element that makes the site nameable was
+  absent from the twelve pages a reader actually spends time in.
+- **The docs index had a broken cell**: the spanning last card laid its text out
+  differently from every card above it, aligning with neither column.
+- Smaller: the §2 rule stopped at 662px where every other rule ran the full rail;
+  the footer orphaned "BY ILIEN." onto a second line; the index card descriptions
+  were set two steps below the same role on the home.
+
+### What was fixed, and what was not
+
+```
+R-G6-05   the three highest-impact fixes, run 1 -> run 2
+  1  ONE RAIL FOR THE WHOLE SITE. --rail-docs is deleted. The docs sit in the
+     home's rail and the three columns were narrowed to pay for it; the prose
+     measure is capped below the column either way, so only tables lost width and
+     tables already scroll in their own box. The `surface` prop on Base.astro
+     existed only to swap the rail and is deleted with it rather than left as a
+     prop that does nothing.
+  2  THE BAND HEADER IS TWO COLUMNS. An asymmetric 5:7 split, heading left, lede
+     right, on any band that has a lede. It fills the empty right half and it is
+     the one thing the eye can use to tell the bands apart. The bands lost about
+     145px each, which is the metronome loosening as a side effect.
+  3  THE DOCS CARRY THE SIGNATURE AND THE INDEX DIVIDES EXACTLY. Every docs page
+     opens with `NN / GROUP` in the same tracked mono, which is both the signature
+     and the breadcrumb the content column loses when the h1 scrolls away. The
+     index chooses its column count per group - three columns for a group of
+     three, two otherwise - so no slot is ever empty and no card is special.
+```
+
+```
+R-G6-06   two of the reviewer's ranked fixes were NOT taken, and why
+  1  "Stop the client strip." Refused: the author required continuous motion
+     explicitly, twice, and it is already recorded as a knowingly-failing
+     craft-floor item under R-B1-15. Reversing it here would be me overturning a
+     decision through a subagent, which is not what a reviewer is for.
+     BUT the reviewer's clipping finding was checked rather than waved away: the
+     viewport carries a real mask, a linear-gradient fading to transparent over
+     40px at each edge, confirmed from the computed style in the built page. The
+     short leftmost mark is an item entering behind that fade, not a hard chop.
+  2  "Delete the two accent highlights." Not taken unilaterally: the author asked
+     for an accent on the URL and on a keyword, and R-G3-05 as amended permits two
+     <mark> highlights per band plus one accent control, so the page is compliant
+     with the rule as written. The reviewer's separate point - that the URL
+     highlight is physically larger than the copy button 40px from it, so the eye
+     lands on a link before the action - is a hierarchy argument rather than a
+     rule violation. It is put to the author rather than decided here.
+```

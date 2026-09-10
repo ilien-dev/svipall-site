@@ -2,10 +2,11 @@
 /*
  * Mark — the Svipall logo, inlined.
  *
- * It MUST be inlined rather than loaded through <img src>: an SVG in an <img>
- * is a separate document and cannot inherit this page's custom properties, so
- * it would fall back to the brand's original hexes. Those are refused for this
- * site (R-D5-02) and the palette rule would fail on the very first page.
+ * It MUST be inlined rather than loaded through an image element: an SVG
+ * referenced that way is a separate document and cannot inherit this page's
+ * custom properties, so it would fall back to the brand's original hexes.
+ * Those are refused for this site (R-D5-02) and the palette rule would fail
+ * on the very first page.
  *
  * Inlined, the four fills resolve through --svipall-* in tokens.css to two ink
  * values plus the accent on the eye. R-D5-01.

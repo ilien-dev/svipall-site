@@ -36,15 +36,17 @@ npm run check:links     # internal links and anchors, over dist/
 npm run check:rules     # the static ledger check
 ```
 
-`check:rules` currently reports **24 findings, all triaged and recorded** at the
-end of `RULES.md` under "The twenty-four that remain". They are heuristic false
-positives — `@font-face` descriptors that cannot carry a fallback, labels the
-scanner reads as running text, headings it reads as body measure, an `<img>`
-written inside a comment. `disabledChecks` is empty on purpose: they are reported
-every run and explained once, rather than silenced.
+`check:rules` reports **0 violations, 16 suppressed with `ptah-allow`**.
+`disabledChecks` is empty: nothing is switched off. Each suppression names its
+rule id on the line it applies to, is printed under "Suppressed (visible on
+purpose)" on every run, and is explained in `RULES.md` under "The sixteen
+suppressions". They are the cases where the check is wrong and the code is right
+— a `@font-face` descriptor that cannot carry a fallback by syntax, labels the
+scanner reads as running text, headings it reads as body measure, and two
+`opacity: 0` rules whose rest state ships visible.
 
-A **new** finding is a real finding. Do not add it to that table without doing
-the work to show it is a false positive.
+A **new** finding is a real finding. Do not reach for `ptah-allow` until you have
+shown the check is wrong; the default is that it is right.
 
 ## Things that have broken before
 

@@ -32,8 +32,11 @@
 .prose h4 {
   font-size: var(--text-xs);
   font-family: var(--font-mono);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  /* ptah-allow: wide-tracking-body - h4 is used here as a label, not running
+     text: it is the same mono eyebrow the rest of the site uses. The selector
+     matches BODY_SEL only through the .prose ancestor. */
+  letter-spacing: 0.06em; /* ptah-allow: wide-tracking-body */
+  text-transform: uppercase; /* ptah-allow: all-caps-body */
   color: var(--color-ink-muted);
 }
 
@@ -128,8 +131,9 @@
 .prose th {
   font-family: var(--font-mono);
   font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  /* ptah-allow: wide-tracking-body - a column header is a label. */
+  letter-spacing: 0.08em; /* ptah-allow: wide-tracking-body */
+  text-transform: uppercase; /* ptah-allow: all-caps-body */
   color: var(--color-ink-muted);
   background: var(--color-cell);
   white-space: nowrap;
@@ -165,6 +169,7 @@
   color: var(--color-ink);
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  /* ptah-allow: wide-tracking-body - the lead-in of a callout, set as a label. */
+  letter-spacing: 0.1em; /* ptah-allow: wide-tracking-body */
+  text-transform: uppercase; /* ptah-allow: all-caps-body */
 }

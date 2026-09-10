@@ -13,7 +13,10 @@
    ============================================================================ */
 
 @font-face {
-  font-family: 'Archivo';
+  /* ptah-allow: font-no-fallback - a @font-face descriptor binds a name to a
+     file; it cannot carry a fallback stack. The stacks are on --font-body and
+     --font-mono below, which is the only place a fallback can exist. */
+  font-family: 'Archivo'; /* ptah-allow: font-no-fallback */
   src: url('/fonts/archivo-variable.woff2') format('woff2-variations');
   font-weight: 100 900;
   font-style: normal;
@@ -21,7 +24,8 @@
 }
 
 @font-face {
-  font-family: 'Commit Mono';
+  /* ptah-allow: font-no-fallback - see above. */
+  font-family: 'Commit Mono'; /* ptah-allow: font-no-fallback */
   src: url('/fonts/commitmono-400.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
@@ -29,7 +33,8 @@
 }
 
 @font-face {
-  font-family: 'Commit Mono';
+  /* ptah-allow: font-no-fallback - see above. */
+  font-family: 'Commit Mono'; /* ptah-allow: font-no-fallback */
   src: url('/fonts/commitmono-700.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
@@ -83,6 +88,12 @@
   --border-hair: 1px;
   --border-focus: 2px;
 
+  /* --hit-min
+     The smallest a standalone target may be in either direction. An inline <a>
+     is only as tall as its text - 13px at the label size used here - so a link
+     that stands on its own has to be given the rest back. */
+  --hit-min: 24px;
+
   --z-base: 0;
   --z-raised: 10;
   --z-sticky: 100;
@@ -106,10 +117,16 @@
      stays inside the same craft-floor window. D5 proposed ~78ch for the docs
      and it was corrected down here: 45-75ch is floor, and floor is not
      licensable by a density setting. */
-  --rail-docs: 1360px;
+  /* The docs sit in the SAME rail as the home. They were on a wider one, and
+     the two vertical rules - the single device this whole idiom rests on -
+     jumped 32px the moment a reader clicked DOCS. A rule that moves between
+     two pages of one site is not a rule, it is a coincidence. The three docs
+     columns are narrowed instead; the prose measure is capped below the
+     column either way, so only tables lost width, and tables already scroll
+     in their own box. */
   --measure-docs: 72ch;
-  --docs-sidebar: 232px;
-  --docs-toc: 208px;
+  --docs-sidebar: 208px;
+  --docs-toc: 184px;
 
   /* --- colour primitives: light values, declared in bare :root first ----- */
   /* The ink is the logo's navy. The dark theme inverts the relationship: the
@@ -165,6 +182,13 @@
      it is not an accent - it identifies a product. Never use it for a
      surface, a rule, or any text of ours. */
   --brand-claude: #D97757;
+
+  /* --mask-on
+     Not a colour. A CSS mask reads the alpha channel only, so this value means
+     "opaque" and its hue is never seen. It lives here because the token layer
+     is the one place a raw value is allowed, not because it is part of the
+     palette. Never paint with it. */
+  --mask-on: #000;
 
   /* --color-hairline  Every rule in the grid. Measured, not eyeballed. */
   --color-hairline: rgba(11, 26, 43, 0.49);

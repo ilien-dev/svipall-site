@@ -25,13 +25,23 @@ interface Props {
   title: string;
   summary: string;
   source: string;
+  group: string;
   slug: string;
   headings?: Heading[];
 }
 
-const { title, summary, source, slug, headings = [] } = Astro.props;
+const { title, summary, source, group, slug, headings = [] } = Astro.props;
 
 const nav = await docsNav();
+
+// Where this page sits, and its number within its group. The home's bands are
+// signed `NN / LABEL` in tracked mono; the docs pages carried no signature at
+// all, so the one element that makes this site nameable was missing from the
+// twelve pages a reader actually spends time in. It doubles as the breadcrumb
+// the content column otherwise loses the moment the h1 scrolls away.
+const groupPages = nav.find((g) => g.name === group)?.pages ?? [];
+const position = groupPages.findIndex((p) => p.id === slug) + 1;
+const num = String(position).padStart(2, '0');
 
 // Only h2 and h3. A list that mirrors every heading depth stops being a map
 // and becomes the document again.
@@ -40,7 +50,7 @@ const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
 ---
 
-<Base title={`${title} — Svipall docs`} description={summary} surface="docs">
+<Base title={`${title} — Svipall docs`} description={summary}>
   <div class="docs">
     <div class="docs__rail">
       <aside class="docs__side">
@@ -74,6 +84,11 @@ const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
 
       <article class="docs__main">
         <header class="docs__head">
+          <p class="docs__sig">
+            <span class="docs__num">{num}</span>
+            <span class="docs__slash" aria-hidden="true">/</span>
+            <span class="docs__group">{group}</span>
+          </p>
           <h1>{title}</h1>
           <p class="docs__summary">{summary}</p>
         </header>
@@ -216,6 +231,29 @@ const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
     border-bottom: var(--border-hair) solid var(--color-hairline);
   }
 
+  /* The same signature the home's bands carry: tracked mono, ink not accent,
+     the number set solid against the label. R-G3-06. */
+  .docs__sig {
+    margin: 0 0 var(--space-4);
+    max-width: none;
+    display: flex;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .docs__num {
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+
+  .docs__slash {
+    opacity: 0.5;
+  }
+
   .docs__head h1 {
     font-size: var(--text-xl);
   }
@@ -260,6 +298,9 @@ const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
 
   .toc a {
     display: block;
+    /* One pixel short of the target minimum without this: the label is 15px
+       and 4px of padding either side reaches 23. */
+    min-height: var(--hit-min);
     padding-block: var(--space-1);
     color: var(--color-ink-muted);
     text-decoration: none;
