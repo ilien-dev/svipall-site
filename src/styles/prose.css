@@ -136,7 +136,12 @@
   text-transform: uppercase; /* ptah-allow: all-caps-body */
   color: var(--color-ink-muted);
   background: var(--color-cell);
-  white-space: nowrap;
+  /* Not nowrap. A long column head - "PAGES LOSING CONTENT" - held on one line
+     pushed a table a few pixels past its box and bought a full-width scrollbar
+     for that overflow, in default operating-system grey, on a surface with no
+     grey in its palette. A head that wraps costs a line; the bar cost a rule
+     that was never drawn. */
+  text-wrap: balance;
 }
 
 .prose td {

@@ -175,16 +175,20 @@ const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
   .side__nav {
     display: flex;
     flex-direction: column;
-    gap: var(--space-5);
-    /* Its own scroll when the list outgrows the window, so a long sidebar
-       never traps the page. */
+    gap: var(--space-4);
     min-height: 0;
+    /* Still scrolls rather than trapping the page on a very short window, but
+       the list is now short enough that it rarely has to - and when it does the
+       bar is drawn from the palette instead of the operating system's, because
+       every other separator on this surface is a drawn hairline. */
     overflow-y: auto;
     overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-hairline) transparent;
   }
 
   .side__heading {
-    margin: 0 0 var(--space-2);
+    margin: 0 0 var(--space-1);
     max-width: none;
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
@@ -193,9 +197,16 @@ const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
     color: var(--color-ink-muted);
   }
 
+  /* Tightened so the whole list fits the sticky column without an inner
+     scroll. It was 8px of padding a side, which pushed the twelve links plus
+     four group labels past a 648px viewport; the column then grew its own
+     scrollbar and hid four pages and a whole group label behind it. The rows
+     keep the 24px target as a min-height rather than as padding. */
   .side__link {
-    display: block;
-    padding: var(--space-2) var(--space-3);
+    display: flex;
+    align-items: center;
+    min-height: var(--hit-min);
+    padding: var(--space-1) var(--space-3);
     color: var(--color-ink-muted);
     text-decoration: none;
     /* The marker is a drawn edge, not a fill: the accent is spent on the
@@ -302,18 +313,37 @@ const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
        and 4px of padding either side reaches 23. */
     min-height: var(--hit-min);
     padding-block: var(--space-1);
-    color: var(--color-ink-muted);
+    padding-left: var(--space-3);
+    color: var(--color-ink);
     text-decoration: none;
     font-size: var(--text-2xs);
     line-height: var(--leading-snug);
+    /* The marker rail. Transparent until a section is current, so the text
+       never shifts sideways when it becomes so. */
+    border-left: var(--border-hair) solid transparent;
+    transition:
+      color var(--dur-state) var(--ease-out),
+      border-color var(--dur-state) var(--ease-out);
   }
 
   .toc a:hover {
-    color: var(--color-ink);
+    border-left-color: var(--color-hairline);
   }
 
+  /* Depth carried by weight as well as indent. It was one grey at one size
+     with nesting shown by indent alone, which made the whole rail read as a
+     paragraph rather than a map: a sub-heading was visually identical to its
+     parent. The top level is ink, the level below it is muted. */
   .toc__item--3 a {
-    padding-left: var(--space-3);
+    padding-left: var(--space-5);
+    color: var(--color-ink-quiet);
+  }
+
+  /* Where the reader actually is, marked with the same left rule the sidebar
+     uses for the current page, so one device means one thing on this surface. */
+  .toc a[aria-current='true'] {
+    border-left-color: var(--color-ink);
+    background: var(--color-cell);
   }
 
   /* --- narrow ------------------------------------------------------------ */
@@ -356,3 +386,55 @@ const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
     }
   }
 </style>
+
+<script>
+  /* Marks the section the reader is actually in. The on-this-page rail said
+     what the page contains but never where you were in it - which is the one
+     question the criterion is about, since most readers arrive halfway down
+     from a search result rather than at the top.
+
+     REST STATE: with no JavaScript nothing is marked, which is the same list
+     it was before. Nothing is hidden waiting for this to run. */
+  const links = new Map<string, HTMLAnchorElement>();
+  for (const a of document.querySelectorAll<HTMLAnchorElement>('.toc a')) {
+    const id = decodeURIComponent(a.hash.slice(1));
+    if (id) links.set(id, a);
+  }
+
+  if (links.size > 0) {
+    const headings = [...links.keys()]
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    let current = '';
+    const mark = () => {
+      // The last heading whose top has passed the reading line. Picking the
+      // topmost intersecting entry instead would jump back up whenever a long
+      // section scrolled past a short one.
+      const line = window.innerHeight * 0.3;
+      let found = '';
+      for (const h of headings) {
+        if (h.getBoundingClientRect().top <= line) found = h.id;
+      }
+      if (found === current) return;
+      links.get(current)?.removeAttribute('aria-current');
+      links.get(found)?.setAttribute('aria-current', 'true');
+      current = found;
+    };
+
+    let ticking = false;
+    addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          mark();
+          ticking = false;
+        });
+      },
+      { passive: true }
+    );
+    mark();
+  }
+</script>

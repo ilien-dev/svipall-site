@@ -23,6 +23,10 @@
     spellcheck="false"
     data-find-input
   />
+  <!-- The shortcut is shown, not just supported. A field that answers a key
+       nobody is told about is a field nobody uses. Hidden once the reader is
+       typing, because by then it is answering a question they stopped asking. -->
+  <kbd class="find__key" aria-hidden="true" data-find-key>/</kbd>
 
   <div class="find__out" data-find-out hidden>
     <p class="find__count" data-find-count aria-live="polite"></p>
@@ -47,6 +51,27 @@
 
   .find__input:hover {
     border-color: var(--color-ink);
+  }
+
+  .find__key {
+    position: absolute;
+    top: 50%;
+    right: var(--space-2);
+    transform: translateY(-50%);
+    padding: 0 var(--space-2);
+    min-width: 18px;
+    text-align: center;
+    border: var(--border-hair) solid var(--color-hairline);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: 1.5;
+    color: var(--color-ink-quiet);
+    pointer-events: none;
+  }
+
+  .find__input:focus-visible ~ .find__key,
+  .find[data-typing] .find__key {
+    display: none;
   }
 
   /* Results sit over the sidebar rather than pushing it down: a list that
@@ -183,7 +208,20 @@
       if (event.key === 'Escape') {
         input.value = '';
         clear();
+        input.blur();
       }
+    });
+
+    // `/` focuses the field, the way every docs search a reader has already
+    // used does. Ignored while they are typing into something else, so it
+    // never steals a slash from a real input.
+    addEventListener('keydown', (event) => {
+      if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return;
+      const el = document.activeElement;
+      const tag = el?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (el as HTMLElement)?.isContentEditable) return;
+      event.preventDefault();
+      input.focus();
     });
 
     document.addEventListener('click', (event) => {

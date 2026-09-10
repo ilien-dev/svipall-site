@@ -358,15 +358,16 @@ svipall search "rust async runtime" --engine all</pre>
           Complying with the law, with data-protection rules and with a site's
           terms is yours, not the author's.
         </p>
+        {/* No separator glyphs. A middot between two links is punctuation
+            doing a rule's job, and on a row that wraps it lands on one margin
+            or the other - trailing the link before it, or opening the line
+            after it. There is no third side to bind it to. Space separates
+            them instead, which is what this idiom uses everywhere else. */}
         <p class="close__meta">
           <a href="/docs">Docs</a>
-          <span aria-hidden="true"> · </span>
           <a href="https://github.com/ilien-dev/svipall">Source</a>
-          <span aria-hidden="true"> · </span>
           <a href="/docs/limits">What it can't do</a>
-          <span aria-hidden="true"> · </span>
           <a href="/docs/privacy">Privacy</a>
-          <span aria-hidden="true"> · </span>
           <span class="close__by">Maintained by <a href="https://github.com/ilien-dev">ilien</a>.</span>
         </p>
       </div>
@@ -396,6 +397,17 @@ svipall search "rust async runtime" --engine all</pre>
       grid-row: span 2;
       align-self: start;
     }
+
+    /* A band with no lede has nothing to put in the right seven columns, so
+       it gives that width to its heading instead of leaving it empty. The
+       SIZE is deliberately not changed: setting these a step larger made two
+       H2 sizes on one page with no semantic difference behind them, so
+       section 03 looked more important than section 02 for no reason a reader
+       could infer. The wider measure and the different content offset are
+       what make the two shapes read apart; the type scale is not. */
+    .beat:not(:has(.beat__lede)) .beat__head {
+      max-width: 46ch; /* ptah-allow: measure - a section heading */
+    }
   }
 
   .beat__head {
@@ -416,6 +428,13 @@ svipall search "rust async runtime" --engine all</pre>
      orphan under a row of links. */
   .close__by {
     white-space: nowrap;
+  }
+
+  .close__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-5);
   }
 
   .beat__hedge {

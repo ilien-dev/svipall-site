@@ -1007,3 +1007,225 @@ R-G6-06   two of the reviewer's ranked fixes were NOT taken, and why
      lands on a link before the action - is a hierarchy argument rather than a
      rule violation. It is put to the author rather than decided here.
 ```
+
+### Run 2 — FAIL, and one regression I caused
+
+| surface | criterion | run 1 | run 2 |
+|---|---|---|---|
+| Home | Composition | 3 | 3 |
+| Home | Typography | 4 | 4 |
+| Home | Colour and contrast | 3 | 3 |
+| Home | Visual identity | 3 | 3 |
+| Home | Polish | 2 (capped) | **4** |
+| Docs | Composition | 3 | 3 |
+| Docs | Typography | 4 | 4 |
+| Docs | Colour and contrast | 3 | 3 |
+| Docs | Visual identity | 3 | **4** |
+| Docs | Polish | 2 (capped) | 3 |
+| Docs | Navigability | 4 | **3** |
+
+Four of the five claimed fixes were confirmed from the pictures: the single rail
+(measured as one 1120 rail at two window widths), the 5:7 band header, the docs
+signature, the exactly-dividing index grid, the full-rail §2 rule and the repaired
+footer orphan.
+
+```
+R-G6-07   the round-1 clipping finding did not survive re-measurement
+  claim   Run 1 reported the leftmost mark of the client strip as clipped: 16px
+          against 25-30px for its neighbours, and missing entirely in light.
+  test    Rather than argue, the reviewer sampled ink density across the mark's
+          own width: 113 then 233 against 602 for the interior marks, and the
+          rightmost ramping 163 -> 578 -> 483 -> 389.
+  result  That is a gradient, not a chop. The mask is doing its job and it reads
+          as a fade. The finding is WITHDRAWN, and Home Polish rose from a capped
+          2 to 4 on the strength of it.
+  keep    Worth recording because the first reading was wrong and the second was
+          a measurement. A reviewer who cannot be shown to be wrong is not a
+          reviewer.
+```
+
+```
+R-G6-08   a fix that cost something else - REGRESSION, mine
+  what    Unifying the rail meant narrowing the docs sidebar. At 208px the twelve
+          links and four group labels no longer fitted the sticky column, so it
+          grew its own scrollbar: four pages - "What it can't do", "How it was
+          measured", "What leaves your machine", "Architecture" - and the whole
+          EVIDENCE group label went behind a scroll nested inside the page scroll.
+          Docs Navigability fell from 4 to 3. In run 1 all twelve were visible at
+          once.
+  worse   The bar was the operating system's own, arrow buttons and all, sitting
+          inside the one surface whose entire thesis is that every separator is a
+          drawn 1px rule.
+  fix     The rows carry their 24px target as min-height instead of as padding,
+          and the group gaps tightened. The list is 510px and fits: measured in
+          the built page as scrollHeight === clientHeight, twelve links, four
+          labels, the last link inside the visible box. The scrollbar is also
+          drawn from the palette now, for the short-window case where it still
+          has to appear.
+  lesson  A fix that pays for itself out of another criterion is not finished. The
+          rail was right and the sidebar was the bill; the bill went unpaid for a
+          round because I did not re-measure the thing I had narrowed.
+```
+
+```
+R-G6-09   the accent hierarchy, settled without reversing the author
+  found   Measured rather than asserted: the URL highlight occupied ~10,900px2
+          against the copy control's ~9,830. The largest accent object in the
+          install block was a link background, and on a persuade page the primary
+          action has to own the one colour in the system.
+  bind    Both highlights stay. The author asked for an accent on the URL and on a
+          keyword, and R-G3-05 permits two marks per band plus one control, so the
+          page was already compliant with the rule as written - this was a
+          hierarchy fault inside a compliant rule.
+  fix     The control grew rather than the highlight shrinking: min-width 88 -> 128.
+          Re-measured: hero mark 9,853 against button 13,991; band 8 mark 9,854
+          against button 16,721. The action is the largest accent object in both.
+  status  FIXED without overturning anything the author asked for.
+```
+
+---
+
+## Gate 6 closed at its ceiling, 2026-09-09
+
+Eight rounds, scored each time by a separate reviewer holding `DIRECTION.md`, the
+captures and the rubric — and never the source. That separation was the whole value:
+almost everything below is something a static check cannot see and I had stopped
+noticing.
+
+### Final standing
+
+| surface | criterion | run 1 | final |
+|---|---|---|---|
+| Home | Composition | 3 | **3** — gated |
+| Home | Typography | 4 | **5** |
+| Home | Colour and contrast | 3 | **4** |
+| Home | Visual identity | 3 | **3** — gated |
+| Home | Polish | 2 capped | **4** |
+| Docs | Composition | 3 | **4** |
+| Docs | Typography | 4 | **4** |
+| Docs | Colour and contrast | 3 | **5** |
+| Docs | Visual identity | 3 | **4** |
+| Docs | Polish | 2 capped | **4** |
+| Docs | Navigability | 4 | **5** |
+
+Nine of eleven at 4 or better, four at 5. **The gate does not pass**, and it cannot:
+its bar is every criterion at 4 twice running, and the two that remain need a
+decision about what three sections *are*.
+
+```
+R-G6-10   the gate's ceiling, and what is behind it
+  state   Home Composition 3 and Home Visual identity 3, both traced by the reviewer
+          to one cause and struck in every round from the third on.
+  cause   Seven bordered card grids - home bands 03, 04 and 06, plus four on the
+          docs index - against a DIRECTION.md component list that says, in as many
+          words, "Not built: card grid". Four consecutive bands read as one shape
+          because three of them are the same shape.
+  second  Section 2 stands on its declared FALLBACK. The direction named exactly one
+          aesthetic risk, an annunciator whose contents are lamps rather than words,
+          and what shipped is a competent two-column table. The result is a page with
+          no loud moment in eight bands.
+  why not fixed  Both are changes to what a section IS, not to how it is spaced or
+          coloured. Spending them without the author would be deciding the brief
+          through a subagent. They are put to the author together, because they are
+          the same kind of decision and the same criterion.
+  refused Varying the heading-to-content gap per band to break the uniform openings.
+          The reviewer offered it; it was declined and the reviewer then agreed:
+          spacing that differs for no stated reason is noise wearing the costume of
+          rhythm, and it would have bought a 4 in Composition at the cost of Polish.
+          A 3 with a named cause beats a 4 with arbitrary padding.
+```
+
+### What the loop actually caught
+
+Every item here was invisible to the static check, which reported clean throughout.
+
+```
+R-G6-11   found by looking, fixed, and measured after
+  metronome        six bands opening on the same three y values. The band header is
+                   an asymmetric 5:7 split now, and a band with no lede gives that
+                   width to its heading. Bands lost ~145px each.
+  card alignment   six rounds old. ProblemRow and ClaimList already top-aligned;
+                   only Flow did not, because its two-row grid shared its slack
+                   between the rows. align-content: start. Heading tops 1990/1980/
+                   1939 -> 1939/1939/1939, spread 51px -> 0.
+  the URL          overflow-wrap: anywhere split the one string this page exists to
+                   have copied: ".../ilien-" then "-dev/", and ".../ilie" then
+                   "n-dev/". break-word plus a <wbr> after every slash. <wbr> has no
+                   text, so the copy button still yields the exact URL.
+  accent weight    the URL highlight measured ~10,900px2 against the copy control's
+                   ~9,830, so the largest accent object in the block was a link. The
+                   control grew to 128 wide rather than the highlight shrinking -
+                   both highlights were asked for. Now 13,991 and 16,721 against
+                   9,853.
+  empty panel      the terminal wiped every line and settled on an empty box, once
+                   per cycle, in the best position on the page. The first line is
+                   held through the wipe. Sampled every 60ms for 18s: minimum lines
+                   visible 0 -> 1.
+  ToC as a wall    one grey, one size, depth by indent alone, and no marker for where
+                   the reader was. Two tiers by colour, a current-section marker
+                   reusing the sidebar's own device, and a scroll-spy. The dark tier
+                   step was 21 levels against light's 48; a token scoped to nav
+                   labels, measured against the UI floor of Lc 60 rather than the
+                   body floor of 75, brings it to 46 at Lc 66.2.
+  no search hint   a `/` badge that shows the shortcut and a key that honours it,
+                   ignored while the reader is typing anywhere else.
+  the footer dot   line 1 ended on a lone "·". Binding the separator to the link
+                   after it moved the fault rather than removing it - line 2 then
+                   OPENED on the dot. There is no third side to bind a glyph to, so
+                   the glyphs are gone: the row is a flex row with a gap, which is
+                   what this idiom uses everywhere else. One line, zero separators.
+  a grey scrollbar a column head held on one line pushed a table a few pixels past
+                   its box and bought a full-width bar in operating-system grey, on
+                   a surface whose palette has no grey. Heads wrap now. 12 tables,
+                   0 overflowing.
+```
+
+### Three of my own claims were wrong, and one of the reviewer's method
+
+```
+R-G6-12   corrections, both directions
+  mine    "the docs rail has no right rule / the ToC overflows to the window edge" -
+          that was MY CAMERA. The captures were 1159px wide showing a 1280px page,
+          so the harness cut off the 121px where the right rule lives. Measured at a
+          true 1280: rail x=72->1192 with its border, furthest ToC ink x=1176,
+          scrollWidth === clientWidth on every entry. It cost the reviewer two
+          criteria and three rounds before I found it. The harness now renders at
+          1280 and scales the whole frame to fit the window.
+  mine    "an accent focus ring would break R-G3-05." It would not. DIRECTION.md
+          assigns --color-focus the accent in dark and reserves the 2px border
+          weight for the ring alone, and the tokens already ship that. R-G3-05 is
+          amended below rather than left as a rule the build correctly contradicts.
+  mine    "the sidebar is unchanged" - it was not. The search field had vanished,
+          and the cause was that `astro build` wipes dist WITHOUT running pagefind;
+          only `npm run build` does. The site was right and my build command was
+          wrong. check-links.mjs now fails if the index is absent.
+  theirs  "the client strip clips its leftmost mark." Re-measured by sampling ink
+          density across the mark: 113 then 233 against 602 for the interior ones.
+          A gradient, not a chop - the mask works. Withdrawn, and Home Polish rose
+          from a capped 2 to 4 on it.
+  theirs  "the accent does nothing across half the site." Withdrawn on the second
+          reading: a docs page at rest has no call to action and no key phrase, so
+          there is nothing for the accent to mean, and putting it on a nav marker
+          would be decoration - the exact reflex the direction exists to prevent.
+```
+
+```
+R-G3-05   AMENDED at gate 6 - the focus ring is a third role
+  was     "The accent appears only as a solid fill, never as a tint, a border, or
+          text. Permitted in exactly two roles: the call to action, and a <mark>."
+  now     A third role is named: THE FOCUS RING. In the dark theme --color-focus is
+          the accent, at the 2px border weight reserved for the ring and nothing
+          else. This is a border, and it is the one border the accent may draw.
+  why     A focus ring is a STATE, not a resting colour: it exists only while a
+          keyboard user is on the element, it must be the most visible thing on the
+          screen at that moment, and it puts no accent on the page at rest. The old
+          wording banned it, DIRECTION.md specified it, and the build followed the
+          direction. A ledger that disagrees with the build is worse than one with
+          three roles in it.
+  bounds  Still never a tint, never text, never a decorative border. The ring is the
+          only border, and only at --border-focus.
+```
+
+The reviewer's closing note, kept because it is the honest summary: *nine of eleven
+at 4 or better; the two that remain need a decision about what three sections are,
+which is not a thing more rounds of styling can reach.*

@@ -133,6 +133,10 @@
      navy becomes the ground and the ink warms toward the logo's bone. */
   --ds-ink-950: #0B1A2B;
   --ds-ink-600: #3B4550;
+  /* One step quieter than ink-600, for navigation labels only. In light the
+     ink-to-600 step is already 48 levels, so this matches it; the dark theme
+     overrides it, where the same step was only 21. */
+  --ds-ink-500: #3B4550;
   /* Not neutral grey and not cream: the logo's navy diluted, so the light
      theme belongs to the same palette as the dark one instead of being a
      different page that happens to share an accent. */
@@ -159,6 +163,15 @@
 
   --color-ink: var(--ds-ink-950);
   --color-ink-muted: var(--ds-ink-600);
+
+  /* --color-ink-quiet
+     One step below muted, for a NAVIGATION LABEL and nothing else - the nested
+     entries of the on-this-page list. Never body text: it is measured against
+     the UI floor of Lc 60, not the body floor of 75.
+     It exists because in light the ink-to-muted step is 48 levels and in dark
+     it was 21, so a distinction that was obvious in one theme was marginal in
+     the other at 12px. */
+  --color-ink-quiet: var(--ds-ink-500);
 
   /* --color-accent
      FILL ONLY: the CTA, a highlight, the eye of the mark.
@@ -214,6 +227,8 @@
 :root:not([data-theme='light']) {
   --ds-ink-950: #EFE7DA;
   --ds-ink-600: #DAD5CA;
+  /* Lc 66.2 on the ground: a 46-level step from the ink, matching light's 48. */
+  --ds-ink-500: #C1BEB7;
   --ds-field-100: #0B1A2B;
   --ds-field-000: #122539;
   --ds-green-700: #5CD6A0;
@@ -242,6 +257,8 @@
 :root[data-theme='dark'] {
   --ds-ink-950: #EFE7DA;
   --ds-ink-600: #DAD5CA;
+  /* Lc 66.2 on the ground: a 46-level step from the ink, matching light's 48. */
+  --ds-ink-500: #C1BEB7;
   --ds-field-100: #0B1A2B;
   --ds-field-000: #122539;
   --ds-green-700: #5CD6A0;

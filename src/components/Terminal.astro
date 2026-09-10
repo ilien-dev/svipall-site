@@ -295,8 +295,15 @@ const sigil = (kind: Line['kind']) =>
 
     // Wiped from the last line up, so it reads as the screen being cleared
     // rather than the whole block blinking off at once.
+    // The FIRST line is deliberately left standing. Wiping every line left the
+    // panel as an empty bordered box for the length of the settle, once per
+    // cycle, in the most valuable position on the page - a reviewer caught it
+    // in a capture and was right to strike it. Holding the command line means
+    // the stage always has something in it, and because show() swaps the
+    // current take and reveals the next command synchronously, the two never
+    // both paint: the command reads as changing in place, which is what it is.
     async function wipe(i: number) {
-      const lines = linesOf(takes[i]).reverse();
+      const lines = linesOf(takes[i]).slice(1).reverse();
       for (const line of lines) {
         if (paused) return;
         line.classList.remove('is-shown');
