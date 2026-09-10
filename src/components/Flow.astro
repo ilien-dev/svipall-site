@@ -107,6 +107,12 @@ const { beats } = Astro.props;
     .flow__beat {
       grid-template-columns: 1fr;
       gap: var(--space-4);
+      /* Pinned to the top. The beats stretch to a common height, and with the
+         default the two rows shared the slack out between them, so each card
+         put its heading at a different y and one row of the same component
+         resolved heading-against-body three different ways. The other two card
+         families in this page top-align; this one now does too. */
+      align-content: start;
     }
   }
 </style>

@@ -51,6 +51,14 @@ import path from 'node:path';
 
 const { id, variants } = Astro.props;
 
+// Every slash is a break opportunity and nothing else is. The segments keep
+// their trailing slash; the template puts a <wbr> between them. <wbr> carries
+// no text, so the copy button reads the same string it always did.
+function urlSegments(url: string): string[] {
+  const parts = url.split('/');
+  return parts.map((part, i) => (i === parts.length - 1 ? part : part + '/'));
+}
+
 // Built here rather than inline: a multi-line expression inside a <pre> is
 // where the compiler gives up, and a newline written in markup is whitespace
 // the parser is free to reinterpret.
@@ -138,7 +146,16 @@ const rows = variants.map((variant) => ({
         >
           <div class="install__row">
             {variant.lead ? (
-              <pre class="install__code" id={`${id}-code-${variant.id}`}>{variant.lead}{NEWLINE}<mark>{variant.url}</mark></pre>
+              <pre class="install__code" id={`${id}-code-${variant.id}`}>{variant.lead}{NEWLINE}<mark>{
+                  /* Break after a slash and nowhere else. With overflow-wrap
+                     alone the URL broke mid-token - ".../ilien-" then "-dev/"
+                     in one block and ".../ilie" then "n-dev/" in the other -
+                     which reads as a typo on the one string this page exists
+                     to have copied. */
+                  urlSegments(variant.url ?? '').map((seg, i, all) => (
+                    <Fragment>{seg}{i < all.length - 1 && <wbr />}</Fragment>
+                  ))
+                }</mark></pre>
             ) : (
               <pre class="install__code" id={`${id}-code-${variant.id}`}>{
                 (variant.lines ?? []).map((line, n) => (
@@ -330,7 +347,9 @@ const rows = variants.map((variant) => ({
     line-height: var(--leading-body);
     white-space: pre-wrap;
     /* Break the URL where it has to, not mid-word wherever it lands. */
-    overflow-wrap: anywhere;
+    /* break-word, not anywhere: it may only break a token that cannot fit on
+       a line of its own, so the <wbr> offers above are taken first. */
+    overflow-wrap: break-word;
   }
 
   /* Structure by weight and value, so the shape of a command reads without
@@ -350,9 +369,15 @@ const rows = variants.map((variant) => ({
     align-items: center;
     justify-content: center;
     gap: var(--space-2);
-    /* Hit target: 44px minimum on touch. Craft floor. */
+    /* Hit target: 44px minimum on touch. Craft floor.
+       The width is 128, not 88, for a second reason: the accent highlight
+       behind the URL measured ~10,900px2 against this control's ~9,830, so
+       the largest accent object in the block was a link background and the
+       eye landed on it before the button beside it. On a persuade page the
+       primary action owns the one colour in the system. Both highlights are
+       kept - they were asked for - and the control simply outweighs them. */
     min-height: 44px;
-    min-width: 88px;
+    min-width: 128px;
     padding: var(--space-3) var(--space-4);
     border-left: var(--border-hair) solid var(--color-hairline);
     background: var(--color-accent);

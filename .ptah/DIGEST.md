@@ -39,13 +39,18 @@ for reading web pages that refuse to be read.
 | Gate | State |
 |---|---|
 | 1–5 interview, direction, copy, build | done |
-| 6 visual loop | narrow widths measured and recorded (`R-G6-01..04`); the formal two-clean-runs scoring is **not** done |
+| 6 visual loop | eight rounds, scored by a separate reviewer. Nine of eleven criteria at 4 or better, four at 5. **Does not pass**, and cannot without an author decision — see below |
 | 7 interface audit | run as part of the static check |
-| 8 parity | 64 → 24 findings, all triaged and recorded |
+| 8 parity | 0 violations, 16 suppressed with `ptah-allow`, each with its reason on the line it applies to |
 | 9 continuity | this file, `CLAUDE.md`, `.claude/settings.json`, `.github/workflows/verify.yml`, checkers vendored into `.ptah/` |
 
-**Not done, and known:** the gate 6 scoring loop; a git repository, without which
-the hooks and the CI workflow are files nobody runs.
+**Not done, and it needs the author, not more work:** gate 6 holds at nine of
+eleven. Home Composition and Home Visual identity are both stuck at 3 for one
+reason — seven bordered card grids against a component list that says "Not built:
+card grid" — and Home Identity carries a second: section 2 stands on its declared
+fallback rather than the annunciator the direction named as its one aesthetic
+risk. Both are decisions about what a section IS. No amount of spacing reaches
+them.
 
 **Failing on purpose:** `R-B1-15`. The client strip autoplays with no visible
 pause, no pause on hover and no focus stop, at the author's explicit direction,

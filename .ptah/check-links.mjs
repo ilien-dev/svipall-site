@@ -24,6 +24,25 @@ async function walk(dir) {
   return out;
 }
 
+// The docs search index. `astro build` wipes dist and does NOT write it - only
+// `npm run build`, which runs pagefind afterwards, does. Build with the wrong
+// command and the docs ship with no search at all, silently: the field hides
+// itself when the index will not load, which is the right behaviour and also
+// the reason nobody notices. A reviewer found it before I did.
+try {
+  await readFile(join(DIST, 'pagefind', 'pagefind.js'));
+} catch {
+  console.error(
+    [
+      "",
+      "No dist/pagefind/pagefind.js: the docs would ship with no search.",
+      "Build with `npm run build`, not `astro build`.",
+      "",
+    ].join("\n")
+  );
+  process.exit(1);
+}
+
 const files = await walk(DIST);
 
 // Every route the build produced, as the URL a browser would ask for.
