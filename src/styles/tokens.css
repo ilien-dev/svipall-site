@@ -338,9 +338,11 @@
      by the same amount. Unlike --hero-film-anchor this works at every width,
      because it changes the box rather than the crop inside it. It is what
      puts the snowfield's walking figure inside the hero instead of inside
-     the bottom fade. The night does not need it - its own subject is the lit
-     gate, which the anchor already holds - so it is 0 there and this costs
-     that theme nothing. */
+     the bottom fade. The night takes 120px, by the author's direction: its
+     picture raised 120px from where the anchor alone left it. In px for the
+     same reason --hero-film-drop is - the direction was a number of pixels.
+     What rises the full 120 is the film's top edge; the box grows to do it,
+     so lower in the frame the picture moves less and scales up a little. */
   --hero-film-lift: 3%;
 
   /* --hero-film-drop
@@ -469,13 +471,23 @@
      that is what 50% costs. At 66% those two read 4.65:1 and 4.54:1; at 50%
      with the deeper pair they read 5.24:1 and 4.89:1, so the cell got a third
      thinner AND the floor got safer.
-     Both themes are now at the wall, and the wall is the same colour in each:
-     --signal-blocked, the word "refused". Light stops at 44% because #983E25
-     reads 4.61:1 there and 4.47:1 one step thinner; dark stops at 52% because
-     #FE775F reads 4.60:1 there and 4.38:1 one step thinner. Everything else
-     in both cells - the ink, the label, ok, caution - still has room. Thinner
-     than this needs those two reds to move again, not this token. */
-  --color-cell-film: color-mix(in srgb, var(--color-cell) 44%, transparent);
+     Thinned twice more at the author's direction, once the hero became a
+     2x2 grid: 10% light, 22% dark (were 44% and 56%). That is past the wall
+     the paragraph above names, and it is the reds that moved, as it said
+     they would - but ONLY HERE. --signal-ok-film and --signal-blocked-film
+     are the terminal's own pair; the Panels in section 2 sit on an opaque
+     cell and keep --signal-ok / --signal-blocked untouched.
+     Measured on the rendered page with the text hidden, the video frozen at
+     ten points of its loop, at 1024px and 1708px, every backdrop pixel:
+       dark  #FE775F -> #FFA390  "refused", result column: 3.51 -> 4.77:1
+             #5CD6A0 -> #60DAA3  ok, whole stage:          4.59 -> 4.78:1
+       light #983E25 -> #923920  "refused", result column:        -> 4.76:1
+             #0C6244 -> #045E41  ok, whole stage:          4.50 -> 4.78:1
+     The dark red is the visible cost: it reads as a salmon now, not a coral.
+     Any thinner needs those to move again. */
+  --color-cell-film: color-mix(in srgb, var(--color-cell) 10%, transparent);
+  --signal-ok-film: #045E41;
+  --signal-blocked-film: #923920;
   --blur-frost: 24px;
 
   /* --color-accent-mark
@@ -548,9 +560,11 @@
      Lc 78.4 - level with what they measure on a bare cell. */
   --hero-film-strength: 0.62;
   --hero-film-anchor: 18%;
-  --hero-film-lift: 0%;
+  --hero-film-lift: 120px;
   --hero-film-drop: 0px;
-  --color-cell-film: color-mix(in srgb, var(--color-cell) 56%, transparent);
+  --color-cell-film: color-mix(in srgb, var(--color-cell) 22%, transparent);
+  --signal-ok-film: #60DAA3;
+  --signal-blocked-film: #FFA390;
   /* Solid. See --color-accent-mark. */
   --color-accent-mark: var(--color-accent);
   --hero-film-veil: color-mix(in srgb, var(--color-ground) 57%, transparent);
@@ -587,7 +601,9 @@
     --hero-film-anchor: 52%;
     --hero-film-lift: 3%;
     --hero-film-drop: 100px;
-    --color-cell-film: color-mix(in srgb, var(--color-cell) 44%, transparent);
+    --color-cell-film: color-mix(in srgb, var(--color-cell) 10%, transparent);
+    --signal-ok-film: #045E41;
+    --signal-blocked-film: #923920;
     --color-accent-mark: color-mix(in srgb, var(--color-accent) 45%, transparent);
     --hero-film-veil: color-mix(in srgb, var(--color-ground) 69%, transparent);
     --hero-film-veil-soft: color-mix(in srgb, var(--color-ground) 52%, transparent);
@@ -623,9 +639,11 @@
      Lc 78.4 - level with what they measure on a bare cell. */
   --hero-film-strength: 0.62;
   --hero-film-anchor: 18%;
-  --hero-film-lift: 0%;
+  --hero-film-lift: 120px;
   --hero-film-drop: 0px;
-  --color-cell-film: color-mix(in srgb, var(--color-cell) 56%, transparent);
+  --color-cell-film: color-mix(in srgb, var(--color-cell) 22%, transparent);
+  --signal-ok-film: #60DAA3;
+  --signal-blocked-film: #FFA390;
   /* Solid. See --color-accent-mark. */
   --color-accent-mark: var(--color-accent);
   --hero-film-veil: color-mix(in srgb, var(--color-ground) 57%, transparent);
