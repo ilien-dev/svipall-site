@@ -338,11 +338,16 @@
      by the same amount. Unlike --hero-film-anchor this works at every width,
      because it changes the box rather than the crop inside it. It is what
      puts the snowfield's walking figure inside the hero instead of inside
-     the bottom fade. The night takes 120px, by the author's direction: its
-     picture raised 120px from where the anchor alone left it. In px for the
-     same reason --hero-film-drop is - the direction was a number of pixels.
-     What rises the full 120 is the film's top edge; the box grows to do it,
-     so lower in the frame the picture moves less and scales up a little. */
+     the bottom fade. The night takes 0, by the author's direction. It was
+     120px, then 40px, and the picture was asked down 100px more from there.
+     Shrinking the lift is the only lever that lowers the film's TOP EDGE
+     one-for-one - growing the box downward moves the top edge not at all -
+     so the lift is spent first, and 0 is where it stops: below 0 the box
+     starts below the band's own top and the first strip of the hero has no
+     film under it. The remaining 60px of that direction is bought with
+     --hero-film-drop, which does not buy it evenly. See the note there.
+     In px for the same reason --hero-film-drop is - the direction was a
+     number of pixels. */
   --hero-film-lift: 3%;
 
   /* --hero-film-drop
@@ -359,7 +364,14 @@
      +13% of scale, which crops more off the sides. That is visible and it is
      the reason not to keep reaching for this token. Past here, re-cut the
      source rather than stretch the box.
-     0 in dark, which is unchanged. */
+     THE NIGHT NOW TAKES 160px, and that is this token being reached for past
+     the point the paragraph above warns about. 40px of the last 100px asked
+     for came out of the lift; the other 60 had to come from here, and here
+     pays p-for-p: 160px of box is about 100px at mid-frame, 130 at three
+     quarters and only 40 at the top, so the picture does not translate down,
+     it stretches down. The zoom is +22% of scale at a 740px band. If the
+     night needs to sit lower again, the answer is a re-cut file, not a
+     larger number on this line. */
   --hero-film-drop: 100px;
 
   /* --hero-film-veil / --hero-film-veil-soft
@@ -560,8 +572,8 @@
      Lc 78.4 - level with what they measure on a bare cell. */
   --hero-film-strength: 0.62;
   --hero-film-anchor: 18%;
-  --hero-film-lift: 120px;
-  --hero-film-drop: 0px;
+  --hero-film-lift: 0px;
+  --hero-film-drop: 160px;
   --color-cell-film: color-mix(in srgb, var(--color-cell) 22%, transparent);
   --signal-ok-film: #60DAA3;
   --signal-blocked-film: #FFA390;
@@ -639,8 +651,8 @@
      Lc 78.4 - level with what they measure on a bare cell. */
   --hero-film-strength: 0.62;
   --hero-film-anchor: 18%;
-  --hero-film-lift: 120px;
-  --hero-film-drop: 0px;
+  --hero-film-lift: 0px;
+  --hero-film-drop: 160px;
   --color-cell-film: color-mix(in srgb, var(--color-cell) 22%, transparent);
   --signal-ok-film: #60DAA3;
   --signal-blocked-film: #FFA390;
