@@ -100,13 +100,49 @@ const { beats } = Astro.props;
   }
 
   @media (min-width: 900px) {
+    /* ONE COLUMN, not N-up. A grid of equal bordered blocks each holding a
+       heading and a paragraph is a card wall, whatever the CSS calls it, and
+       DIRECTION.md's component list rules one out by name. The idiom is a
+       RULED BOARD: rows that share edges, with the label in a left column and
+       the reading in a right one, which is the same shape section 2 uses and
+       the same shape the brief's own reference used. */
     .flow {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .flow__beat {
-      grid-template-columns: 1fr;
-      gap: var(--space-4);
+      /* base.css caps every <li> at the reading measure, and these rows are
+         list items. Under the old two-up grid each column sat below the cap so
+         nothing showed; across the full rail the cap held the row at 653px and
+         the rest of the track showed the container's own background as a grey
+         block. The MEASURE still applies to the text inside; it must not
+         apply to the row that carries it. */
+      max-width: none;
+      grid-template-columns: 4ch minmax(0, 1fr);
+      gap: var(--space-5);
+    }
+
+    /* The step's name in the left column, what it means in the right. */
+    .flow__body {
+      display: grid;
+      grid-template-columns: 5fr 7fr;
+      gap: var(--space-3) var(--space-6);
+      align-items: start;
+    }
+
+    .flow__title {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+    }
+
+    .flow__quote {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .flow__text {
+      grid-column: 2;
+      grid-row: 2;
       /* Pinned to the top. The beats stretch to a common height, and with the
          default the two rows shared the slack out between them, so each card
          put its heading at a different y and one row of the same component

@@ -33,7 +33,7 @@ const count = nav.reduce((n, group) => n + group.pages.length, 0);
           {/* The column count divides the group exactly, so no slot is ever
               empty. The counts are known at build time; guessing with auto-fill
               is what left a hole in the first place. */}
-          <ul class="group__list" style={`--cols: ${group.pages.length % 3 === 0 ? 3 : 2}`}>
+          <ul class="group__list">
             {group.pages.map((page) => (
               <li class="group__item">
                 <a class="group__link" href={`/docs/${page.id}`}>
@@ -84,24 +84,17 @@ const count = nav.reduce((n, group) => n + group.pages.length, 0);
   /* The seams are the 1px gaps in the grid, showing the container's own
      background. Per-child borders need nth-child rules that hold for exactly
      one item count, and these groups have four different ones. */
-  /* The seams are the 1px gaps showing the container's own background, so an
-     empty slot is a hole rather than a blank. Rather than let one appear and
-     then patch it - the last card used to span the row and lay its text out
-     differently from every card above it, which read as broken - the column
-     count is chosen per group so the grid always divides exactly. Groups of
-     three get three columns; everything else gets two. */
+  /* One column. Four groups laid out as grids of bordered blocks was four
+     card walls, which DIRECTION.md's component list rules out by name, and it
+     turned a twelve-item contents list into a wall of boxes. A ruled list of
+     rows is what a contents list is, and it cannot leave an empty slot at any
+     item count - which is the second problem it solves. */
   .group__list {
     display: grid;
-    grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--border-hair);
     padding: var(--border-hair);
     background: var(--color-hairline);
-  }
-
-  @media (max-width: 860px) {
-    .group__list {
-      grid-template-columns: minmax(0, 1fr);
-    }
   }
 
   .group__item {
@@ -109,14 +102,23 @@ const count = nav.reduce((n, group) => n + group.pages.length, 0);
     background: var(--color-cell);
   }
 
+  /* Title left, summary right: the row reads across, like every other ruled
+     list on this site. */
   .group__link {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    height: 100%;
-    padding: var(--space-4);
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: var(--space-5);
+    align-items: baseline;
+    padding: var(--space-3) var(--space-4);
     text-decoration: none;
     transition: background var(--dur-state) var(--ease-out);
+  }
+
+  @media (max-width: 700px) {
+    .group__link {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-2);
+    }
   }
 
   .group__link:hover {

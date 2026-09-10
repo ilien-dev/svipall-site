@@ -153,7 +153,7 @@ const rows = variants.map((variant) => ({
                      which reads as a typo on the one string this page exists
                      to have copied. */
                   urlSegments(variant.url ?? '').map((seg, i, all) => (
-                    <Fragment>{seg}{i < all.length - 1 && <wbr />}</Fragment>
+                    <Fragment><span class="install__seg">{seg}</span>{i < all.length - 1 && <wbr />}</Fragment>
                   ))
                 }</mark></pre>
             ) : (
@@ -350,6 +350,16 @@ const rows = variants.map((variant) => ({
     /* break-word, not anywhere: it may only break a token that cannot fit on
        a line of its own, so the <wbr> offers above are taken first. */
     overflow-wrap: break-word;
+  }
+
+  /* Each run between two slashes is unbreakable, which leaves the <wbr> after
+     every slash as the ONLY place the URL may break. Without it the browser
+     was free to break at the hyphen inside "ilien-dev" whenever that filled
+     the line better - and it did, in the hero, whose cell is narrower than
+     band 8's, so the same string broke two different ways on one page. A span
+     carries no text, so the copy button still yields the URL exactly. */
+  .install__seg {
+    white-space: nowrap;
   }
 
   /* Structure by weight and value, so the shape of a command reads without

@@ -39,18 +39,22 @@ for reading web pages that refuse to be read.
 | Gate | State |
 |---|---|
 | 1–5 interview, direction, copy, build | done |
-| 6 visual loop | eight rounds, scored by a separate reviewer. Nine of eleven criteria at 4 or better, four at 5. **Does not pass**, and cannot without an author decision — see below |
+| 6 visual loop | **PASSES.** Ten rounds, scored by a separate reviewer. Two consecutive runs with every criterion at 4 or higher; four at 5 |
 | 7 interface audit | run as part of the static check |
 | 8 parity | 0 violations, 16 suppressed with `ptah-allow`, each with its reason on the line it applies to |
 | 9 continuity | this file, `CLAUDE.md`, `.claude/settings.json`, `.github/workflows/verify.yml`, checkers vendored into `.ptah/` |
 
-**Not done, and it needs the author, not more work:** gate 6 holds at nine of
-eleven. Home Composition and Home Visual identity are both stuck at 3 for one
-reason — seven bordered card grids against a component list that says "Not built:
-card grid" — and Home Identity carries a second: section 2 stands on its declared
-fallback rather than the annunciator the direction named as its one aesthetic
-risk. Both are decisions about what a section IS. No amount of spacing reaches
-them.
+**What turned it, and the mistake worth inheriting:** for six rounds the two
+failing criteria were filed as "the author's decision" — seven card grids and
+section 2's fallback. They were never a decision. `DIRECTION.md` rules card grids
+out by name and names the annunciator as the intended component, and the author
+approved that direction at gate 3. The build was violating a rule, not honouring
+a choice. "This needs the author" is a claim, and it gets checked against the
+ledger like any other.
+
+**Three real items are named and unfixed** at the end of `RULES.md`, all inside
+criteria already at 4: bands 04 and 06 are structural twins, the band foot is
+uniform where the head now varies, and three docs table heads break mid-token.
 
 **Failing on purpose:** `R-B1-15`. The client strip autoplays with no visible
 pause, no pause on hover and no focus stop, at the author's explicit direction,
