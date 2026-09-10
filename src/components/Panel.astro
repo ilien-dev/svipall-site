@@ -80,10 +80,10 @@ const { title, conditions, faulted } = Astro.props;
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: start;
-    gap: var(--space-3);
-    padding: var(--space-4);
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-4);
     font-family: var(--font-mono);
-    font-size: var(--text-2xs);
+    font-size: var(--text-xs);
     line-height: var(--leading-body);
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -94,11 +94,16 @@ const { title, conditions, faulted } = Astro.props;
     border-top: var(--border-hair) solid var(--color-hairline);
   }
 
-  /* The only curve in the project: a real lamp is round. */
+  /* The only curve in the project: a real lamp is round.
+     16px, not 10. At 10 with a 12px legend the two panels read as an ordinary
+     table with dots in it - which is the FALLBACK D7 named, not the risk it
+     named. The risk was two cells whose contents are lamps rather than words,
+     and on a page of quiet cells that only works if the lamps are the loudest
+     thing on it. */
   .lamp__bulb {
-    width: 10px;
-    height: 10px;
-    margin-top: 0.42em;
+    width: 16px;
+    height: 16px;
+    margin-top: 0.15em;
     border-radius: var(--radius-dot);
     border: var(--border-hair) solid currentColor;
   }
@@ -110,6 +115,10 @@ const { title, conditions, faulted } = Astro.props;
     color: var(--signal-blocked);
   }
 
+  /* Filled against hollow: form carries the state before colour does, so it
+     survives print and colour-blindness. A ring was tried here and removed -
+     it needed a second box-shadow, and R-E2b-02 says this project has exactly
+     one, bound to the menu. At 16px the fill is loud enough without it. */
   .is-lit .lamp__bulb {
     background: currentColor;
   }

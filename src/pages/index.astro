@@ -513,15 +513,14 @@ svipall search "rust async runtime" --engine all</pre>
   }
 
   @media (min-width: 860px) {
+    /* TWO PANELS with ground between them, not one table with a divider.
+       Sharing a single rule down the middle was the right instinct for a cell
+       grid and the wrong one for D7: it made the two read as one instrument
+       split in half, which is the FALLBACK the direction named, not the risk
+       it named. Two annunciators are two objects, and the gap is what says so. */
     .compare {
       grid-template-columns: 1fr 1fr;
-      gap: 0;
-    }
-
-    /* The two panels share one rule down the middle rather than each drawing
-       its own: two edges at one seam is the thing this grid does not do. */
-    .compare > :global(.panel + .panel) {
-      border-left: 0;
+      gap: var(--space-5);
     }
   }
 
