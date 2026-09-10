@@ -16,6 +16,19 @@
  * REST STATE. Every transcript is in the HTML. With no JavaScript, or under
  * prefers-reduced-motion, all of them are visible, stacked and finished. The
  * cycling only ever hides what is already there.
+ *
+ * IT IS THE ONE SEE-THROUGH CELL. The hero band carries a film behind it and
+ * this cell is --color-cell-film over a 24px blur of that film - 68% in
+ * dark, 78% in light, both measured - by the author's direction. Every other cell in the hero stays
+ * opaque: a page where everything is slightly transparent has no cells in it.
+ * The blur is what makes it measurable rather than lucky - it turns the
+ * backdrop into its own local average instead of whatever pixel the lit gate
+ * happens to put under a word. Measured on the rendered page, worst case,
+ * transcript text over the brightest part of the film: dark theme, ink at
+ * Lc 87.9 and "refused" at 5.12:1, both clear. It was NOT clear at the first
+ * attempt - 4.35:1 and Lc 73.4 - and the fix was the veil under the cell,
+ * not the cell, because the cell being see-through is the direction and the
+ * floor is not the direction's to waive.
  */
 
 interface Line {
@@ -83,7 +96,10 @@ const sigil = (kind: Line['kind']) =>
        it instead of stopping short and leaving a hole. */
     flex: 1 1 auto;
     border: var(--border-hair) solid var(--color-hairline);
-    background: var(--color-cell);
+    /* Over the film, per theme. See the header and --color-cell-film. */
+    background: var(--color-cell-film);
+    -webkit-backdrop-filter: blur(var(--blur-frost));
+    backdrop-filter: blur(var(--blur-frost));
     min-width: 0;
   }
 

@@ -1,7 +1,7 @@
 /* ============================================================================
    Svipall site — design tokens
    The ONLY file in this project allowed to contain raw values.
-   Everything else uses the aliases declared here. See .ptah/DIRECTION.md.
+   Everything else uses the aliases declared here.
 
    Idiom: CELL GRID. The page is a modular grid of 1px rules. Every block is a
    cell with a drawn edge. Nothing floats, nothing blurs, nothing has a radius.
@@ -88,6 +88,41 @@
   --border-hair: 1px;
   --border-focus: 2px;
 
+  /* --glyph-size
+     The box a mark occupies beside a MONO LABEL or body-size text: the ask
+     rows, the docs group headings. The drawing is lucide's; the box and the
+     line are this project's.
+     Do NOT use for the brand mark or the client marks - those are artwork at
+     their own sizes and are not this language. */
+  --glyph-size: 16px;
+
+  /* --glyph-size-lg
+     The same mark beside a --text-lg HEADING: the fault rows and the claim
+     rows. Two sizes, not a free choice - a mark is set to the cap height of
+     the thing it names, and this project names things at two sizes.
+     Measured, not guessed: at 16px beside a 27px heading the mark read as a
+     speck in the gutter and named nothing.
+     Do NOT add a third step to make one mark louder. A mark is never an
+     illustration and never carries a section on its own. */
+  --glyph-size-lg: 24px;
+
+  /* --glyph-stroke
+     The SVG stroke-width of a mark, unitless, and paired with
+     vector-effect: non-scaling-stroke so it renders at exactly 1px at EVERY
+     --glyph-size. A mark is therefore drawn with the same line as
+     --border-hair at any size: the grid's own rule, doing a second job.
+     This is also what lands a lucide icon on this site. Lucide's own weight is
+     2px round on a 24-unit box, which is a function of that box; stripping it
+     and redrawing with this is why the set reads as a set HERE.
+     Raised from 1 to 1.5 at the author's direction: at a hairline the lucide
+     drawings, which carry more detail per box than the hand-drawn marks they
+     replaced, went thin enough to read as smudges beside body text. 1.5 is
+     still under the 2 lucide ships and still reads as a drawn line rather
+     than a filled shape.
+     Do NOT thicken it further to make a mark louder. A mark that needs to be
+     louder is a mark in the wrong place. */
+  --glyph-stroke: 1.5;
+
   /* --hit-min
      The smallest a standalone target may be in either direction. An inline <a>
      is only as tall as its text - 13px at the label size used here - so a link
@@ -109,7 +144,9 @@
   /* --rail  The column every cell sits in. Rows are full-bleed; the rail's
      vertical rules stack into two continuous lines down the page. */
   --rail: 1120px;
-  --nav-height: var(--space-7);
+  /* Off the spacing scale on purpose: the bar is sized by the 60px mark it
+     carries plus 10px of air either side, not by a spacing step. */
+  --nav-height: 80px;
   --measure: 68ch;   /* craft floor window is 45-75ch */
 
   /* The docs rail is wider because it carries three columns, not one: the
@@ -143,14 +180,44 @@
   --ds-field-100: #DCE3EB;
   --ds-field-000: #F4F7FA;
   --ds-amber-400: #FFB03A;
-  --ds-green-700: #0F7A55;
+  /* The amber a MARK is drawn in, which cannot be --ds-amber-400: measured
+     against the light cell that is 1.69:1 and Lc 28.7, so on the light theme
+     the accent would make a mark HARDER to see, not easier.
+     THE FIRST ANSWER TO THAT WAS WRONG. It was #A85F00, chosen to match the
+     ink's presence exactly - Lc 68.4 against 68.8 - on the theory that equal
+     weight plus a different hue is enough to pick a mark out. On the page it
+     was not: matching the ink's lightness is what made it read as more text,
+     and at that value the amber is a brown. Reported as still lost in the
+     copy, and correct.
+     This is chosen for CHROMA instead, and the contrast is what has to clear a
+     floor rather than what has to be matched: 80% saturation against the ink's
+     13%, still 4.01:1 on the cell and 3.33:1 on the ground, both over the 3:1
+     non-text floor. It reads as orange first and as dark second, which is the
+     opposite of what it replaced. */
+  --ds-amber-700: #CC5500;
+  /* Two steps below the green this shipped with, #0F7A55, and neither step
+     was chosen - both were bought. That value is 4.96:1 on the light cell,
+     half a point over AA, and it was the tightest colour on this theme; with
+     the hero film behind a see-through terminal it fell to 4.13:1. This is
+     6.86:1 bare and 5.24:1 there, which is what lets that cell sit at 50%.
+     It is the same green, deeper. Everywhere else on the site - the panels,
+     the verdict rows - this can only improve, and it was checked there. */
+  --ds-green-700: #0C6244;
   /* Caution was an amber and the accent is now an amber. Two ambers with
      different meanings is a state nobody can read, so caution moved to a blue
      rather than the accent moving off the logo. */
   --ds-sky-700: #175E8A;
-  /* Blocked is the logo's rust, exact. It already meant "refused" on the mark
-     and it means the same thing here. */
-  --ds-red-700: #A7472C;
+  /* Blocked was the logo's rust EXACT, #A7472C, and in this theme it is no
+     longer exact. That is a real loss and it is written here rather than
+     quietly absorbed: the rust is what "refused" means on the mark, and the
+     light theme now says it one step deeper, #983E25, because the hero's
+     see-through terminal at 50% took the exact value to 4.17:1 against a
+     4.5:1 floor. Deeper, same hue, 6.40:1 bare and 4.89:1 there.
+     The dark theme never carried the exact rust either - it is #FE775F, and
+     always was - so what changed is that light stopped being the one place
+     the logo's own value survived. If the terminal ever goes opaque again,
+     put #A7472C back; nothing else needs this. */
+  --ds-red-700: #983E25;
 
   /* --- aliases: what components use ------------------------------------- */
 
@@ -183,6 +250,19 @@
      decision was reversed here, deliberately, and the reason is in RULES.md.
      Do NOT use as a text colour, a border, or a tint. R-G3-14. */
   --color-accent: var(--ds-amber-400);
+
+  /* --color-mark
+     THE MARK COLOUR, and the one place the amber family is allowed to be a
+     stroke rather than a fill. It exists so a mark is picked out of the row
+     at a glance instead of reading as one more piece of the sentence beside
+     it - which is what --color-ink did.
+     It is NOT --color-accent and must not be replaced by it: the accent is a
+     fill, measured on the navy it is filled with, and as a hairline on the
+     light cell it measures 1.69:1. A mark is a thin stroke on a page ground,
+     so it is measured there instead, in both themes.
+     Still not a signal colour: R-E3-01 holds. ok/caution/blocked report a
+     state and a mark is not a state. */
+  --color-mark: var(--ds-amber-700);
   /* The logo's navy is the only ink permitted on the amber, which is the
      pairing the mark itself uses. */
   --color-on-accent: #0B1A2B;
@@ -202,6 +282,221 @@
      is the one place a raw value is allowed, not because it is part of the
      palette. Never paint with it. */
   --mask-on: #000;
+
+  /* --- the hero's film --------------------------------------------------
+     The hero band carries a video behind it - the ONLY moving image on this
+     site that is not reporting something. Every value that governs it lives
+     here, because a film is a surface like any other.
+     R-E3-01 still holds: it is weather, not a state. Nothing is read off it.
+     ---------------------------------------------------------------------- */
+
+  /* --hero-film-dark / --hero-film-light
+     WHICH OF THE TWO FILMS IS ON, as a token rather than as a selector in the
+     component. Two reasons. An Astro scoped rule hangs the component's hash
+     off every compound in the chain, so a `:root[data-theme='dark'] .film`
+     written next to the markup is a rule about an <html> carrying that
+     component's attribute, which no <html> does - the same trap that shipped
+     the marks at 16px. And the four theme blocks in this file are already the
+     one place that knows which theme is on.
+     There are two files because there are two scenes, not one scene and a
+     filter. The night's own ground measures #071525 against the dark theme's
+     #0B1A2B; the snowfield's foot measures #D0D8E5 against the light theme's
+     #DCE3EB. Each film already ends in its own theme's ground, which is what
+     lets the bottom fade dissolve rather than stop on a line, and neither
+     file was retouched to get that. Washing the night pale for the light
+     theme was tried and it is a grey rectangle - it shipped that way for one
+     round, with light showing no film at all, until the light scene existed.
+     Exactly one of these is `block` in every theme block below. The
+     component's script reads these same two values back off the computed
+     style, so the file that is not being shown is never fetched. */
+  --hero-film-dark: none;
+  --hero-film-light: block;
+
+  /* --hero-film-strength
+     How much of the film reaches the page before the veil. An opacity against
+     --color-ground, deliberately not a filter: each film's own extreme
+     already sits close to its theme's ground, so pulling the whole thing back
+     toward that ground flattens the half that is FAR from it and leaves the
+     half that is already close where it was. A brightness() filter would move
+     both.
+     LIGHT IS LOWER THAN DARK, and the reason is not taste. Read the note on
+     --hero-film-veil below: this theme has no contrast headroom to spend, so
+     the film is quieter here and the veil is heavier. */
+  --hero-film-strength: 0.55;
+
+  /* --hero-film-anchor
+     The vertical half of object-position on the film. Per theme because the
+     two scenes are asked for different things: the night wants its own top
+     edge at the foot of the nav bar, the snowfield wants the walking figure
+     in frame, and the figure sits low. It only bites where the film is taller
+     than the band after cover-fitting - below about 1200px the crop is
+     horizontal instead and this does nothing. */
+  --hero-film-anchor: 52%;
+
+  /* --hero-film-lift
+     How far the film's box is grown past the foot of the band and pulled up
+     by the same amount. Unlike --hero-film-anchor this works at every width,
+     because it changes the box rather than the crop inside it. It is what
+     puts the snowfield's walking figure inside the hero instead of inside
+     the bottom fade. The night does not need it - its own subject is the lit
+     gate, which the anchor already holds - so it is 0 there and this costs
+     that theme nothing. */
+  --hero-film-lift: 3%;
+
+  /* --hero-film-drop
+     The mirror of --hero-film-lift: the box grows past the FOOT of the band
+     with its top left where it is, so the picture slides DOWN. Given in px
+     rather than a percentage because the direction it came from was a number
+     of pixels, not a proportion of the band.
+     It is not one-for-one with what you see, and that is arithmetic rather
+     than a fudge: with cover-fitting, a feature sitting at fraction p down
+     the frame moves by p times the box growth. The snowfield's walking
+     figure is at about three fifths, so every 5px of box is about 3px on
+     screen there - 33px bought the first 20px asked for, 100px buys 60.
+     The second cost of growing the box is a zoom: at a 740px band this is
+     +13% of scale, which crops more off the sides. That is visible and it is
+     the reason not to keep reaching for this token. Past here, re-cut the
+     source rather than stretch the box.
+     0 in dark, which is unchanged. */
+  --hero-film-drop: 100px;
+
+  /* --hero-film-veil / --hero-film-veil-soft
+     The ground, laid back OVER the film where type sits on it. Two stops of
+     one idea, so the component spends the protection where the copy is - the
+     left column - and not on the right, where the demonstration is opaque
+     cells that need none of it.
+     Every one of these numbers was walked down against a measurement, and
+     the thing being measured is always the same: the LEDE, over the one
+     object in its theme's film that would take it under.
+     DARK: the moon, brightest thing in the night film, near the top left of
+     the frame, and at a wide window it lands squarely behind the lede.
+     LIGHT: the monoliths, near black.
+     They started at 88% and 97%, which is a picture nobody can see, and the
+     author said so twice. What actually bought the room was not thinning
+     these - it was two things that cost no contrast at all and one that
+     cost something named.
+     ONE: the ramp is keyed to the rail now, so the wide margins down each
+     side of the band, which hold no content whatever, carry no veil at all.
+     TWO: 88% was over-cautious for its own worst pixel; the true limit with
+     muted ink was 81%.
+     THREE, and this is the one with a price: the hero lede is set in full
+     --color-ink rather than --color-ink-muted, which is worth about twelve
+     levels, and it is what pays for 57% and 83%. The note on .hero__lede in
+     index.astro says what that cost and who chose it.
+     FOUR, and it is the one that finally bought the picture back: 83% was
+     over-cautious for a second reason, and it is the same mistake as TWO.
+     The pixel it was defended against was never under the lede. The film was
+     measured where the type actually is - the lede's own box, every frame of
+     the 20.2s loop, at 1336, 1700, 2100 and 2560 - and the darkest thing that
+     ever lands there is rgb(89,109,139), not the near-black monolith the
+     earlier number assumed. Against THAT pixel the Lc 75 body floor is
+     crossed at 67%, so this theme carries 69% and keeps a level in hand:
+     lede Lc 75.9 and 11.15:1, headline Lc 81. Nearly twice as much film
+     reaches the copy column as at 83%.
+     THE THREE ZONES ARE NOT ONE DIAL, and that is the whole of why they are
+     three numbers. Each is held by a different object and they are nowhere
+     near each other:
+       veil, the copy column   - held by the LEDE at Lc 75. Limit 67%.
+       soft, the right column  - held by "refused" in the terminal, which is
+                                 --color-red on --color-cell-film over the
+                                 film, and is the tightest thing in the band:
+                                 4.61:1 at 54% against a 4.5:1 floor. Limit
+                                 49%. 52% is 4.56:1. Measured through a
+                                 24px backdrop blur, because that is what the
+                                 cell actually does to the film behind it -
+                                 measure it any other way and the number is
+                                 wrong in both directions.
+       top, the first strip    - held by the BARE CLIENT MARKS at 3:1, and it
+                                 turns out to hold almost nothing: even at 0
+                                 they measure 3.51:1 and the mono label 6.26:1
+                                 and Lc 64.8. It was spending 83% to protect a
+                                 floor it clears without it. 30% leaves the
+                                 marks at 4.5:1 and takes a third of the band
+                                 back.
+     Do not thin these further without moving one of those four, do not move
+     them together, and do not re-derive a limit from the film's own extremes -
+     measure it under the box of the thing that is actually read. The picture
+     is not the thing being read, but it was being hidden from pixels that
+     were not there. DARK IS UNCHANGED: its own worst pixel under the lede is
+     the moon, and that one is real. */
+  --hero-film-veil: color-mix(in srgb, var(--color-ground) 69%, transparent);
+  --hero-film-veil-soft: color-mix(in srgb, var(--color-ground) 52%, transparent);
+  /* --hero-film-veil-top
+     The band's first strip, over the two ramps rather than instead of them.
+     It carries the one thing in this hero with no cell under it at all: the
+     client belt, bare marks and a mono label on open film, and the belt is
+     FULL BLEED, so most of it is outside the rail where the three-zone ramp
+     lays down nothing. This is the only thing defending it.
+     It used to BE --hero-film-veil, which is why the top third of the band
+     was the palest part of it. It is its own token because it answers to its
+     own floor - see the note above. */
+  --hero-film-veil-top: color-mix(in srgb, var(--color-ground) 30%, transparent);
+  /* The ramp does NOT end at nothing. It used to, and the reading is in the
+     header of Terminal.astro: with the film at full strength under the
+     see-through cell, "refused" measured 4.35:1 - under AA - and the lede's
+     muted ink measured Lc 73.4, under the 75 body floor. Both were fixed
+     HERE rather than by making the cell opaque again, because the cell being
+     see-through is the direction and the floor is not the direction's to
+     waive. The film loses a little of its brightest quarter; nothing else
+     changes. */
+
+  /* --color-cell-film / --blur-frost
+     A CELL THAT SITS ON THE FILM, and the only see-through surface on this
+     site. It is the hero terminal and nothing else: every other cell in the
+     hero - the paste block, the tabs - stays opaque, because a page where
+     everything is slightly transparent is a page with no cells in it, which
+     is the whole idiom gone.
+     By the author's direction, and it is a real reversal of "nothing on this
+     page is see-through". It is allowed because it is bounded: one cell, in
+     one band, over the one thing on this site worth seeing through a cell.
+     It is the same value in both themes because both themes have a film
+     behind that cell now - the mix resolves against each theme's own
+     --color-cell, so there is nothing per-theme left to say.
+     The blur is not decoration either - it is what makes the contrast under
+     the cell PREDICTABLE. Unblurred, the lit gate passes under the transcript
+     at full chroma and the floor is whatever pixel happens to be there; at
+     18px the backdrop is its own local average and the worst case is one
+     number that can be measured. Which it was: see the header of
+     Terminal.astro for the reading. */
+  /* Light is much the thinner of the two, at the author's direction and asked
+     for three times, and it is the two SIGNAL colours that paid for it - not
+     the cell, and not the veil behind it.
+     Those two are the tightest things in this terminal by a distance. As
+     shipped, --signal-ok was 4.96:1 on a bare cell and --signal-blocked
+     5.45:1, both about half a point over AA before any film existed at all,
+     and a see-through cell over a snowfield spends more than that. Each went
+     one step deeper - see the notes on --ds-green-700 and --ds-red-700 - and
+     that is what 50% costs. At 66% those two read 4.65:1 and 4.54:1; at 50%
+     with the deeper pair they read 5.24:1 and 4.89:1, so the cell got a third
+     thinner AND the floor got safer.
+     Both themes are now at the wall, and the wall is the same colour in each:
+     --signal-blocked, the word "refused". Light stops at 44% because #983E25
+     reads 4.61:1 there and 4.47:1 one step thinner; dark stops at 52% because
+     #FE775F reads 4.60:1 there and 4.38:1 one step thinner. Everything else
+     in both cells - the ink, the label, ok, caution - still has room. Thinner
+     than this needs those two reds to move again, not this token. */
+  --color-cell-film: color-mix(in srgb, var(--color-cell) 44%, transparent);
+  --blur-frost: 24px;
+
+  /* --color-accent-mark
+     The <mark> highlight WHERE IT STANDS ON THE FILM - the hero lede, and
+     nowhere else; the docs prose keeps the solid fill from base.css because
+     there is no film under it to see.
+     Softened at the author's direction, and it is measured in both directions
+     because the answer is not the same in both themes. base.css cites 12.64:1
+     for the navy on the solid accent, which is WCAG; in APCA that pairing is
+     Lc 68.4, so this mark ships BELOW the 75 body floor already and always
+     has. In LIGHT, thinning it toward a pale backdrop makes the amber lighter
+     and the navy on it reads BETTER: Lc 71.2 at 72%, measured on the page.
+     In DARK the backdrop is the night, so the same thinning drags the amber
+     down to #C38E3D and Lc 47.2 - which is why dark keeps the solid fill and
+     this token exists instead of one rule for both.
+     45% is where it sits, and it is the rare place on this page where the
+     author asking for less and the floor asking for more want the same
+     thing: solid is Lc 68.4, 72% was 71.2, this is 74.5. Thinning it further
+     keeps helping the number and stops looking like a highlighter, which is
+     the actual limit here rather than contrast. */
+  --color-accent-mark: color-mix(in srgb, var(--color-accent) 45%, transparent);
 
   /* --color-hairline  Every rule in the grid. Measured, not eyeballed. */
   --color-hairline: rgba(11, 26, 43, 0.49);
@@ -234,9 +529,35 @@
   --ds-green-700: #5CD6A0;
   --ds-sky-700: #8FD0FF;
   --ds-red-700: #FE775F;
+  /* The accent itself, exactly, and the only place the amber family is the
+     same value in both roles. 8.54:1 on the cell, and 77% saturation against a
+     bone ink's 8%. #FFC260 was tried first for more measured contrast and was
+     the same mistake as the light theme's first answer: paler is closer to the
+     bone the text is set in, and the mark went back to reading as text. */
+  --ds-amber-700: #FFB03A;
 
   --color-hairline: rgba(239, 231, 218, 0.38);
   --color-focus: var(--ds-amber-400);
+
+  /* The night film. See --hero-film-dark. */
+  --hero-film-dark: block;
+  --hero-film-light: none;
+  /* The night film carries more of itself and needs less ground over it:
+     this theme's ink has real headroom where the light theme's has none.
+     Measured at 1708px, worst pixel under the copy: ink Lc 89.9, muted
+     Lc 78.4 - level with what they measure on a bare cell. */
+  --hero-film-strength: 0.62;
+  --hero-film-anchor: 18%;
+  --hero-film-lift: 0%;
+  --hero-film-drop: 0px;
+  --color-cell-film: color-mix(in srgb, var(--color-cell) 56%, transparent);
+  /* Solid. See --color-accent-mark. */
+  --color-accent-mark: var(--color-accent);
+  --hero-film-veil: color-mix(in srgb, var(--color-ground) 57%, transparent);
+  --hero-film-veil-soft: color-mix(in srgb, var(--color-ground) 38%, transparent);
+  /* Unchanged from when the top strip WAS the veil: this theme's numbers were
+     measured against the night film and nothing about it has moved. */
+  --hero-film-veil-top: color-mix(in srgb, var(--color-ground) 57%, transparent);
 }
 
 @media (prefers-color-scheme: light) {
@@ -245,12 +566,32 @@
     --ds-ink-600: #3B4550;
     --ds-field-100: #DCE3EB;
     --ds-field-000: #F4F7FA;
-    --ds-green-700: #0F7A55;
+    --ds-green-700: #0C6244;
     --ds-sky-700: #175E8A;
-    --ds-red-700: #A7472C;
+    --ds-red-700: #983E25;
+    --ds-amber-700: #CC5500;
 
     --color-hairline: rgba(11, 26, 43, 0.49);
     --color-focus: var(--ds-ink-950);
+
+    /* The snowfield film, explicitly: this block overrides the dark
+       defaults above it. ALL FOUR of these, not just the two that pick the
+       file. The dark block above sets a strength and a veil as well, and a
+       reader on a system that prefers light with nothing stored got the
+       light film under the dark theme's veil - which is precisely the pair
+       that measured Lc 66.4 under the lede. Whichever film a block turns on,
+       it owns the numbers that make that film safe. */
+    --hero-film-dark: none;
+    --hero-film-light: block;
+    --hero-film-strength: 0.55;
+    --hero-film-anchor: 52%;
+    --hero-film-lift: 3%;
+    --hero-film-drop: 100px;
+    --color-cell-film: color-mix(in srgb, var(--color-cell) 44%, transparent);
+    --color-accent-mark: color-mix(in srgb, var(--color-accent) 45%, transparent);
+    --hero-film-veil: color-mix(in srgb, var(--color-ground) 69%, transparent);
+    --hero-film-veil-soft: color-mix(in srgb, var(--color-ground) 52%, transparent);
+    --hero-film-veil-top: color-mix(in srgb, var(--color-ground) 30%, transparent);
   }
 }
 
@@ -264,9 +605,34 @@
   --ds-green-700: #5CD6A0;
   --ds-sky-700: #8FD0FF;
   --ds-red-700: #FE775F;
+  /* Lc 48.8 on the cell and 9.74:1. The light value would sit at Lc 12 here.
+     Kept clearly orange rather than pushed paler for more contrast: the ink in
+     this theme is a bone, and a pale amber stops being a different colour from
+     it, which is the whole reason the mark carries one. */
+  --ds-amber-700: #FFC260;
 
   --color-hairline: rgba(239, 231, 218, 0.38);
   --color-focus: var(--ds-amber-400);
+
+  /* The night film. See --hero-film-dark. */
+  --hero-film-dark: block;
+  --hero-film-light: none;
+  /* The night film carries more of itself and needs less ground over it:
+     this theme's ink has real headroom where the light theme's has none.
+     Measured at 1708px, worst pixel under the copy: ink Lc 89.9, muted
+     Lc 78.4 - level with what they measure on a bare cell. */
+  --hero-film-strength: 0.62;
+  --hero-film-anchor: 18%;
+  --hero-film-lift: 0%;
+  --hero-film-drop: 0px;
+  --color-cell-film: color-mix(in srgb, var(--color-cell) 56%, transparent);
+  /* Solid. See --color-accent-mark. */
+  --color-accent-mark: var(--color-accent);
+  --hero-film-veil: color-mix(in srgb, var(--color-ground) 57%, transparent);
+  --hero-film-veil-soft: color-mix(in srgb, var(--color-ground) 38%, transparent);
+  /* Unchanged from when the top strip WAS the veil: this theme's numbers were
+     measured against the night film and nothing about it has moved. */
+  --hero-film-veil-top: color-mix(in srgb, var(--color-ground) 57%, transparent);
 }
 
 /* The mark's four fills resolve to two ink values plus the accent on the eye.

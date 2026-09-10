@@ -1,4 +1,5 @@
 import { getCollection } from 'astro:content';
+import type { GlyphName } from './glyphs';
 
 /*
  * One source for the sidebar and the /docs index, so the two can never fall
@@ -7,6 +8,26 @@ import { getCollection } from 'astro:content';
  * it behaves, then the evidence for all of it.
  */
 const GROUPS = ['Start here', 'Interfaces', 'Behaviour', 'Evidence'] as const;
+
+/*
+ * The mark for each group, declared beside the group order for the same
+ * reason the order is declared here: the sidebar, the /docs index and the page
+ * header all show the group name, and a mark that disagreed with itself across
+ * the three would be worse than no mark at all.
+ *
+ * Each one names what the group IS, not what a documentation section
+ * generally looks like:
+ *   Start here  a way in
+ *   Interfaces  the prompt caret - the command line and the local API
+ *   Behaviour   the tier ladder web_fetch climbs when a page refuses
+ *   Evidence    every claim followed to something a reader can open
+ */
+export const GROUP_MARKS: Record<(typeof GROUPS)[number], GlyphName> = {
+  'Start here': 'enter',
+  Interfaces: 'prompt',
+  Behaviour: 'ladder',
+  Evidence: 'verified',
+};
 
 export async function docsNav() {
   const pages = await getCollection('docs');

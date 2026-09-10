@@ -6,7 +6,8 @@
  */
 import Base from '../../layouts/Base.astro';
 import Row from '../../components/Row.astro';
-import { docsNav } from '../../lib/docs-nav';
+import Glyph from '../../components/Glyph.astro';
+import { docsNav, GROUP_MARKS } from '../../lib/docs-nav';
 
 const nav = await docsNav();
 const count = nav.reduce((n, group) => n + group.pages.length, 0);
@@ -16,7 +17,7 @@ const count = nav.reduce((n, group) => n + group.pages.length, 0);
   title="Svipall documentation"
   description="The command line, the local API, the MCP tools, and the measurements behind every number on this site."
 >
-  <Row num="00" label="Documentation">
+  <Row>
     <div class="beat">
       <h1 class="beat__head">{count} pages, and the log behind each one.</h1>
       <p class="beat__lede">
@@ -29,7 +30,10 @@ const count = nav.reduce((n, group) => n + group.pages.length, 0);
     {
       nav.map((group) => (
         <section class="group">
-          <h2 class="group__name">{group.name}</h2>
+          <h2 class="group__name">
+            <Glyph name={GROUP_MARKS[group.name]} class="group__mark" />
+            {group.name}
+          </h2>
           {/* The column count divides the group exactly, so no slot is ever
               empty. The counts are known at build time; guessing with auto-fill
               is what left a hole in the first place. */}
@@ -50,10 +54,6 @@ const count = nav.reduce((n, group) => n + group.pages.length, 0);
 </Base>
 
 <style>
-  .beat {
-    margin-bottom: var(--space-7);
-  }
-
   .beat__head {
     font-size: var(--text-2xl);
     /* ptah-allow: measure - a heading, not body copy. The 45-75ch window is a
@@ -67,11 +67,13 @@ const count = nav.reduce((n, group) => n + group.pages.length, 0);
     color: var(--color-ink-muted);
   }
 
-  .group + .group {
-    margin-top: var(--space-7);
-  }
-
+  /* The mark sits IN THE LINE with the label, never above it: a mark stacked
+     over a heading is the icon tile R-G3-10 refuses, whatever it is drawn
+     with. */
   .group__name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
     margin-bottom: var(--space-4);
     font-family: var(--font-mono);
     font-size: var(--text-2xs);

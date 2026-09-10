@@ -7,28 +7,37 @@
  * down the page into continuous lines. That stack is the grid, and the grid is
  * the idiom: every block is a cell with a drawn edge, nothing floats.
  *
- * `num` and `label` are the signature: a two-digit number and a mono label in
- * the same corner of every band. They are ink, never accent — the accent is
- * scarce by rule and belongs to the call to action.
+ * The band carries no eyebrow. It used to be signed `NN / LABEL` in tracked
+ * mono, and both halves were doing nothing: the label restated the heading
+ * three lines below it, and the number counted a sequence no reader follows in
+ * order. The rule at the top of the band separates it; the heading names it.
+ *
+ * The optional `media` slot is the band's BACKGROUND and nothing else: it is
+ * full bleed, it is clipped to the band, and it takes no pointer. It exists
+ * because the band is the only element that spans the window - anything the
+ * rail holds is capped at --rail and would be a picture in a column, not a
+ * ground. The Row owns the box; whatever is slotted into it owns its own
+ * paint, and styles it in the file it is written in. A rule written HERE for
+ * slotted content carries this component's hash and would never apply.
  */
 
 interface Props {
-  num: string;
-  label: string;
   class?: string;
 }
 
-const { num, label, class: className = '' } = Astro.props;
+const { class: className = '' } = Astro.props;
+const hasMedia = Astro.slots.has('media');
 ---
 
 <section class={`row ${className}`}>
+  {
+    hasMedia && (
+      <div class="row__media">
+        <slot name="media" />
+      </div>
+    )
+  }
   <div class="row__rail">
-    <p class="row__eyebrow">
-      <span class="row__num">{num}</span>
-      <span class="row__slash" aria-hidden="true">/</span>
-      <span class="row__label">{label}</span>
-    </p>
-
     <div class="row__body">
       <slot />
     </div>
@@ -37,6 +46,10 @@ const { num, label, class: className = '' } = Astro.props;
 
 <style>
   .row {
+    position: relative;
+    /* Its own stacking context, so a band's media can never reach over the
+       band above it and the sticky nav stays over all of them. */
+    isolation: isolate;
     width: 100%;
     /* A minimum gutter, so the rail's vertical rules are always inset and the
        grid reads at every width instead of vanishing off the window edge. */
@@ -44,38 +57,27 @@ const { num, label, class: className = '' } = Astro.props;
     border-top: var(--border-hair) solid var(--color-hairline);
   }
 
+  /* Full bleed and clipped to the band: the media is exactly as tall as the
+     row it sits behind, which is what makes it a ground rather than a block
+     with a height of its own. */
+  .row__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
   .row__rail {
+    /* Over the media, and the two vertical rules with it: the grid is the
+       idiom and it does not go behind a picture. */
+    position: relative;
+    z-index: 1;
     width: 100%;
     max-width: var(--rail);
     margin-inline: auto;
     padding: var(--space-7) var(--space-6) var(--space-8);
     border-inline: var(--border-hair) solid var(--color-hairline);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-  }
-
-  .row__eyebrow {
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-2);
-    margin: 0;
-    max-width: none;
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    line-height: var(--leading-body);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-ink-muted);
-  }
-
-  .row__num {
-    font-weight: 700;
-    color: var(--color-ink);
-  }
-
-  .row__slash {
-    color: var(--color-hairline);
   }
 
   .row__body {
@@ -94,6 +96,9 @@ const { num, label, class: className = '' } = Astro.props;
       /* Below the rail width the vertical rules sit against the window edge,
          where they read as a frame rather than as a column. */
       border-inline: 0;
+    }
+
+    .row__body {
       gap: var(--space-5);
     }
   }

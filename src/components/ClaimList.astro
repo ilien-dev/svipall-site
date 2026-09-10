@@ -5,9 +5,22 @@
  * Each claim carries where to check it. That is the whole point of the band:
  * there is no social proof anywhere on this site, so the only thing holding it
  * up is that every claim is followed to something a reader can open.
+ *
+ * THE MARK names the reason before it is read, in the same 4ch gutter
+ * sections 3 and 4 use.
+ *
+ * THE FOOT is the difference between this band and section 4, which the gate 6
+ * reviewer named as structural twins. Section 4's row says two things and its
+ * seam divides the text column between them. This row says ONE thing and then
+ * points somewhere: the rule runs the FULL width, under the mark as well as
+ * the text, because the destination belongs to the whole row rather than to
+ * half of it. Same vocabulary, two geometries, and the geometry is true.
  */
+import Glyph from './Glyph.astro';
+import type { GlyphName } from '../lib/glyphs';
 
 interface Claim {
+  mark: GlyphName;
   title: string;
   body: string;
   link?: { label: string; href: string };
@@ -24,11 +37,17 @@ const { claims } = Astro.props;
   {
     claims.map((claim) => (
       <li class="claim">
-        <h3 class="claim__title">{claim.title}</h3>
-        <p class="claim__body">{claim.body}</p>
+        <Glyph name={claim.mark} size="lg" class="claim__mark" />
+        <div class="claim__body">
+          <h3 class="claim__title">{claim.title}</h3>
+          <p class="claim__text">{claim.body}</p>
+        </div>
         {claim.link && (
           <p class="claim__link">
-            <a href={claim.link.href}>{claim.link.label}</a>
+            <a href={claim.link.href}>
+              {claim.link.label}
+              <Glyph name="onward" class="claim__onward" />
+            </a>
           </p>
         )}
       </li>
@@ -49,12 +68,48 @@ const { claims } = Astro.props;
   }
 
   .claim {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+    display: grid;
+    grid-template-columns: 4ch minmax(0, 1fr);
+    gap: var(--space-4) 0;
     padding: var(--space-5);
     background: var(--color-cell);
     min-width: 0;
+  }
+
+  /* :global - the class is passed as a prop into Glyph, so it carries Glyph's
+     scope hash and a plain rule here would match nothing. */
+  :global(.claim__mark) {
+    /* Optically on the cap line of the heading beside it, not on its line box:
+       the heading is set at --text-lg on --leading-snug, so centring the
+       column would float the mark half a line above the word it names. */
+    margin-top: 0.2em;
+  }
+
+  /* THE MARK GETS ITS OWN COLUMN, ruled off like every other column on this
+     site. It used to carry the whole job of saying "this is a different kind
+     of object from the text beside it", because at the time the palette had
+     no colour free to say so - the accent measures 1.69:1 as a line on the
+     light cell against a 3:1 floor, and the signal colours mean "a state is
+     being reported" everywhere else.
+     --color-mark answered that since: the same amber family, measured where a
+     stroke actually sits rather than where a fill does, at 4.54:1. The rule
+     stays anyway - it is the idiom, and the column was never only about
+     telling the mark apart. */
+  .claim__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+    padding-left: var(--space-5);
+    border-left: var(--border-hair) solid var(--color-hairline);
+  }
+
+  /* Inline with the label, so the arrow travels with the words on hover
+     rather than sitting in the row as a second object. */
+  :global(.claim__onward) {
+    display: inline-block;
+    vertical-align: -0.15em;
+    margin-left: 0.4em;
   }
 
   .claim__title {
@@ -65,15 +120,18 @@ const { claims } = Astro.props;
     max-width: 26ch; /* ptah-allow: measure */
   }
 
-  .claim__body {
+  .claim__text {
     max-width: var(--measure);
     font-size: var(--text-sm);
     color: var(--color-ink-muted);
   }
 
+  /* The foot: across both columns, under the mark as well as the reading. */
   .claim__link {
+    grid-column: 1 / -1;
     margin-top: auto;
-    padding-top: var(--space-2);
+    padding-top: var(--space-4);
+    border-top: var(--border-hair) solid var(--color-hairline);
     max-width: none;
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
@@ -100,6 +158,9 @@ const { claims } = Astro.props;
          grey block. The MEASURE still applies to the text inside; it must not
          apply to the row that carries it. */
       max-width: none;
+    }
+
+    .claim__body {
       display: grid;
       grid-template-columns: 5fr 7fr;
       gap: var(--space-3) var(--space-6);
@@ -108,19 +169,24 @@ const { claims } = Astro.props;
 
     .claim__title {
       grid-column: 1;
-      grid-row: 1 / span 2;
+    }
+
+    .claim__text {
+      grid-column: 2;
+    }
+  }
+  /* The gutter narrows with the mark. At 390px the row has about 310px of
+     content width before the gutter takes any, and every character the rule
+     and its padding cost comes off a reading measure that is already at the
+     bottom of the craft-floor window. 4ch plus 24px of padding cost about four
+     characters; 16px plus 12px costs under two. */
+  @media (max-width: 640px) {
+    .claim {
+      grid-template-columns: var(--glyph-size) minmax(0, 1fr);
     }
 
     .claim__body {
-      grid-column: 2;
-      grid-row: 1;
+      padding-left: var(--space-3);
     }
-
-    .claim__link {
-      grid-column: 2;
-      grid-row: 2;
-      margin-top: 0;
-    }
-
   }
 </style>

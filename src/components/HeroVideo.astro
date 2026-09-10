@@ -1,0 +1,294 @@
+---
+/*
+ * HeroVideo — the film behind the hero band, and nothing else.
+ *
+ * It must never:
+ *   - carry a claim. It is weather. No number, no word, no state is read off
+ *     it, so it is aria-hidden and it is the only decorative image on the
+ *     home. R-E3-01 holds: a film is not a signal.
+ *   - take a pointer. It sits under the band's content with pointer-events
+ *     off; every target in the hero belongs to the block that owns it.
+ *   - play with sound. The files in public/hero have NO audio track at all -
+ *     it was stripped in the encode - so `muted` is belt and braces rather
+ *     than the only thing between a reader and a noise.
+ *   - decide the band's height. The film is sized by the hero, not the other
+ *     way round: inset:0 on a box the Row positions, object-fit: cover.
+ *
+ * TWO FILMS, ONE PER THEME. They are the same scene painted twice: a night
+ * whose own ground measures #071525 against the dark theme's #0B1A2B, and a
+ * snowfield whose foot measures #D0D8E5 against the light theme's #DCE3EB.
+ * Two levels apart in one case and a dozen in the other, which is why the
+ * bottom fade dissolves into the page instead of ending on a line - in both
+ * themes, for the same reason, without either file being retouched.
+ * They are NOT one file with a filter over it. A dark scene washed pale is a
+ * grey rectangle, and that is what this shipped as for one round before the
+ * light film existed.
+ * WHICH ONE IS SHOWN is a token, not a selector written here - see
+ * --hero-film-dark / --hero-film-light in tokens.css and the note there.
+ * The script reads the same two tokens and only ever fetches the file the
+ * live theme is actually showing, so a reader on one theme never pays for
+ * the other's three megabytes. Flipping the theme attaches the other on
+ * demand and pauses the one going off.
+ *
+ * THE LOOP DOES NOT CUT. Both files are the source played forward and then
+ * backward, encoded that way rather than reversed at runtime, because a
+ * negative playbackRate is not a thing browsers actually do. The seam frames
+ * are dropped in the encode - the last frame is not repeated at the turn,
+ * and the first is not repeated at the wrap - so `loop` runs continuously
+ * with nothing to see at either join.
+ *
+ * MOTION IS NOT ASSUMED. Under prefers-reduced-motion no source is ever
+ * attached and what the reader gets is the `poster` still: the same frame,
+ * the same colour, no movement. The craft floor is not licensable and a
+ * twenty-second loop behind a headline is exactly what it protects against.
+ */
+---
+
+<div class="film" aria-hidden="true">
+  <video
+    class="film__frame film__frame--dark"
+    data-hero-film="dark"
+    data-webm="/hero/hero.webm"
+    data-mp4="/hero/hero.mp4"
+    poster="/hero/hero-poster.webp"
+    autoplay
+    muted
+    loop
+    playsinline
+    disablepictureinpicture
+    preload="none"
+    tabindex="-1"></video>
+
+  <video
+    class="film__frame film__frame--light"
+    data-hero-film="light"
+    data-webm="/hero/hero-light.webm"
+    data-mp4="/hero/hero-light.mp4"
+    poster="/hero/hero-light-poster.webp"
+    autoplay
+    muted
+    loop
+    playsinline
+    disablepictureinpicture
+    preload="none"
+    tabindex="-1"></video>
+
+  <div class="film__veil"></div>
+</div>
+
+<style>
+  /* The box is positioned by Row's .row__media, which is the full bleed of the
+     band. This element only has to fill it and hold the fade. */
+  .film {
+    position: absolute;
+    inset: 0;
+    /* The fade the whole composite ends on - film AND veil together, so the
+       bottom of the band is the page ground and not a lighter rectangle of
+       it. A mask, not a painted gradient, for the same reason the client
+       belt uses one: nothing is drawn over the ground.
+       IT STARTS AT 62%, NOT 46%. It began eating the film just past the
+       halfway line, which erased most of the lower half of the picture for
+       no contrast reason at all - the only thing down there is .hero__foot,
+       two short lines that sit below the grid. The dissolve is the same
+       shape, run over a shorter distance: measured at the foot, the ink is
+       Lc 91.4 and the mark 10.89:1, which is what they read on the bare
+       ground. Do not start it later than this; past about 70% the last stop
+       has no room left to land softly and the band ends on a line, which is
+       the one thing this mask exists to prevent. */
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      var(--mask-on) 0 62%,
+      color-mix(in srgb, var(--mask-on) 62%, transparent) 80%,
+      color-mix(in srgb, var(--mask-on) 20%, transparent) 92%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      var(--mask-on) 0 62%,
+      color-mix(in srgb, var(--mask-on) 62%, transparent) 80%,
+      color-mix(in srgb, var(--mask-on) 20%, transparent) 92%,
+      transparent 100%
+    );
+  }
+
+  .film__frame {
+    position: absolute;
+    /* Lifted, not just re-anchored. object-position only bites when the film
+       is TALLER than the band after cover-fitting, and at most desktop widths
+       these files are wider than the band instead - the crop is horizontal
+       and the whole height of the frame is already on screen, so no anchor
+       value can move anything. Growing the box past the band's foot and
+       pulling it up by the same amount does move it, at every width.
+       The snowfield needs it: the figure walking to the gate sits at about
+       three fifths down its frame, which lands in the bottom fade, and the
+       author asked for them in the hero rather than dissolving into it.
+       --hero-film-drop is the same idea downward: the box grows past the
+       foot with its top left where it is, so the picture slides DOWN. Both
+       are lengths, so either can be given in px when the direction asked for
+       is a number of pixels rather than a proportion of the band. Whatever
+       the pair, the box still covers the band top to bottom - that is the
+       one thing neither of them may break. */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: calc(-1 * var(--hero-film-lift));
+    width: 100%;
+    height: calc(100% + var(--hero-film-lift) + var(--hero-film-drop));
+    object-fit: cover;
+    /* Where the crop sits, and it is per theme - see --hero-film-anchor.
+       Both films are the same composition, but they are not asked for the
+       same thing. The night is anchored near the top of its frame, by the
+       author's direction: its own top edge is meant to arrive where the nav
+       bar ends rather than a crop being taken out of its middle. The
+       snowfield is anchored lower, also by direction, because the figure
+       walking toward the gate is the thing worth seeing in it and at the
+       night's anchor a wide window walks them off the bottom. */
+    object-position: 50% var(--hero-film-anchor);
+    /* Not a filter. Each film's own extreme already sits close to its theme's
+       ground, so pulling the whole thing back toward that ground flattens the
+       half that is FAR from it - the moon and the lit gate in the dark, the
+       monoliths and the same gate in the light - and leaves the half that is
+       already close where it is. A brightness() filter would move both. */
+    opacity: var(--hero-film-strength);
+  }
+
+  /* Which of the two is on. display, not opacity: the one that is off must
+     not composite, must not decode, and must not cost a layer. */
+  .film__frame--dark {
+    display: var(--hero-film-dark);
+  }
+
+  .film__frame--light {
+    display: var(--hero-film-light);
+  }
+
+  /* The ground, laid back over the film where type sits on it - and NOWHERE
+     ELSE. It resolves per theme on its own, because it is mixed from
+     --color-ground.
+     THE RAMP IS KEYED TO THE RAIL, not to the band. The band is full bleed
+     and the rail is capped at --rail, so at any wide window there is a broad
+     margin down each side of this page that holds no content at all. Veiling
+     that was the whole of what read as "a colour layer over the video": at
+     1971px it was 21% of the band on each side, covered at 88% to protect
+     nothing. Those margins now carry no veil at all and the film is simply
+     the film there.
+     Inside the rail the ramp HOLDS across the copy column, it does not start
+     falling at its left edge. That was an earlier bug: a ramp that begins
+     dropping at 0 is already half spent by the time it reaches the right side
+     of the copy, which is where the brightest thing in the night film - the
+     moon - lands at a wide window. It turns down only in the gutter between
+     the two columns.
+     THREE ZONES, not a slope. Outside the rail: nothing. Across the copy
+     column: the full veil, held. Across the second column: --hero-film-veil-
+     soft, also held, and it does not thin any further before the rail's edge.
+     That last part was got wrong once and measured: with the veil tailing off
+     to a --hero-film-veil-min inside the second column, the see-through
+     terminal sat over the thinnest part of it and its ink fell to Lc 64.2
+     with "refused" at 1.86:1, and the client belt - bare marks on no cell at
+     all - fell to 2.64:1 against a 3:1 floor. The right column has the two
+     lightest-defended things in the band on it; it does not get the thinnest
+     veil.
+     The fractions of --rail-live are the layout: --space-6 is the rail's own
+     padding, 0.48 is where the copy column ends, 0.58 clears the gutter.
+     They come from .hero__grid in index.astro. If that grid changes, these
+     change with it. */
+  .film__veil {
+    position: absolute;
+    inset: 0;
+    /* What the rail is ACTUALLY showing, which below ~1200px is narrower than
+       --rail: the band keeps --space-6 of gutter on each side of it. */
+    --rail-live: min(var(--rail), 100% - 2 * var(--space-6));
+    --rail-edge: calc(50% - var(--rail-live) / 2);
+    background:
+      linear-gradient(
+        to right,
+        transparent 0,
+        transparent var(--rail-edge),
+        var(--hero-film-veil) calc(var(--rail-edge) + var(--space-6)),
+        var(--hero-film-veil) calc(var(--rail-edge) + var(--rail-live) * 0.48),
+        var(--hero-film-veil-soft) calc(var(--rail-edge) + var(--rail-live) * 0.58),
+        var(--hero-film-veil-soft) calc(var(--rail-edge) + var(--rail-live)),
+        transparent 100%
+      ),
+      /* A short top ramp, over the ramp above rather than instead of it. The
+         band's first strip carries the ONE thing in this hero that has no
+         cell under it at all: the client belt, bare marks and a mono label on
+         open film. At the right column's held veil alone that label measured
+         3.41:1 and Lc 53.3 - under both the 4.5:1 for text that size and the
+         Lc 60 for a label. This is what pays for it, and it is spent in the
+         top third because that is the only place the belt is.
+         IT IS --hero-film-veil-top, NOT --hero-film-veil. It was the veil,
+         and that made the top third of the band the palest part of it for a
+         floor it clears without the help: measured through the loop at four
+         widths, the bare marks read 3.51:1 with this ramp at zero. The token
+         answers to the belt now instead of to the copy column. */
+      linear-gradient(to bottom, var(--hero-film-veil-top) 0%, transparent 32%);
+  }
+
+  /* Below the two-column hero there is no gutter to turn down in: every line
+     of copy runs the full width of the band, so the ramp would be putting its
+     thinnest end under the headline. One flat wash instead. The breakpoint is
+     the hero's own, in index.astro - if that moves, this moves with it. */
+  @media (max-width: 999px) {
+    .film__veil {
+      background: var(--hero-film-veil);
+    }
+  }
+</style>
+
+<script>
+  const films = [
+    ...document.querySelectorAll<HTMLVideoElement>('[data-hero-film]'),
+  ];
+
+  if (films.length) {
+    const stillOnly = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const attached = new WeakSet<HTMLVideoElement>();
+
+    function sync() {
+      for (const film of films) {
+        // The token decides, not a theme string read a second time here:
+        // whichever film the CSS is actually showing is the one that plays.
+        const shown = getComputedStyle(film).display !== 'none';
+
+        if (!shown || stillOnly.matches) {
+          // Nothing is fetched that is not going to be seen, and anything
+          // already playing stops rather than decoding behind display: none.
+          film.pause();
+          continue;
+        }
+
+        if (!attached.has(film)) {
+          for (const [type, src] of [
+            ['video/webm', film.dataset.webm],
+            ['video/mp4', film.dataset.mp4],
+          ] as const) {
+            if (!src) continue;
+            const source = document.createElement('source');
+            source.type = type;
+            source.src = src;
+            film.append(source);
+          }
+          attached.add(film);
+          film.load();
+        }
+
+        // Autoplay can still be refused - a data-saver setting, a battery
+        // policy. The poster stays on screen when it is, which is the same
+        // thing a reduced-motion reader gets, so there is nothing to catch.
+        void film.play().catch(() => {});
+      }
+    }
+
+    sync();
+
+    new MutationObserver(sync).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+    window
+      .matchMedia('(prefers-color-scheme: light)')
+      .addEventListener('change', sync);
+    stillOnly.addEventListener('change', sync);
+  }
+</script>

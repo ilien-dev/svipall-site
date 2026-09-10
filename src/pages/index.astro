@@ -9,6 +9,8 @@ import Flow from '../components/Flow.astro';
 import ProblemRow from '../components/ProblemRow.astro';
 import AskList from '../components/AskList.astro';
 import ClaimList from '../components/ClaimList.astro';
+import Glyph from '../components/Glyph.astro';
+import HeroVideo from '../components/HeroVideo.astro';
 const conditions = [
   { legend: 'asked once only' },
   { legend: 'a wall came back as a success' },
@@ -22,8 +24,10 @@ const conditions = [
   title="Svipall: your agent doesn't read the web. It tries to."
   description="Svipall runs on your machine and gives your AI assistant the page, or the reason it never arrived. No account, no key, nothing sent anywhere else."
 >
-  {/* ---- 1 · Hero -------------------------------------------------------- */}
-  <Row num="01" label="What this is" class="hero">
+  {/* ---- Hero -------------------------------------------------------- */}
+  <Row class="hero">
+    <HeroVideo slot="media" />
+
     <div class="hero__grid">
       <div class="hero__tell">
       <div class="hero__say">
@@ -51,7 +55,7 @@ const conditions = [
             {
               id: 'plugin',
               tab: 'Claude plugin',
-              icon: 'claude',
+              icon: 'claudecode-tile',
               iconColor: 'var(--brand-claude)',
               label: 'the plugin commands',
               lines: [
@@ -77,7 +81,7 @@ const conditions = [
       <Clients
         label="Runs in any MCP client, including"
         clients={[
-          { name: 'Claude Code', icon: 'claude' },
+          { name: 'Claude Code', icon: 'claudecode' },
           { name: 'Cursor', icon: 'cursor' },
           { name: 'Codex', icon: 'openai' },
           { name: 'opencode', icon: 'opencode' },
@@ -92,7 +96,7 @@ const conditions = [
       />
 
       <Terminal
-        caption="Illustrations of what happens, written plainly. Not recordings: the real runs, with the command and the log behind every number, are in the docs."
+        caption="Illustrations, not recordings. The real runs, with the command and the log behind every number, are in the docs."
         takes={[
           {
             title: 'A page that refuses',
@@ -136,19 +140,18 @@ const conditions = [
         It installs itself and sets itself up. You never open a terminal.
       </p>
       <p class="hero__secondary">
-        <a href="/docs/proof">How it was measured</a>
+        <a href="/docs/proof">How it was measured<Glyph name="onward" class="hero__onward" /></a>
       </p>
     </div>
   </Row>
 
-  {/* ---- 2 · Before and after ------------------------------------------- */}
-  <Row num="02" label="Before and after">
+  {/* ---- Before and after ------------------------------------------- */}
+  <Row>
     <div class="beat">
       <h2 class="beat__head">The same page, twice.</h2>
       <p class="beat__lede">
         First, what a plain fetch brings back. Then the same request through
-        Svipall. Both panels describe behaviour that is documented, and both
-        are held to the same standard.
+        Svipall. The same five conditions, in the same order, on both.
       </p>
     </div>
 
@@ -162,8 +165,8 @@ const conditions = [
     </p>
   </Row>
 
-  {/* ---- 3 · What you ask, what it does, what you get -------------------- */}
-  <Row num="03" label="How it goes">
+  {/* ---- What you ask, what it does, what you get -------------------- */}
+  <Row>
     <div class="beat">
       <h2 class="beat__head">Three steps, and you only do the first one.</h2>
     </div>
@@ -172,17 +175,20 @@ const conditions = [
       beats={[
         {
           num: '01',
+          mark: 'ask',
           title: 'You ask',
           quote: '"Read this page and tell me what it costs."',
           body: 'You say it the way you would say it to a person. Nothing changes about how you work.',
         },
         {
           num: '02',
+          mark: 'fetch',
           title: 'It goes and gets it',
           body: 'A page that opens gets read. A page that refuses gets asked again a different way, up to six times. When it still refuses, Svipall stops and says so instead of making something up.',
         },
         {
           num: '03',
+          mark: 'reading',
           title: 'Your assistant gets the reading',
           body: 'The part a person would have read, without the menus, the cookie banner and the footer. With it come three plain facts: whether it arrived complete, whether it is substance or filler, and whether it is the same thing you already looked at.',
         },
@@ -190,8 +196,8 @@ const conditions = [
     />
   </Row>
 
-  {/* ---- 4 · Four things that go wrong ----------------------------------- */}
-  <Row num="04" label="What goes wrong">
+  {/* ---- Four things that go wrong ----------------------------------- */}
+  <Row>
     <div class="beat">
       <h2 class="beat__head">You have had all four of these already.</h2>
     </div>
@@ -199,6 +205,7 @@ const conditions = [
     <ProblemRow
       problems={[
         {
+          mark: 'wall',
           title: 'The wall it never mentioned',
           wrong:
             'A page can refuse and still look like it worked. Your assistant reads the refusal, sums it up, and hands you an answer with nothing wrong on the surface.',
@@ -206,6 +213,7 @@ const conditions = [
             'Svipall names the wall rather than summarising it, including who put it there when that can be identified.',
         },
         {
+          mark: 'funnel',
           title: 'The whole page, poured into the answer',
           wrong:
             'One page can be tens of thousands of words of things nobody reads: navigation, scripts, repeated footers. All of it competes with your actual question.',
@@ -213,6 +221,7 @@ const conditions = [
             'Svipall hands over the reading, and can write long results to a file so a thousand rows never pass through the conversation.',
         },
         {
+          mark: 'unlabelled',
           title: 'Filler that nobody labelled',
           wrong:
             'Not every page that arrives is worth having. Some are a shell, some are cut off halfway, some are the same thing you fetched twenty minutes ago.',
@@ -220,18 +229,19 @@ const conditions = [
             'Svipall labels what came back so your assistant can tell those apart. It labels and keeps everything: it does not throw pages away and it does not rank them by how much it trusts them.',
         },
         {
-          title: 'Looking something up should not need an account',
+          mark: 'key',
+          title: 'A search that wants an account first',
           wrong:
-            'No plan, no signup, nothing to register for, and no key to paste before you can search.',
+            'Looking something up is the one thing an assistant does constantly, and it is usually the thing gated behind a plan, a signup and a key pasted somewhere before the first question.',
           instead:
-            'Svipall searches three engines and can merge what they agree on.',
+            'Svipall asks three engines with nothing to register for and no key to paste, and can merge what they agree on.',
         },
       ]}
     />
   </Row>
 
-  {/* ---- 5 · Things you can ask for -------------------------------------- */}
-  <Row num="05" label="Things you can ask for">
+  {/* ---- Things you can ask for -------------------------------------- */}
+  <Row>
     <div class="beat">
       <h2 class="beat__head">Said the way you would actually say it.</h2>
     </div>
@@ -239,19 +249,19 @@ const conditions = [
     <AskList
       note="Your assistant picks the right one by itself. There are no commands to learn."
       asks={[
-        'Read this page and summarise the pricing.',
-        'Crawl these docs and write me a file my assistant can read later.',
-        'Get me every row of that table as a spreadsheet.',
-        'Watch this listing and tell me when the price moves.',
-        'Find the three best sources on this and tell me where they disagree.',
-        'Log me in once, then keep reading the pages behind it.',
-        'Read this PDF the same way you read a web page.',
+        { mark: 'read', text: 'Read this page and summarise the pricing.' },
+        { mark: 'crawl', text: 'Crawl these docs and write me a file my assistant can read later.' },
+        { mark: 'table', text: 'Get me every row of that table as a spreadsheet.' },
+        { mark: 'watch', text: 'Watch this listing and tell me when the price moves.' },
+        { mark: 'merge', text: 'Find the three best sources on this and tell me where they disagree.' },
+        { mark: 'threshold', text: 'Log me in once, then keep reading the pages behind it.' },
+        { mark: 'document', text: 'Read this PDF the same way you read a web page.' },
       ]}
     />
   </Row>
 
-  {/* ---- 6 · Why you can believe any of this ----------------------------- */}
-  <Row num="06" label="Why you can believe it">
+  {/* ---- Why you can believe any of this ----------------------------- */}
+  <Row>
     <div class="beat">
       <h2 class="beat__head">Three reasons, and none of them is a promise.</h2>
     </div>
@@ -259,16 +269,19 @@ const conditions = [
     <ClaimList
       claims={[
         {
+          mark: 'machine',
           title: 'It runs on your machine',
           body: 'No account, no key, no service in the middle. The pages you read stay between you and the site. Nothing about what you looked at is sent anywhere else, and nothing tracks what you use it for.',
           link: { label: 'What leaves your machine', href: '/docs/privacy' },
         },
         {
+          mark: 'measure',
           title: 'Everything claimed here was measured',
           body: 'Including the results that came out badly. Three independent collections of pages were used to score how well it reads, and the best and the worst are both published. Each number carries the command and the log that reproduce it.',
           link: { label: 'How it was measured', href: '/docs/proof' },
         },
         {
+          mark: 'struck',
           title: 'What it cannot do is written down too',
           body: 'Some sites will refuse it, and no amount of trying changes that. Those situations have their own page, kept beside everything else rather than buried at the bottom of a FAQ.',
           link: { label: "What it can't do", href: '/docs/limits' },
@@ -277,10 +290,10 @@ const conditions = [
     />
   </Row>
 
-  {/* ---- 7 · If you open a terminal --------------------------------------
+  {/* ---- If you open a terminal --------------------------------------
        The one band where jargon is allowed. R-C2-02 binds sections 1 to 6;
        this is where the technical reader is addressed, in one place. */}
-  <Row num="07" label="If you open a terminal">
+  <Row>
     <div class="beat">
       <h2 class="beat__head">
         It is also a command-line tool, a local API, and readable source.
@@ -294,21 +307,21 @@ const conditions = [
     </div>
 
     <div class="shell">
-      <p class="shell__label">Three of the commands</p>
+      <p class="shell__label"><Glyph name="prompt" />Three of the commands</p>
       <pre class="shell__code">svipall fetch https://example.com/article
 svipall crawl https://docs.example/ --pages 50 --out pages.csv
 svipall search "rust async runtime" --engine all</pre>
     </div>
 
     <p class="beat__links">
-      <a href="/docs">Read the docs</a>
+      <a href="/docs"><Glyph name="docs" />Read the docs</a>
       <span aria-hidden="true"> · </span>
-      <a href="https://github.com/ilien-dev/svipall">Source</a>
+      <a href="https://github.com/ilien-dev/svipall"><Glyph name="source" />Source</a>
     </p>
   </Row>
 
-  {/* ---- 8 · Final CTA ---------------------------------------------------- */}
-  <Row num="08" label="Install it">
+  {/* ---- Final CTA ---------------------------------------------------- */}
+  <Row>
     <div class="beat">
       <h2 class="beat__head">One line, and your assistant does the rest.</h2>
     </div>
@@ -329,7 +342,7 @@ svipall search "rust async runtime" --engine all</pre>
             id: 'plugin',
             tab: 'Claude plugin',
             label: 'the plugin commands',
-            icon: 'claude',
+            icon: 'claudecode-tile',
             iconColor: 'var(--brand-claude)',
             lines: [
               [
@@ -472,6 +485,9 @@ svipall search "rust async runtime" --engine all</pre>
   .shell__label {
     margin: 0;
     max-width: none;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
     padding: var(--space-2) var(--space-4);
     border-bottom: var(--border-hair) solid var(--color-hairline);
     font-family: var(--font-mono);
@@ -565,10 +581,35 @@ svipall search "rust async runtime" --engine all</pre>
     max-width: 17ch; /* ptah-allow: measure - the hero turn, display size */
   }
 
+  /* Full ink, not muted, and this is the ONE lede on the site that is.
+     It is the only body text on this page standing on the hero film, and it
+     was the single thing sizing the veil over the whole copy column: muted
+     ink measures Lc 80.0 on the bare dark ground and 75.6 on the light one -
+     the body floor is 75, so in light it shipped with six tenths of a level
+     to spend. Holding it there needed 82% of the ground laid back over the
+     film in dark and 97% in light, which is a picture nobody can see.
+     Full ink measures 91.5 and 87.3, and that headroom is what pays for the
+     veil to come down to 57% and 83%. The reading under it is Lc 75.4.
+     The cost is the tonal step below the heading, and it is a real cost.
+     What carries the hierarchy instead is size and weight - 76px at 700
+     against 21px at 400 - plus the measure. Chosen by the author over the
+     two alternatives, which were leaving the film invisible here or
+     reporting the lede as failing. */
   .hero__lede {
     font-size: var(--text-md);
-    color: var(--color-ink-muted);
+    color: var(--color-ink);
     max-width: 48ch;
+  }
+
+  /* The one mark on the site that is not always a solid fill, because it is
+     the only one standing on the film. Softened in LIGHT ONLY - the value and
+     the reason are both in --color-accent-mark, and the short version is that
+     thinning it helps the light theme and would wreck the dark one. R-G3-14
+     holds either way: the keyword is marked rather than coloured, and nothing
+     else about the accent changes. The docs prose keeps base.css's solid
+     fill; there is no film under it to see. */
+  .hero__lede mark {
+    background: var(--color-accent-mark);
   }
 
   .hero__act {
@@ -595,6 +636,16 @@ svipall search "rust async runtime" --engine all</pre>
     gap: var(--space-3);
   }
 
+  /* The same treatment the claim links get: the arrow travels with the words
+     rather than sitting in the row as a second object. The footer row below
+     stays bare - it is legal and meta text, and a mark on each of four links
+     there is noise, not navigation. */
+  :global(.hero__onward) {
+    display: inline-block;
+    vertical-align: -0.15em;
+    margin-left: 0.4em;
+  }
+
   .hero__note {
     max-width: var(--measure);
     font-size: var(--text-xs);
@@ -608,6 +659,9 @@ svipall search "rust async runtime" --engine all</pre>
   .close__meta a {
     display: inline-flex;
     align-items: center;
+    /* The mark rides inside the link, so it is part of the target rather than
+       a thing beside it that looks pressable and is not. */
+    gap: var(--space-2);
     min-height: var(--hit-min);
   }
 

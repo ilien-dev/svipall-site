@@ -5,10 +5,25 @@
  * The densest band on the page (E8: this is where the rhythm compresses).
  * Each ask is set in the mono face because it is something you type, not
  * something the page is telling you.
+ *
+ * THE MARK names the tool family the sentence exercises - read, crawl, table,
+ * watch, merge, threshold, document - so seven lines of near-identical mono
+ * stop being one texture. It replaces the ASCII quote that stood in the same
+ * column: the quote said "someone is speaking", which every row here already
+ * says, so it was the one thing in the column that carried no information.
+ * Each family is a tool this product documents. A mark for an eighth kind of
+ * ask does not exist, and would not be drawn before the ask did.
  */
+import Glyph from './Glyph.astro';
+import type { GlyphName } from '../lib/glyphs';
+
+interface Ask {
+  mark: GlyphName;
+  text: string;
+}
 
 interface Props {
-  asks: string[];
+  asks: Ask[];
   note: string;
 }
 
@@ -20,8 +35,8 @@ const { asks, note } = Astro.props;
     {
       asks.map((ask) => (
         <li class="asks__item">
-          <span class="asks__mark" aria-hidden="true">"</span>
-          <span class="asks__text">{ask}</span>
+          <Glyph name={ask.mark} class="asks__mark" />
+          <span class="asks__text">{ask.text}</span>
         </li>
       ))
     }
@@ -49,8 +64,9 @@ const { asks, note } = Astro.props;
 
   .asks__item {
     display: grid;
-    grid-template-columns: 2ch 1fr;
-    gap: var(--space-2);
+    grid-template-columns: var(--glyph-size) minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: start;
     /* space-3 rows: this is the one band that compresses. */
     padding: var(--space-3) var(--space-4);
     background: var(--color-cell);
@@ -61,8 +77,12 @@ const { asks, note } = Astro.props;
     max-width: none;
   }
 
-  .asks__mark {
-    color: var(--color-ink-muted);
+  /* Optically on the first line of the ask beside it. The mono line box is
+     taller than the mark, so centring the column would float it. */
+  /* :global - the class is passed as a prop into Glyph, so it carries Glyph's
+     scope hash and a plain rule here would match nothing. */
+  :global(.asks__mark) {
+    margin-top: 0.15em;
   }
 
   .asks__note {

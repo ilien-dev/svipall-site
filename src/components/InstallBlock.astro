@@ -14,13 +14,26 @@
  * The active tab is marked with ink and a rule, not with the accent. The
  * accent is fill only and exactly one accent fill on this page is a control:
  * the copy button. A highlighted tab would be a second one.
+ *
+ * ITS FRAME IS SEE-THROUGH, at the author's direction, and it is the second
+ * cell on this site to be - the hero terminal is the other. Same treatment
+ * for the same reason: it sits on the hero film, and opaque it was a slab in
+ * the middle of the picture. --color-cell-film and --blur-frost, both from
+ * the token layer, so the two cells cannot drift apart.
+ * What does NOT become see-through is the copy control. It is the one accent
+ * fill on the page and the one thing here that is pressed; a translucent
+ * button is a button you have to look twice at. It stays solid on top of a
+ * frame you can see through, which is also what tells them apart.
  */
 
 /*
  * A command is written as tokens so its parts can carry different weight.
- * `key` is the one token per panel that gets the accent fill: the accent is
- * fill only and the copy control is already one, so a second is the limit
- * before yellow stops meaning "this is the thing".
+ * The accent does not appear in here at all. It used to highlight the URL and
+ * the repository slug, which put two amber masses beside a third - the copy
+ * control - and the eye had no way to tell which of the three was the thing to
+ * press. Structure is carried by weight and value instead, which is what the
+ * `cmd` / `sub` / `key` tokens are for; the one accent fill in the block is the
+ * control.
  */
 interface Token {
   text: string;
@@ -33,7 +46,9 @@ interface Variant {
   label: string;
   /* 'prompt' draws a UI glyph in currentColor. Any other value is a slug in
      src/assets/clients, drawn in the brand's own colour: recolouring someone
-     else's mark is worse than showing it as it is. */
+     else's mark is worse than showing it as it is. A tab mark is a single
+     currentColor shape - a two-colour mark is knocked out of itself, never
+     painted with a second value from this palette. */
   icon?: 'prompt' | string;
   iconColor?: string;
   lead?: string;
@@ -47,6 +62,7 @@ interface Props {
 }
 
 import fs from 'node:fs';
+import { lucideBody } from '../lib/lucide';
 import path from 'node:path';
 
 const { id, variants } = Astro.props;
@@ -101,25 +117,15 @@ const rows = variants.map((variant) => ({
             {variant.icon === 'prompt' && (
               <svg
                 class="install__tabicon"
-                viewBox="0 0 16 16"
-                width="14"
-                height="14"
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
                 aria-hidden="true"
                 focusable="false"
-              >
-                <path
-                  d="M2.5 3.5 6 8l-3.5 4.5"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                />
-                <path
-                  d="M8 12.5h5.5"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                />
-              </svg>
+                set:html={lucideBody('terminal')}
+              />
             )}
             {variant.markSvg && (
               <span
@@ -146,7 +152,7 @@ const rows = variants.map((variant) => ({
         >
           <div class="install__row">
             {variant.lead ? (
-              <pre class="install__code" id={`${id}-code-${variant.id}`}>{variant.lead}{NEWLINE}<mark>{
+              <pre class="install__code" id={`${id}-code-${variant.id}`}>{variant.lead}{NEWLINE}<span class="install__url">{
                   /* Break after a slash and nowhere else. With overflow-wrap
                      alone the URL broke mid-token - ".../ilien-" then "-dev/"
                      in one block and ".../ilie" then "n-dev/" in the other -
@@ -155,14 +161,14 @@ const rows = variants.map((variant) => ({
                   urlSegments(variant.url ?? '').map((seg, i, all) => (
                     <Fragment><span class="install__seg">{seg}</span>{i < all.length - 1 && <wbr />}</Fragment>
                   ))
-                }</mark></pre>
+                }</span></pre>
             ) : (
               <pre class="install__code" id={`${id}-code-${variant.id}`}>{
                 (variant.lines ?? []).map((line, n) => (
                   <span class="install__cmdline">{
                     line.map((token, t) => (
                       <span class={`install__tok install__tok--${token.kind ?? 'sub'}`}>{
-                        token.kind === 'key' ? <mark>{token.text}</mark> : token.text
+                        token.text
                       }{t < line.length - 1 ? ' ' : ''}</span>
                     ))
                   }{n < (variant.lines ?? []).length - 1 ? NEWLINE : ''}</span>
@@ -178,33 +184,31 @@ const rows = variants.map((variant) => ({
             >
               <svg
                 class="install__glyph"
-                viewBox="0 0 16 16"
+                viewBox="0 0 24 24"
                 width="22"
                 height="22"
+                fill="none"
+                stroke="currentColor"
                 aria-hidden="true"
                 focusable="false"
-              >
-                <rect
-                  x="5.5"
-                  y="1.5"
-                  width="9"
-                  height="11"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.4"
-                />
-                <path
-                  d="M10.5 14.5h-9v-11"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.4"
-                />
-              </svg>
+                set:html={lucideBody('copy')}
+              />
               <span class="visually-hidden install__copy-idle">
                 Copy {variant.label}
               </span>
               <span class="visually-hidden install__copy-done" hidden>Copied</span>
-              <span class="install__tick" aria-hidden="true" hidden>+</span>
+              <svg
+                class="install__tick"
+                viewBox="0 0 24 24"
+                width="22"
+                height="22"
+                fill="none"
+                stroke="currentColor"
+                aria-hidden="true"
+                focusable="false"
+                hidden
+                set:html={lucideBody('check')}
+              />
             </button>
           </div>
         </div>
@@ -223,7 +227,10 @@ const rows = variants.map((variant) => ({
 
   .install__frame {
     border: var(--border-hair) solid var(--color-hairline);
-    background: var(--color-cell);
+    /* See-through over the hero film. See the header. */
+    background: var(--color-cell-film);
+    -webkit-backdrop-filter: blur(var(--blur-frost));
+    backdrop-filter: blur(var(--blur-frost));
   }
 
   .install__tabs {
@@ -314,12 +321,43 @@ const rows = variants.map((variant) => ({
     display: block;
   }
 
+  /* lucide ships a 2px round line sized for a 24-unit box. Stripped here the
+     same way Glyph.astro strips it, so a tab mark is drawn with a device-pixel
+     line and not with the set's own weight. Slightly heavier than --glyph-stroke
+     on purpose: this sits at 14px beside 10px uppercase mono, under the smallest
+     type on the page.
+
+     Scoped away from the brand mark. That one is a filled shape with a mask
+     inside it, and a blanket `fill: none` reaches into the mask and empties
+     it - the mark then renders as nothing at all. */
+  .install__tabicon:not(.install__tabicon--brand) :global(*) {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+  }
+
   /* A brand mark keeps its own colour. It is decoration beside a text label
-     that already says which tab this is, so it carries no contrast duty. */
+     that already says which tab this is, so it carries no contrast duty.
+
+     The rule above used to set `fill: none` on every descendant, so the `fill`
+     written on the <svg> never reached the <path>: the mark was being STROKED
+     at 1.4px in coral, which is why twenty tapered rays read as a smudge and
+     not as a sunburst. It is scoped to the lucide glyph now.
+
+     The Claude Code tab draws `claudecode-tile`, not `claudecode`: the tile
+     the vendor publishes, with the sunburst knocked out of it. The bare
+     sunburst has no mass of its own - its rays go sub-pixel below about 20px -
+     and at this size mass is the whole job. The knockout is a hole, not a
+     painted ray, so it shows whatever is behind the tab and needs no second
+     colour and no theme of its own. The belt in Clients.astro keeps the bare
+     mark: there it is 30px, in ink, in a row of other bare silhouettes. */
   .install__tabicon--brand :global(svg) {
     display: block;
-    width: 14px;
-    height: 14px;
+    width: 20px;
+    height: 20px;
     fill: currentColor;
   }
 
@@ -373,6 +411,12 @@ const rows = variants.map((variant) => ({
     color: var(--color-ink-muted);
   }
 
+  .install__tok--key,
+  .install__url {
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+
   .install__copy {
     flex: 0 0 auto;
     display: flex;
@@ -380,14 +424,12 @@ const rows = variants.map((variant) => ({
     justify-content: center;
     gap: var(--space-2);
     /* Hit target: 44px minimum on touch. Craft floor.
-       The width is 128, not 88, for a second reason: the accent highlight
-       behind the URL measured ~10,900px2 against this control's ~9,830, so
-       the largest accent object in the block was a link background and the
-       eye landed on it before the button beside it. On a persuade page the
-       primary action owns the one colour in the system. Both highlights are
-       kept - they were asked for - and the control simply outweighs them. */
+       88, not 128. The width was inflated to out-mass the accent highlight
+       behind the URL; with that highlight gone this is the only accent fill in
+       the block, and at 128 against a three-line panel it stretched into a
+       slab the size of the code beside it. */
     min-height: 44px;
-    min-width: 128px;
+    min-width: 88px;
     padding: var(--space-3) var(--space-4);
     border-left: var(--border-hair) solid var(--color-hairline);
     background: var(--color-accent);
@@ -400,7 +442,8 @@ const rows = variants.map((variant) => ({
     opacity: 0.88;
   }
 
-  .install__glyph {
+  .install__glyph,
+  .install__tick {
     flex: none;
     /* The word came off the button, so the glyph carries the whole affordance
        on its own. At 16px it read as a decoration. */
@@ -408,10 +451,26 @@ const rows = variants.map((variant) => ({
     height: 22px;
   }
 
-  .install__tick {
-    font-family: var(--font-mono);
-    font-size: var(--text-md);
-    font-weight: 700;
+  /* Heavier than --glyph-stroke because this one is not a mark beside a
+     sentence: it is the whole affordance of the only accent-filled control on
+     the page, reversed out of that fill. A hairline on --color-on-accent
+     disappeared into it. */
+  .install__glyph :global(*),
+  .install__tick :global(*) {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+  }
+
+  /* The UA sheet's [hidden] rule is namespaced to HTML and does not reach an
+     inline SVG. Without this the copy mark and the tick would both be painted
+     the moment the button is pressed. */
+  .install__glyph[hidden],
+  .install__tick[hidden] {
+    display: none;
   }
 
   /* Below this the button stops fitting beside wrapped lines of URL and goes
@@ -514,20 +573,31 @@ const rows = variants.map((variant) => ({
 
     const idle = button.querySelector<HTMLElement>('.install__copy-idle');
     const done = button.querySelector<HTMLElement>('.install__copy-done');
-    const glyph = button.querySelector<HTMLElement>('.install__glyph');
-    const tick = button.querySelector<HTMLElement>('.install__tick');
+    const glyph = button.querySelector<SVGElement>('.install__glyph');
+    const tick = button.querySelector<SVGElement>('.install__tick');
     if (!idle || !done) return;
+
+    /* setAttribute, not .hidden. Both marks are SVG elements now and
+       SVGElement does not implement the hidden IDL attribute - assigning it
+       sets a property nothing renders from, and both marks would show at
+       once. The [hidden] rule in this component's styles is the other half:
+       the UA sheet's own [hidden] rule is namespaced to HTML. */
+    const show = (el: Element | null, on: boolean) => {
+      if (!el) return;
+      if (on) el.removeAttribute('hidden');
+      else el.setAttribute('hidden', '');
+    };
 
     idle.hidden = true;
     done.hidden = false;
-    if (glyph) glyph.hidden = true;
-    if (tick) tick.hidden = false;
+    show(glyph, false);
+    show(tick, true);
 
     window.setTimeout(() => {
       idle.hidden = false;
       done.hidden = true;
-      if (glyph) glyph.hidden = false;
-      if (tick) tick.hidden = true;
+      show(glyph, true);
+      show(tick, false);
     }, 2000);
   });
 </script>

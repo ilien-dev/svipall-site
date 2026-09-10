@@ -40,8 +40,13 @@
   color: var(--color-ink-muted);
 }
 
+/* Running text is INK. It was set in the muted step, which is the secondary
+   colour this site uses for ledes, captions and labels - so on the twelve
+   pages a reader actually reads, every paragraph was the quietest thing on the
+   page and the hierarchy ran backwards. Muted stays where it belongs: the page
+   summary, the source footer, the on-this-page list. */
 .prose p {
-  color: var(--color-ink-muted);
+  color: var(--color-ink);
 }
 
 .prose strong {
@@ -55,7 +60,7 @@
 .prose ul,
 .prose ol {
   padding-left: var(--space-5);
-  color: var(--color-ink-muted);
+  color: var(--color-ink);
 }
 
 .prose ul {
@@ -145,7 +150,7 @@
 }
 
 .prose td {
-  color: var(--color-ink-muted);
+  color: var(--color-ink);
 }
 
 .prose tbody tr:last-child td {
@@ -157,7 +162,7 @@
 .prose blockquote {
   padding-left: var(--space-4);
   border-left: var(--border-hair) solid var(--color-hairline);
-  color: var(--color-ink-muted);
+  color: var(--color-ink);
 }
 
 .prose hr {
