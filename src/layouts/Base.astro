@@ -1,8 +1,11 @@
 ---
+import fs from 'node:fs';
+import path from 'node:path';
 import '../styles/tokens.css';
 import '../styles/base.css';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import Mark from '../components/Mark.astro';
+import Glyph from '../components/Glyph.astro';
 
 interface Props {
   title: string;
@@ -10,6 +13,16 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+
+/* Inlined, not <img src>: an SVG in an <img> is a separate document and cannot
+   see currentColor or this page's custom properties. That has been shipped
+   wrong here twice already. Filled rather than stroked, so it does not go
+   through Glyph.astro, whose whole job is to redraw a stroke. */
+const githubSvg = fs
+  .readFileSync(path.resolve('src/assets/github.svg'), 'utf8')
+  .replace(/<!--[\s\S]*?-->/g, '')
+  .replace('<svg ', '<svg aria-hidden="true" focusable="false" ')
+  .trim();
 ---
 
 <!doctype html>
@@ -58,13 +71,19 @@ const { title, description } = Astro.props;
     <header class="nav">
       <div class="nav__rail">
         <a class="nav__home" href="/">
-          <Mark size={34} />
+          <Mark size={60} />
           <span>Svipall</span>
         </a>
 
         <nav class="nav__links" aria-label="Main">
-          <a href="/docs">Docs</a>
-          <a href="https://github.com/ilien-dev/svipall">Source</a>
+          <a href="/docs"><Glyph name="docs" /><span>Docs</span></a>
+          <a
+            class="nav__icon"
+            href="https://github.com/ilien-dev/svipall"
+            aria-label="Source on GitHub"
+            title="Source on GitHub"
+            set:html={githubSvg}
+          />
         </nav>
 
         <ThemeToggle />
@@ -123,19 +142,44 @@ const { title, description } = Astro.props;
   .nav__home {
     display: flex;
     align-items: center;
-    /* 34px, not 24: the mark has knotwork and a single eye in it and neither
-       survived the smaller size. It stays under the 44px the theme control
-       already occupies, so the bar's 64px is untouched. */
+    /* 60px, not 34: the knotwork and the eye were still unreadable at 34, 44
+       and 52 on a real window. At 60 the mark, not the padding, is what sets
+       the bar's height, which is why --nav-height went to 80px with it. The
+       word beside it grew with it: a 60px mark against 17px type reads as a
+       mark with a caption, not as one object. */
     gap: var(--space-3);
     margin-right: auto;
     text-decoration: none;
     font-weight: 600;
-    font-size: var(--text-sm);
+    /* A step off the scale, derived rather than written: --text-lg is only
+       1.22x --text-md at the small end and the word has to be at least 1.3x.
+       Multiplying the token keeps the fluid clamp and keeps the raw value out
+       of this file. 23 -> 27px. */
+    font-size: calc(var(--text-md) * 1.3);
     letter-spacing: -0.01em;
+  }
+
+  /* The whole anchor is the target, so the pointer anywhere on it fires the
+     state, but only the word takes the colour: the mark keeps its own palette.
+     --color-mark, not --color-accent: the accent is 1.69:1 on the light ground
+     and this is text. Nothing moves or resizes, so a hover never touches the
+     80px bar. */
+  .nav__home span {
+    transition: color var(--dur-state) var(--ease-out);
+  }
+
+  .nav__home:hover span,
+  .nav__home:focus-visible span {
+    color: var(--color-mark);
   }
 
   .nav__links {
     display: flex;
+    align-items: center;
+    /* One row, always. A mark and the word it names are one object; the pair
+       breaking over two lines reads as two separate controls, and it happened
+       on a real window. Neither this list nor a link inside it may wrap. */
+    flex-wrap: nowrap;
     gap: var(--space-5);
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
@@ -144,13 +188,44 @@ const { title, description } = Astro.props;
   }
 
   .nav__links a {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    /* The list is a flex row, so a link is a flex item and would shrink below
+       its own content before the rail gave up any width. */
+    flex: none;
+    gap: var(--space-2);
     color: var(--color-ink-muted);
     text-decoration: none;
+    white-space: nowrap;
     padding-block: var(--space-3);
   }
 
   .nav__links a:hover {
     color: var(--color-ink);
+  }
+
+  /* A link with no label. The mark IS the link, so it carries the hit target
+     the word used to give it: 44px, the same as the theme control beside it,
+     and it is the accessible name on the anchor rather than on the mark. */
+  .nav__icon {
+    justify-content: center;
+    min-height: 44px;
+    /* Padded out to the target, then pulled back by the same amount, so the
+       box grows without moving the row's rhythm off the gap it is set on. */
+    padding-block: 0;
+    padding-inline: var(--space-2);
+    margin-inline: calc(var(--space-2) * -1);
+  }
+
+  /* GitHub's mark is filled and monochrome by its own brand guidance, so it
+     takes the link's colour and lights with it. It is NOT --color-mark: the
+     amber is this site's mark colour and this is somebody else's mark. */
+  .nav__icon :global(svg) {
+    display: block;
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
   }
 
   .page {

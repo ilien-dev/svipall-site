@@ -97,14 +97,14 @@ const belt = [...marks, ...marks];
       to right,
       transparent,
       var(--mask-on) var(--space-6),
-      var(--mask-on) calc(100% - var(--space-7)),
+      var(--mask-on) calc(100% - var(--space-6)),
       transparent
     );
     mask-image: linear-gradient(
       to right,
       transparent,
       var(--mask-on) var(--space-6),
-      var(--mask-on) calc(100% - var(--space-7)),
+      var(--mask-on) calc(100% - var(--space-6)),
       transparent
     );
   }
@@ -126,9 +126,12 @@ const belt = [...marks, ...marks];
      could never have matched and was an accommodation on paper only.
      prefers-reduced-motion below is the one that actually fires. */
 
+  /* 24, not 40. At 40 a 30px mark sat in 80px of air, so the hero's column
+     held five marks with more ground than mark in it and the belt read as
+     icons adrift rather than as a run of them. */
   .agents__item {
     flex: none;
-    padding-inline: var(--space-6);
+    padding-inline: var(--space-5);
   }
 
   .agents__mark {

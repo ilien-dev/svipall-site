@@ -11,7 +11,8 @@
  * and a right-hand column that stays put while the prose scrolls.
  */
 import Base from './Base.astro';
-import { docsNav } from '../lib/docs-nav';
+import Glyph from '../components/Glyph.astro';
+import { docsNav, GROUP_MARKS } from '../lib/docs-nav';
 import Search from '../components/Search.astro';
 import '../styles/prose.css';
 
@@ -25,23 +26,13 @@ interface Props {
   title: string;
   summary: string;
   source: string;
-  group: string;
   slug: string;
   headings?: Heading[];
 }
 
-const { title, summary, source, group, slug, headings = [] } = Astro.props;
+const { title, summary, source, slug, headings = [] } = Astro.props;
 
 const nav = await docsNav();
-
-// Where this page sits, and its number within its group. The home's bands are
-// signed `NN / LABEL` in tracked mono; the docs pages carried no signature at
-// all, so the one element that makes this site nameable was missing from the
-// twelve pages a reader actually spends time in. It doubles as the breadcrumb
-// the content column otherwise loses the moment the h1 scrolls away.
-const groupPages = nav.find((g) => g.name === group)?.pages ?? [];
-const position = groupPages.findIndex((p) => p.id === slug) + 1;
-const num = String(position).padStart(2, '0');
 
 // Only h2 and h3. A list that mirrors every heading depth stops being a map
 // and becomes the document again.
@@ -61,7 +52,10 @@ const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
           {
             nav.map((group) => (
               <div class="side__group">
-                <p class="side__heading">{group.name}</p>
+                <p class="side__heading">
+                  <Glyph name={GROUP_MARKS[group.name]} class="side__mark" />
+                  {group.name}
+                </p>
                 <ul>
                   {group.pages.map((page) => (
                     <li>
@@ -84,11 +78,6 @@ const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
 
       <article class="docs__main">
         <header class="docs__head">
-          <p class="docs__sig">
-            <span class="docs__num">{num}</span>
-            <span class="docs__slash" aria-hidden="true">/</span>
-            <span class="docs__group">{group}</span>
-          </p>
           <h1>{title}</h1>
           <p class="docs__summary">{summary}</p>
         </header>
@@ -99,6 +88,7 @@ const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
 
         <footer class="docs__foot">
           <p>
+            <Glyph name="sourcefile" class="docs__footmark" />
             Written from <a href={`${repo}${source}`}><code>{source}</code></a> in
             the product repository. Where this page and that file disagree, the
             file is right: it ships with the code and this does not.
@@ -187,7 +177,12 @@ const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
     scrollbar-color: var(--color-hairline) transparent;
   }
 
+  /* In the line with the label, not above it. R-G3-10 refuses the icon tile
+     and a mark stacked over a heading is one however it is drawn. */
   .side__heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
     margin: 0 0 var(--space-1);
     max-width: none;
     font-family: var(--font-mono);
@@ -242,28 +237,6 @@ const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
     border-bottom: var(--border-hair) solid var(--color-hairline);
   }
 
-  /* The same signature the home's bands carry: tracked mono, ink not accent,
-     the number set solid against the label. R-G3-06. */
-  .docs__sig {
-    margin: 0 0 var(--space-4);
-    max-width: none;
-    display: flex;
-    gap: var(--space-2);
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-ink-muted);
-  }
-
-  .docs__num {
-    color: var(--color-ink);
-    font-weight: 700;
-  }
-
-  .docs__slash {
-    opacity: 0.5;
-  }
 
   .docs__head h1 {
     font-size: var(--text-xl);
@@ -273,6 +246,14 @@ const repo = 'https://github.com/ilien-dev/svipall/blob/main/';
     margin-top: var(--space-3);
     color: var(--color-ink-muted);
     font-size: var(--text-sm);
+  }
+
+  /* Floated into the first line of the paragraph rather than given a column:
+     this is one sentence of provenance, not a row of a ruled board. */
+  :global(.docs__footmark) {
+    display: inline-block;
+    vertical-align: -0.15em;
+    margin-right: 0.5em;
   }
 
   .docs__foot {

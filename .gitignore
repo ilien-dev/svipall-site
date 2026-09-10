@@ -3,3 +3,7 @@ dist/
 .astro/
 .DS_Store
 *.log
+
+# The hero film masters. public/hero/ carries what the site actually serves;
+# these are the uncompressed sources those were encoded from.
+hero-image-video/

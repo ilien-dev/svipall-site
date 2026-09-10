@@ -8,11 +8,18 @@
  * assistant gets something back. The order is the content.
  */
 
+import Glyph from './Glyph.astro';
+import type { GlyphName } from '../lib/glyphs';
+
 interface Beat {
   num: string;
   title: string;
   body: string;
   quote?: string;
+  /* The mark names what the BEAT is, not what a step generally looks like:
+     you say it, it goes and keeps going, you get the reading back. The number
+     already carries the order, so the mark is free to carry the content. */
+  mark: GlyphName;
 }
 
 interface Props {
@@ -28,7 +35,10 @@ const { beats } = Astro.props;
       <li class="flow__beat">
         {/* aria-hidden: the <ol> already conveys the order, so a screen
             reader would otherwise hear the position twice. */}
-        <p class="flow__num" aria-hidden="true">{beat.num}</p>
+        <div class="flow__gutter">
+          <p class="flow__num" aria-hidden="true">{beat.num}</p>
+          <Glyph name={beat.mark} size="lg" class="flow__mark" />
+        </div>
         <div class="flow__body">
           <h3 class="flow__title">{beat.title}</h3>
           {beat.quote && <p class="flow__quote">{beat.quote}</p>}
@@ -57,6 +67,16 @@ const { beats } = Astro.props;
     gap: var(--space-5);
     padding: var(--space-5);
     background: var(--color-cell);
+  }
+
+  /* The number and the mark share the 4ch column the number already had, so
+     the mark costs the row no width. Stacked rather than side by side: at 4ch
+     they would each be half a character wide. */
+  .flow__gutter {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
   }
 
   .flow__num {

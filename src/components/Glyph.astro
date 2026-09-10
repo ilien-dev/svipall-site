@@ -1,0 +1,123 @@
+---
+/*
+ * Glyph — a lucide icon, drawn with the grid's own line.
+ *
+ * The set is lucide (ISC, read off disk at build time by lib/lucide.ts and
+ * inlined). What is NOT lucide's is the line it is drawn with: lucide ships a
+ * 2px round-capped stroke and this strips it, so a mark renders at exactly
+ * --border-hair with square caps and mitred joins, the same line the grid and
+ * every hairline rule on this page are drawn with.
+ *
+ * WHAT THIS MUST NEVER DO
+ * - Carry a tile, a box, a fill or a background. R-G3-10 refuses the icon
+ *   tile and that refusal stands: this is a mark IN FLOW beside a label.
+ * - Wear --color-accent. R-G3-14 stands: the accent is a FILL, measured on
+ *   the navy it is filled with, and as a hairline on the light cell it is
+ *   1.69:1. A mark wears --color-mark, which is the same amber family
+ *   measured where a mark actually sits.
+ * - Wear a signal colour. R-E3-01: ok/caution/blocked report a state and a
+ *   mark is not a state.
+ * - Say anything the text beside it does not already say. A mark restates; it
+ *   never claims. That is why every one of them is aria-hidden: the sentence
+ *   is the accessible name, and announcing both would say it twice.
+ * - Appear for evenness. A row with no type to name carries no mark, and
+ *   sections 01, 02, 03 and 08 carry none at all because the accent, the
+ *   lamps, the 01/02/03 numbering and the tab icons already do that work.
+ */
+
+import { ICONS, type GlyphName } from '../lib/glyphs';
+import { lucideBody } from '../lib/lucide';
+
+interface Props {
+  name: GlyphName;
+  /* Two steps, and the SIZE IS A PROP rather than a rule in the parent. A
+     class passed down carries this component's scope hash and this
+     component's rules outrank a :global() written next door, so a parent that
+     sized its own mark would be writing a rule that silently loses. The
+     project's list of things that have broken before names the first half of
+     that; this is the second half. */
+  size?: 'md' | 'lg';
+  class?: string;
+}
+
+const { name, size = 'md', class: className = '' } = Astro.props;
+
+const body = lucideBody(ICONS[name]);
+---
+
+<svg
+  class={`glyph glyph--${size} ${className}`}
+  viewBox="0 0 24 24"
+  width="24"
+  height="24"
+  fill="none"
+  stroke="currentColor"
+  aria-hidden="true"
+  focusable="false"
+  set:html={body}
+/>
+
+<style>
+  .glyph {
+    flex: none;
+    display: block;
+    /* --color-mark, not --color-ink. In ink the mark was one more object of
+       the same colour as the sentence beside it and the eye had to look for
+       it; the amber is found without looking. What makes that work is CHROMA, not
+       lightness: the first attempt matched the ink's presence exactly - Lc
+       68.4 against 68.8 - and was still lost in the copy, because equal
+       lightness is most of what makes two things read as the same kind of
+       object. The mark colour is 80% saturated against the ink's 13% and
+       clears the 3:1 non-text floor on both surfaces; it is not asked to match
+       the ink's weight as well.
+       Not --color-ink-muted either. A stroke is already the thinnest object on
+       the row and setting it a step quieter as well put it below the weight of
+       everything it sits between; at that value the mark read as a smudge
+       beside a 27px heading. */
+    color: var(--color-mark);
+  }
+
+  /* Beside a mono label or body-size text. */
+  .glyph--md {
+    width: var(--glyph-size);
+    height: var(--glyph-size);
+  }
+
+  /* Beside a --text-lg heading. */
+  .glyph--lg {
+    width: var(--glyph-size-lg);
+    height: var(--glyph-size-lg);
+  }
+
+  /* --text-lg is fluid and reaches 22px at the narrow end, where a 24px mark
+     is larger than the heading it names - and where the gutter it sits in is
+     taking width off a reading measure that is already tight. It steps back to
+     the small box with the type. */
+  @media (max-width: 640px) {
+    .glyph--lg {
+      width: var(--glyph-size);
+      height: var(--glyph-size);
+    }
+  }
+
+  /* Every child, not just <path>: lucide draws with circle, rect, line and
+     polyline too, and a rule that named only paths would leave half of some
+     marks wearing lucide's own 2px round line. */
+  .glyph :global(*) {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: var(--glyph-stroke);
+    /* The line does not scale with the box. A 16px mark and a 24px mark are
+       drawn with the SAME 1px rule the grid is drawn with, which is the whole
+       claim this language makes; without this the larger one would be a 1.5px
+       line that exists nowhere else in the project. It is also what makes a
+       lucide icon land on this site: the set's own weight is a function of its
+       24-unit box, and this replaces it with a device-pixel line. */
+    vector-effect: non-scaling-stroke;
+    /* Square and mitred, because --radius-0 is 0 everywhere. This is the
+       whole reason a mark here does not look like a mark from anywhere else
+       lucide is used. */
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+  }
+</style>

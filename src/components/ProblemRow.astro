@@ -5,9 +5,21 @@
  * A cell per problem, each with the same two fields in the same order: what
  * goes wrong, then what happens instead. Same fields in the same order is what
  * lets four of them be compared rather than just read.
+ *
+ * TWO DEVICES CARRY THAT, and neither is decoration:
+ *   the MARK in the gutter names the fault before the first word is read, in
+ *     the same 4ch column section 3 uses for its step number;
+ *   the SEAM is a drawn rule between the fault and its answer. The row has
+ *     always said two things; until the seam it said so with the word
+ *     INSTEAD doing a rule's job. It spans the TEXT column only, because both
+ *     halves live there — section 6's foot spans the whole row instead, and
+ *     that difference is what stops these two bands reading as twins.
  */
+import Glyph from './Glyph.astro';
+import type { GlyphName } from '../lib/glyphs';
 
 interface Problem {
+  mark: GlyphName;
   title: string;
   wrong: string;
   instead: string;
@@ -24,12 +36,15 @@ const { problems } = Astro.props;
   {
     problems.map((problem) => (
       <li class="problem">
-        <h3 class="problem__title">{problem.title}</h3>
-        <p class="problem__wrong">{problem.wrong}</p>
-        <p class="problem__instead">
-          <span class="problem__tag">Instead</span>
-          {problem.instead}
-        </p>
+        <Glyph name={problem.mark} size="lg" class="problem__mark" />
+        <div class="problem__body">
+          <h3 class="problem__title">{problem.title}</h3>
+          <p class="problem__wrong">{problem.wrong}</p>
+          <p class="problem__instead">
+            <span class="problem__tag">Instead</span>
+            {problem.instead}
+          </p>
+        </div>
       </li>
     ))
   }
@@ -48,12 +63,48 @@ const { problems } = Astro.props;
   }
 
   .problem {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+    display: grid;
+    /* The same gutter section 3 sets its step number in. One column shared by
+       three bands is a system; three different left offsets would be three
+       ideas. */
+    grid-template-columns: 4ch minmax(0, 1fr);
+    gap: var(--space-5) 0;
     padding: var(--space-5);
     background: var(--color-cell);
     min-width: 0;
+  }
+
+  /* Optically aligned to the cap height of the title beside it, the same way
+     section 3's number is. */
+  /* :global. The class is passed as a prop into Glyph, so the element carries
+     GLYPH'S scope hash, not this component's - a plain .problem__mark rule
+     here compiles to a selector that matches nothing and fails silently. This
+     is the first trap in the project's own list of things that have broken
+     before, and it caught this change too: the marks shipped at 16px for a
+     round because the rule below never applied. */
+  :global(.problem__mark) {
+    /* Optically on the cap line of the heading beside it, not on its line box:
+       the heading is set at --text-lg on --leading-snug, so centring the
+       column would float the mark half a line above the word it names. */
+    margin-top: 0.2em;
+  }
+
+  /* THE MARK GETS ITS OWN COLUMN, ruled off like every other column on this
+     site. The mark is asked to be visibly a different kind of object from the
+     text beside it, and this palette has no colour free to say so: the accent
+     measures 1.69:1 as a line on the light cell against a 3:1 floor for a
+     non-text graphic - which is the same measurement that made the accent
+     fill-only in the first place - and the signal colours mean "a state is
+     being reported" everywhere else on the site. So the separation is drawn,
+     which is what this idiom does anyway: the rule says the gutter is a
+     column, and the mark is what lives in it. */
+  .problem__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+    padding-left: var(--space-5);
+    border-left: var(--border-hair) solid var(--color-hairline);
   }
 
   .problem__title {
@@ -68,6 +119,13 @@ const { problems } = Astro.props;
     max-width: var(--measure);
     font-size: var(--text-sm);
     color: var(--color-ink-muted);
+    /* The seam. It sits UNDER the fault rather than over the answer, so it
+       belongs to the pair rather than to the second half of it. The measure
+       stays on: at every width this column is narrower than 68ch, so the rule
+       runs the column and the cap never binds - but a paragraph without a
+       measure is a paragraph waiting for a wider window to break it. */
+    padding-bottom: var(--space-3);
+    border-bottom: var(--border-hair) solid var(--color-hairline);
   }
 
   .problem__instead {
@@ -106,14 +164,17 @@ const { problems } = Astro.props;
          block. The MEASURE still applies to the text inside; it must not
          apply to the row that carries it. */
       max-width: none;
+    }
+
+    /* The name of the fault stands in the left column against both halves of
+       the answer, so the row reads across rather than down. */
+    .problem__body {
       display: grid;
       grid-template-columns: 5fr 7fr;
       gap: var(--space-3) var(--space-6);
       align-items: start;
     }
 
-    /* The name of the fault stands in the left column against both halves of
-       the answer, so the row reads across rather than down. */
     .problem__title {
       grid-column: 1;
       grid-row: 1 / span 2;
@@ -127,6 +188,20 @@ const { problems } = Astro.props;
     .problem__instead {
       grid-column: 2;
       grid-row: 2;
+    }
+  }
+  /* The gutter narrows with the mark. At 390px the row has about 310px of
+     content width before the gutter takes any, and every character the rule
+     and its padding cost comes off a reading measure that is already at the
+     bottom of the craft-floor window. 4ch plus 24px of padding cost about four
+     characters; 16px plus 12px costs under two. */
+  @media (max-width: 640px) {
+    .problem {
+      grid-template-columns: var(--glyph-size) minmax(0, 1fr);
+    }
+
+    .problem__body {
+      padding-left: var(--space-3);
     }
   }
 </style>

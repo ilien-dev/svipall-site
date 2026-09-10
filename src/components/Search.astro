@@ -10,10 +10,15 @@
  * rendered dead. A search box that does nothing when typed into is worse than
  * no search box, because the reader spends a query finding out.
  */
+import Glyph from './Glyph.astro';
 ---
 
 <div class="find" data-find hidden>
   <label class="visually-hidden" for="docs-find">Search the documentation</label>
+  {/* aria-hidden: the label above is the accessible name and the mark adds
+      nothing to it. It is here so the field is recognised as a search field
+      before it is read. */}
+  <Glyph name="find" class="find__mark" />
   <input
     class="find__input"
     id="docs-find"
@@ -39,9 +44,21 @@
     position: relative;
   }
 
+  /* Inside the field, not beside it: a mark in the margin would push the
+     field narrower in a 208px rail that has none to give. */
+  :global(.find__mark) {
+    position: absolute;
+    left: var(--space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
   .find__input {
     width: 100%;
     padding: var(--space-2) var(--space-3);
+    /* Room for the mark: the gutter it sits in plus its own box. */
+    padding-left: calc(var(--space-3) * 2 + var(--glyph-size));
     background: var(--color-cell);
     border: var(--border-hair) solid var(--color-hairline);
     border-radius: var(--radius-0);

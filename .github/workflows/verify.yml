@@ -1,13 +1,12 @@
 name: verify
 
-# Three gates, in the order that fails cheapest first. The rule check runs on
-# source and needs no build; the link check needs dist, so it runs after it.
+# Three gates, in the order that fails cheapest first. The glyph check runs on
+# source and needs no build; the link check needs dist, so it runs after.
 #
-# The rule check is NOT allowed to fail the build today: it reports 24 findings
-# that are triaged and recorded in .ptah/RULES.md. Its job here is to make a
-# NEW finding visible in the log. Turning it into a hard gate needs those 24 to
-# be resolved or explicitly baselined first, and baselining them silently is
-# how a check stops meaning anything.
+# The glyph check IS a hard gate. It is mechanical - a table, not judgement -
+# it stands at zero findings, and it catches the one failure the marks can
+# still have now that they come from lucide: a slug lucide does not ship, or a
+# GlyphName with no icon behind it. Both reach the page as an empty box.
 
 on:
   push:
@@ -27,12 +26,11 @@ jobs:
 
       - run: npm ci
 
-      - name: Ledger rules
-        run: node .ptah/ptah-check.mjs --all
-        continue-on-error: true
+      - name: Mark table
+        run: node scripts/check-glyphs.mjs
 
       - name: Build
         run: npm run build
 
       - name: Internal links
-        run: node .ptah/check-links.mjs
+        run: node scripts/check-links.mjs
