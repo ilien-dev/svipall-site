@@ -6,6 +6,7 @@ import '../styles/base.css';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import Mark from '../components/Mark.astro';
 import Glyph from '../components/Glyph.astro';
+import MakerMark from '../components/MakerMark.astro';
 
 interface Props {
   title: string;
@@ -93,6 +94,24 @@ const githubSvg = fs
     <main id="main" class="page">
       <slot />
     </main>
+
+    {/* The maker's signature, on every page. The lockup and the domain are
+        one link and "That person is" is not: a signature and the address it
+        signs are one destination, the sentence introducing them is a
+        sentence. The lockup is aria-hidden because it is a drawing of a word,
+        so the word goes back into the link's text for screen readers. */}
+    <footer class="foot">
+      <div class="foot__rail">
+        <p>Svipall is built in the open, by one person.</p>
+        <p class="foot__credit">
+          That person is <a class="foot__maker" href="https://ilien.dev">
+            <MakerMark />
+            <span class="visually-hidden">ilien</span>
+            <span class="foot__domain">— ilien.dev</span>
+          </a>
+        </p>
+      </div>
+    </footer>
   </body>
 </html>
 
@@ -235,7 +254,73 @@ const githubSvg = fs
     gap: 0;
   }
 
+  /* A band like the Row above it: the horizontal rule on the band, the two
+     vertical rules on the rail, so the grid's lines run into the footer. */
+  .foot {
+    padding-inline: var(--space-6);
+    border-top: var(--border-hair) solid var(--color-hairline);
+  }
+
+  .foot__rail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-6);
+    width: 100%;
+    max-width: var(--rail);
+    margin-inline: auto;
+    padding: var(--space-6) var(--space-6) var(--space-7);
+    border-inline: var(--border-hair) solid var(--color-hairline);
+    font-size: var(--text-xs);
+    color: var(--color-ink-muted);
+  }
+
+  .foot__rail p {
+    margin: 0;
+    max-width: none;
+  }
+
+  .foot__credit {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* The signature is drawn in ink, the rest of the line stays muted: one step
+     of colour is what makes a name read as a name rather than as small print. */
+  .foot__maker {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--hit-min);
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .foot__domain {
+    color: var(--color-ink-muted);
+    text-underline-offset: 4px;
+    transition: color var(--dur-state) var(--ease-out);
+  }
+
+  /* The underline goes on the domain and never under the lockup: a rule
+     touching a logotype is what its clear space exists to stop. */
+  .foot__maker:hover .foot__domain,
+  .foot__maker:focus-visible .foot__domain {
+    color: var(--color-ink);
+    text-decoration: underline;
+  }
+
   @media (max-width: 760px) {
+    .foot {
+      padding-inline: 0;
+    }
+
+    .foot__rail {
+      padding: var(--space-5) var(--space-4) var(--space-6);
+      border-inline: 0;
+    }
+
     .nav {
       padding-inline: 0;
     }

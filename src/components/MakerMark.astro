@@ -1,0 +1,94 @@
+---
+/*
+ * MakerMark — the maker's signature: the ilien horizontal lockup, drawn.
+ *
+ * This is not this site's identity. The mark in `Mark.astro` is; this is the
+ * mark of the person who made the thing that mark stands for, and the two must
+ * never be confused, which is why it is a component of its own and is named
+ * for what it is rather than for what it draws.
+ *
+ * It must never be edited by hand. The geometry belongs to a third brand,
+ * `ilien-dev-brand`, and is the exact output of that repository's
+ * `components/mark/Lockup.astro` at `variant="horizontal"`, copied byte for
+ * byte from the same component in `untitled-site`. A coordinate changed here
+ * is a fork of somebody else's identity. After any retune upstream:
+ *
+ *   cd ../ilien-dev-brand && bun run build
+ *   # then pull the <svg data-mark="lockup-horizontal"> out of dist/index.html
+ *
+ * Horizontal, because the footer credit is one line of running type and only
+ * that variant sets the moth and the letters along a line. The eye-spots are
+ * dropped by upstream's own rule (they need the moth's box at 64px or more;
+ * here it is about 29px). The i-dots stay: they are letterforms, and an
+ * "ilien" without them is misspelt.
+ *
+ * Single-ink `currentColor`, the monochrome variant upstream ships. It is
+ * NOT --color-mark: the amber is this site's mark colour and this is somebody
+ * else's mark. The caller sets the colour on the link it sits in.
+ *
+ * Clear space is upstream's one needle width, 30 units of the moth's 200-unit
+ * box, carried as the component's own margin so no call site can lose it.
+ */
+
+interface Props {
+  /* Rendered height. A multiple of the type it sits in, so the signature
+     scales with the line it signs. */
+  size?: string;
+}
+
+const { size = '2.2em' } = Astro.props;
+
+/* 30 units of the moth's box, through the lockup's moth scale of 1.40724,
+   over the 225.9-unit viewBox height. */
+const CLEAR_RATIO = ((30 * 1.40724) / 225.9).toFixed(4);
+---
+
+<svg
+  class="maker-mark"
+  style={`--maker-mark-size: ${size}; --maker-mark-clear: calc(${size} * ${CLEAR_RATIO});`}
+  viewBox="-6 -6 664.24737 225.9"
+  preserveAspectRatio="xMidYMid meet"
+  fill="none"
+  aria-hidden="true"
+  focusable="false"
+  data-mark="ilien-lockup-horizontal"
+>
+  <g transform="translate(0 -28.14474) scale(1.40724)" data-part="moth">
+    <path
+      d="M 120 70 L 192 58 L 188 100 L 160 108 L 168 122 L 142 120 L 120 104 Z M 80 70 L 8 58 L 12 100 L 40 108 L 32 122 L 58 120 L 80 104 Z M 120 120 L 156 131 L 163 159 L 143 152 L 136 172 L 120 150 Z M 80 120 L 44 131 L 37 159 L 57 152 L 64 172 L 80 150 Z M 100 54 L 115 70 L 113 104 L 107 158 L 100 172 L 93 158 L 87 104 L 85 70 Z M 104.47439207479799 50 L 123 28 L 142.5 20 L 146 28.5 L 128.5 35.5 L 111.03689207479799 57 Z M 95.52560792520201 50 L 77 28 L 57.5 20 L 54 28.5 L 71.5 35.5 L 88.96310792520201 57 Z"
+      fill="currentColor"
+      fill-rule="evenodd"></path>
+  </g>
+
+  <g transform="translate(323.24737 15.95)" data-part="wordmark">
+    <g
+      stroke="currentColor"
+      stroke-width="22"
+      stroke-linecap="butt"
+      stroke-linejoin="miter"
+      stroke-miterlimit="8"
+      fill="none"
+    >
+      <path d="M 11 72 L 11 160"></path>
+      <path d="M 57 22 L 57 160"></path>
+      <path d="M 103 72 L 103 160"></path>
+      <path
+        d="M 140 116 L 216 116 L 216 92 L 196 72 L 160 72 L 140 92 L 140 140 L 160 160 L 196 160 L 216 140"
+      ></path>
+      <path d="M 242 72 L 242 160"></path>
+      <path d="M 242 96 L 262 72 L 298 72 L 318 96 L 318 160"></path>
+    </g>
+    <circle cx="11" cy="40" r="12" fill="currentColor"></circle>
+    <circle cx="103" cy="40" r="12" fill="currentColor"></circle>
+  </g>
+</svg>
+
+<style>
+  .maker-mark {
+    display: block;
+    height: var(--maker-mark-size);
+    width: auto;
+    margin: var(--maker-mark-clear);
+    flex: none;
+  }
+</style>
