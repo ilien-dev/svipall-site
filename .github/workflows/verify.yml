@@ -31,6 +31,14 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          # The build asks the GitHub API for the product's newest stable
+          # release and writes it into the nav. Anonymous callers get sixty
+          # requests an hour per IP and a CI runner shares its IP widely, so
+          # the build is authenticated. It is not required: without a token
+          # the request simply may not answer, and a build that cannot reach
+          # the API ships no version rather than a wrong one.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Internal links
         run: node scripts/check-links.mjs

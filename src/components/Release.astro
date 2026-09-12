@@ -1,0 +1,207 @@
+---
+/*
+ * Release — the product's current version, in the two places it is shown.
+ *
+ * `chip` sits in the nav rail on every page: the answer to "which version is
+ * current", available without scrolling and without leaving the page you are
+ * on. `line` sits under the install block, where the question is a different
+ * one — "what am I about to install" — and where the date earns its place,
+ * because a version with no date beside it says nothing about how alive the
+ * project is.
+ *
+ * ONE COMPONENT, TWO TEMPLATES, on purpose. The markup carries the hooks the
+ * browser script writes into (`data-release`, `data-release-version`,
+ * `data-release-date`), and those three names have to stay in step with the
+ * script in Base.astro. Splitting this into two components would put them in
+ * three files instead of two.
+ *
+ * WHAT THIS MUST NEVER DO
+ * - Wear --color-accent. The accent is a fill and exactly one accent fill on
+ *   the home page is a control: the copy button. A version is a fact, not a
+ *   control, and an amber one beside the paste block would be a second.
+ * - Draw itself with no version in it. When the build could not reach GitHub
+ *   the element ships `hidden` and the script reveals it only if the browser
+ *   gets an answer. An empty box in the nav is worse than no box.
+ * - Claim a pre-release. lib/release.ts and the script both filter to `vX.Y.Z`.
+ */
+
+import Glyph from './Glyph.astro';
+import { latestRelease, RELEASES_URL } from '../lib/release';
+
+interface Props {
+  variant: 'chip' | 'line';
+}
+
+const { variant } = Astro.props;
+
+const release = await latestRelease();
+const href = release?.url ?? RELEASES_URL;
+---
+
+{
+  variant === 'chip' ? (
+    <a
+      class="tag"
+      href={href}
+      hidden={!release}
+      data-release
+      title="The current release on GitHub"
+    >
+      {/* The version alone is a poor accessible name - "v1.0.2" says nothing
+          about where the link goes - so the sentence is supplied and the
+          number stays the only thing drawn. */}
+      <span class="visually-hidden">Current release: </span>
+      <span data-release-version>{release?.version}</span>
+    </a>
+  ) : (
+    <p class="line" hidden={!release}>
+      <a class="line__link" href={href} data-release>
+        <span class="line__version" data-release-version>
+          {release?.version}
+        </span>
+        <span class="line__sep" aria-hidden="true">
+          ·
+        </span>
+        <span class="line__date" data-release-date>
+          {release?.date}
+        </span>
+        <span class="line__sep" aria-hidden="true">
+          ·
+        </span>
+        <span class="line__go">
+          Release notes
+          <Glyph name="onward" class="line__onward" />
+        </span>
+      </a>
+    </p>
+  )
+}
+
+<style>
+  /* The UA rule for [hidden] is display:none at zero specificity, and the
+     display below outranks it. Both variants state it again. */
+  .tag[hidden],
+  .line[hidden] {
+    display: none;
+  }
+
+  /* ---- chip -------------------------------------------------------- */
+
+  .tag {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    padding: 2px var(--space-2);
+    border: var(--border-hair) solid var(--color-hairline);
+    /* Square, like every other box on this site. --radius-1 is reserved for
+       inputs and inline code chips and this is neither. */
+    border-radius: var(--radius-0);
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    /* Looser than the nav links' 0.12em: those are uppercase words, this is a
+       number, and tracking a number apart makes it read as a code. */
+    letter-spacing: 0.06em;
+    line-height: 1.4;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      color var(--dur-state) var(--ease-out),
+      border-color var(--dur-state) var(--ease-out);
+  }
+
+  /* The visible box is 20px tall and the hit target is 44px, the same as the
+     GitHub link and the theme control beside it. Grown with a pseudo-element
+     rather than with padding, because padding would make the box itself as
+     tall as the wordmark and the chip would stop reading as a tag on it. */
+  .tag::after {
+    content: '';
+    position: absolute;
+    inset: -12px -6px;
+  }
+
+  .tag:hover,
+  .tag:focus-visible {
+    color: var(--color-mark);
+    border-color: var(--color-mark);
+  }
+
+  /* ---- line -------------------------------------------------------- */
+
+  .line {
+    margin: 0;
+    max-width: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.06em;
+    line-height: var(--leading-body);
+  }
+
+  .line__link {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0 0.5em;
+    /* The caption under a cell, not a row of controls: the whole line is one
+       destination and the hit target is the line. */
+    min-height: var(--hit-min);
+    color: var(--color-ink-muted);
+    text-decoration: none;
+  }
+
+  /* One step of colour, on the one part of the line that is the answer. The
+     date and the invitation stay muted; without this the three parts read as
+     three links. */
+  .line__version {
+    color: var(--color-ink);
+  }
+
+  .line__sep {
+    /* The separator is the quietest thing on the line and must not be mistaken
+       for a bullet in a list. */
+    color: var(--color-hairline);
+  }
+
+  .line__go {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    text-underline-offset: 4px;
+    transition: color var(--dur-state) var(--ease-out);
+  }
+
+  .line__link:hover .line__go,
+  .line__link:focus-visible .line__go {
+    color: var(--color-ink);
+    text-decoration: underline;
+  }
+
+  /* The mark's size is set here and its colour is the component's own. The
+     rule reaches it with :global() because a class passed to a child carries
+     that child's scope; layout is all it is asked to change. */
+  .line__link :global(.line__onward) {
+    margin-left: 0.35em;
+  }
+
+  /* Below this the rail is full with the lockup, the two links and the theme
+     control alone, and a tag squeezed in beside them either overlaps the
+     Docs mark or pushes the page into a horizontal scroll. The version is
+     not worth either, and on the home page the install block still carries
+     it. Measured at 320px on the rendered page, not decided from the CSS. */
+  @media (max-width: 359px) {
+    .tag {
+      display: none;
+    }
+  }
+
+  @media (max-width: 760px) {
+    /* The date is the first thing to go: on a phone the line sits directly
+       under the command and the version and the way through are what it is
+       for. */
+    .line__date,
+    .line__date + .line__sep {
+      display: none;
+    }
+  }
+</style>
