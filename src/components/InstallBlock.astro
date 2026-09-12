@@ -59,13 +59,19 @@ interface Variant {
 interface Props {
   id: string;
   variants: Variant[];
+  /* The version of the thing this block installs, under the frame. Off by
+     default and on once per page: the hero block and the closing block are
+     the same command, and the same fact stated twice on one page stops being
+     a fact and becomes decoration. The nav carries it everywhere else. */
+  release?: boolean;
 }
 
 import fs from 'node:fs';
 import { lucideBody } from '../lib/lucide';
 import path from 'node:path';
+import Release from './Release.astro';
 
-const { id, variants } = Astro.props;
+const { id, variants, release = false } = Astro.props;
 
 // Every slash is a break opportunity and nothing else is. The segments keep
 // their trailing slash; the template puts a <wbr> between them. <wbr> carries
@@ -216,6 +222,8 @@ const rows = variants.map((variant) => ({
     }
     </div>
   </div>
+
+  {release && <Release variant="line" />}
 </div>
 
 <style>

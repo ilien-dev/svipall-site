@@ -89,6 +89,13 @@ That is the method: measure the result.
 - **An empty slot in a gap-seam grid is a hole**, not a blank: the container's
   background shows through as a solid block. The fix used everywhere here is two
   columns plus `:last-child:nth-child(odd) { grid-column: 1 / -1 }`.
+- **A flex item that may shrink below its content overlaps; it does not
+  squash.** The nav rail was given a third object — the version tag — and at
+  320px it was drawn on top of the Docs link rather than pushing the row
+  wider, because the wrapper carried `min-width: 0`. Nothing in the rail
+  shrinks now: what gives way is the Docs label, hidden from sight only and
+  still in the accessibility tree, and below 360px the tag itself. Found by
+  rendering at 320, not by reading the CSS.
 - **`rules.json` has failed open twice.** Once with inline `(?i)` prefixes the
   checker threw on and discarded; once with `"\b"`, which in JSON is a backspace
   byte and not a word boundary. If you add a pattern, assert that it compiles
@@ -136,6 +143,7 @@ That is the method: measure the result.
 |---|---|
 | `src/styles/tokens.css` | The only file allowed raw values. Three layers: `--ds-*` primitive, `--color-*` alias, components use the alias. |
 | `src/components/` | The home's blocks. Each carries a header comment stating what it must never do. |
+| `src/lib/release.ts` | The product's newest **stable** release, read from the GitHub API at build time and baked into the page. Its other half is the script at the bottom of `Base.astro`, which asks again in the browser and raises the number if a release has appeared since the build. Neither half may invent one: no answer means the tag is not drawn. The `vX.Y.Z` shape test is what keeps `-rc` and `-beta` out, and it is written in both halves. |
 | `src/lib/glyphs.ts` | `GlyphName` → lucide slug. The site's names on the left, lucide's on the right, so re-picking an icon is one line here and nothing else. |
 | `src/lib/lucide.ts` | Reads a lucide SVG off `node_modules` at build and returns its body. Inlined, never `<img src>`. |
 | `src/content/docs/*.md` | The twelve docs pages. Front matter requires `source:`. |
