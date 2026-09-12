@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import { rehypeTableScroll } from './src/lib/rehype-table-scroll.mjs';
 
 export default defineConfig({
-  site: 'https://svipall.dev',
+  site: 'https://svipall.ilien.dev',
   build: { inlineStylesheets: 'auto' },
   markdown: {
     rehypePlugins: [rehypeTableScroll],

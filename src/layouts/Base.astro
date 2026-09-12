@@ -16,6 +16,17 @@ interface Props {
 
 const { title, description } = Astro.props;
 
+/* The share card. Absolute URLs: a crawler reads these out of context and a
+   relative path resolves against nothing. `Astro.site` is the deployed origin,
+   so both halves move together if that ever changes.
+
+   og.png is the mark on the night ground, 640x640 and square on purpose: with
+   `twitter:card` at `summary` the unfurl draws it small and to the side of the
+   text rather than as a banner above it. A wide crop of a centred mark would
+   be mostly empty ground. */
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/og.png', Astro.site);
+
 /* Inlined, not <img src>: an SVG in an <img> is a separate document and cannot
    see currentColor or this page's custom properties. That has been shipped
    wrong here twice already. Filled rather than stroked, so it does not go
@@ -35,6 +46,22 @@ const githubSvg = fs
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Svipall" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="640" />
+    <meta property="og:image:height" content="640" />
+    <meta property="og:image:alt" content="The Svipall mark" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
 
     <link
       rel="preload"
