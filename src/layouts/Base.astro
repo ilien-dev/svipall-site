@@ -20,10 +20,13 @@ const { title, description } = Astro.props;
    relative path resolves against nothing. `Astro.site` is the deployed origin,
    so both halves move together if that ever changes.
 
-   og.png is the mark on the night ground, 640x640 and square on purpose: with
-   `twitter:card` at `summary` the unfurl draws it small and to the side of the
-   text rather than as a banner above it. A wide crop of a centred mark would
-   be mostly empty ground. */
+   og.png is 1200x630 and `twitter:card` is `summary_large_image`, which is
+   what makes Slack, X, LinkedIn and Discord draw the card as a banner above
+   the text. This was a square 640x640 mark under `summary` and it unfurled
+   with no picture at all in Slack, so the size and the card type move
+   together: a square image under a large-image card gets cropped, and a wide
+   image under `summary` is thrown away. `scripts/make-og.mjs` draws the
+   file. */
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL('/og.png', Astro.site);
 
@@ -55,10 +58,10 @@ const githubSvg = fs
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="640" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:alt" content="The Svipall mark" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Svipall mark beside the wordmark, on the night ground" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
