@@ -7,3 +7,13 @@ dist/
 # The hero film masters. public/hero/ carries what the site actually serves;
 # these are the uncompressed sources those were encoded from.
 hero-image-video/
+
+# Local tooling state, not the site. .claude/skills is a checkout of skills
+# that have nothing to do with this repo, and .impeccable/ is a design
+# checker's config and its hook cache.
+.claude/
+.impeccable/
+
+# The lockfile this project builds from is package-lock.json. bun.lock is a
+# second answer to the same question, written by whichever run used bun.
+bun.lock
