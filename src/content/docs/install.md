@@ -221,8 +221,8 @@ and put the routing rules at `~/.claude/svipall/SVIPALL.md`. Keep the markers:
 they are what makes it removable.
 
 There is also a strict mode, off by default, in which Claude Code's own `WebFetch`
-and `WebSearch` are declined with a pointer to the Svipall tool that does the same
-job. Turn it on by creating an empty `~/.svipall/claude_strict`; delete the file to
+and `WebSearch` are declined with a pointer to the Svipall tool that replaces
+them. Turn it on by creating an empty `~/.svipall/claude_strict`; delete the file to
 turn it off, no restart.
 
 ## Known failures
