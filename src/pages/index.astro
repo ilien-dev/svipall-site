@@ -1,691 +1,114 @@
 ---
-import Base from '../layouts/Base.astro';
-import Row from '../components/Row.astro';
-import InstallBlock from '../components/InstallBlock.astro';
-import Terminal from '../components/Terminal.astro';
-import Clients from '../components/Clients.astro';
-import Panel from '../components/Panel.astro';
-import Flow from '../components/Flow.astro';
-import ProblemRow from '../components/ProblemRow.astro';
-import AskList from '../components/AskList.astro';
-import ClaimList from '../components/ClaimList.astro';
-import Glyph from '../components/Glyph.astro';
-import HeroVideo from '../components/HeroVideo.astro';
-const conditions = [
-  { legend: 'asked once only' },
-  { legend: 'a wall came back as a success' },
-  { legend: 'the whole page handed over' },
-  { legend: 'arrival unreported' },
-  { legend: 'repeat undetected' },
-];
+/*
+ * The product page. The markup is the approved canvas design ("Orbit"),
+ * ported by scripts/port-orbit.mjs into src/home/orbit.body.html; edit it
+ * there or re-run the port. This file adds only what a real page needs on
+ * top of the design: the head (SEO), the shared theme, the release tag, the
+ * copy button and the maker's credit.
+ *
+ * The theme is the SAME one the docs use: Starlight keeps it in
+ * localStorage under `starlight-theme` and in <html data-theme>. Both pages
+ * read and write that one key, so switching on one switches the other.
+ */
+import body from '../home/orbit.body.html?raw';
+import '../styles/orbit.css';
+import '../styles/page.css';
+import MakerMark from '../components/MakerMark.astro';
+import { latestRelease, RELEASES_URL } from '../lib/release';
+
+const release = await latestRelease();
+const chip = release
+  ? `<a class="ver" href="${release.url}" title="Released ${release.date}">${release.version}</a>`
+  : '';
+const html = body.replace('<a href="#get" class="btn" style="border', `${chip}<a href="#get" class="btn" style="border`);
+
+const site = 'https://svipall.ilien.dev';
+const title = 'Svipall — free web access for your AI, no API key';
+const description =
+  'Svipall is a free, open-source add-on that lets Claude, Cursor, Codex and other AI apps read websites, get past "checking your browser" screens, search without a key, watch videos and track page changes. Runs on your computer; no account.';
+const setupMessage =
+  'Install and configure Svipall by following the instructions here:\nhttps://raw.githubusercontent.com/ilien-dev/svipall/main/docs/install.md';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Svipall',
+  url: site,
+  description,
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Windows, macOS, Linux',
+  license: 'https://www.gnu.org/licenses/agpl-3.0.html',
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  codeRepository: 'https://github.com/ilien-dev/svipall',
+  ...(release ? { softwareVersion: release.version.replace(/^v/, '') } : {}),
+};
 ---
 
-<Base
-  title="Svipall: your agent doesn't read the web. It tries to."
-  description="Svipall runs on your machine and gives your AI assistant the page, or the reason it never arrived. No account, no key, nothing sent anywhere else."
->
-  {/* ---- Hero -------------------------------------------------------- */}
-  <Row class="hero">
-    <HeroVideo slot="media" />
-
-    <div class="hero__grid">
-      <div class="hero__say">
-        <h1 class="hero__turn">
-          Your agent doesn't read the web.<br />It tries to.
-        </h1>
-        <p class="hero__lede">
-          Some pages let it in. Others hand it <mark>a wall</mark> and let it
-          believe that was the article. Svipall tells it which one just
-          happened.
-        </p>
-      </div>
-
-      <Terminal
-        caption="Illustrations, not recordings. The real runs, with the command and the log behind every number, are in the docs."
-        takes={[
-          {
-            title: 'A page that refuses',
-            lines: [
-              { kind: 'cmd', text: 'svipall fetch example.com/pricing' },
-              { kind: 'try', text: 'asked the ordinary way', result: 'refused', tone: 'blocked' },
-              { kind: 'try', text: 'opened a real browser', result: 'refused', tone: 'blocked' },
-              { kind: 'try', text: 'waited the check out', result: 'opened', tone: 'ok' },
-              { kind: 'ok', text: 'the page arrived complete' },
-              { kind: 'ok', text: 'substance, not filler' },
-              { kind: 'note', text: 'your agent gets the reading, not the page' },
-            ],
-          },
-          {
-            title: 'A whole site, kept out of the way',
-            lines: [
-              { kind: 'cmd', text: 'svipall crawl docs.example.com' },
-              { kind: 'try', text: 'followed the links it was allowed to', result: 'read', tone: 'ok' },
-              { kind: 'ok', text: 'marked the pages that were the same page twice' },
-              { kind: 'ok', text: 'written to a file, not into the answer' },
-              { kind: 'note', text: 'your agent opens the file when it needs a page' },
-            ],
-          },
-          {
-            title: 'Looking something up',
-            lines: [
-              { kind: 'cmd', text: 'svipall search "how to read a lease"' },
-              { kind: 'try', text: 'asked three search engines', result: 'no account', tone: 'ok' },
-              { kind: 'ok', text: 'kept what they agreed on' },
-              { kind: 'ok', text: 'said where they disagreed' },
-              { kind: 'note', text: 'nothing to sign up for, nothing to paste' },
-            ],
-          },
-        ]}
-      />
-
-      <div class="hero__belt">
-      <Clients
-        label="Runs in any MCP client, including"
-        clients={[
-          { name: 'Claude Code', icon: 'claudecode' },
-          { name: 'Cursor', icon: 'cursor' },
-          { name: 'Codex', icon: 'openai' },
-          { name: 'opencode', icon: 'opencode' },
-          { name: 'Zed', icon: 'zedindustries' },
-          { name: 'Windsurf', icon: 'windsurf' },
-          { name: 'Cline', icon: 'cline' },
-          { name: 'VS Code', icon: 'visualstudiocode' },
-          { name: 'Warp', icon: 'warp' },
-          { name: 'JetBrains IDEs', icon: 'jetbrains' },
-          { name: 'Any MCP client', icon: 'modelcontextprotocol' },
-        ]}
-      />
-      <div class="hero__foot">
-        <p class="hero__note">
-          It installs itself and sets itself up. You never open a terminal.
-        </p>
-        <p class="hero__secondary">
-          <a href="/docs/proof">How it was measured<Glyph name="onward" class="hero__onward" /></a>
-        </p>
-      </div>
-      </div>
-
-      <div class="hero__act">
-        <InstallBlock
-          id="hero-install"
-          release
-          variants={[
-            {
-              id: 'prompt',
-              tab: 'Any agent',
-              icon: 'prompt',
-              label: 'the install prompt',
-              lead: 'Install and configure Svipall by following the instructions here:',
-              url: 'https://raw.githubusercontent.com/ilien-dev/svipall/main/docs/install.md',
-            },
-            {
-              id: 'plugin',
-              tab: 'Claude plugin',
-              icon: 'claudecode-tile',
-              iconColor: 'var(--brand-claude)',
-              label: 'the plugin commands',
-              lines: [
-                [
-                  { text: '/plugin', kind: 'cmd' },
-                  { text: 'marketplace add', kind: 'sub' },
-                  { text: 'ilien-dev/svipall', kind: 'key' },
-                ],
-                [
-                  { text: '/plugin', kind: 'cmd' },
-                  { text: 'install', kind: 'sub' },
-                  { text: 'svipall@svipall', kind: 'cmd' },
-                ],
-                [{ text: '/svipall:setup', kind: 'cmd' }],
-              ],
-            },
-          ]}
-        />
-      </div>
-    </div>
-
-  </Row>
-
-  {/* ---- Before and after ------------------------------------------- */}
-  <Row>
-    <div class="beat">
-      <h2 class="beat__head">The same page, twice.</h2>
-      <p class="beat__lede">
-        First, what a plain fetch brings back. Then the same request through
-        Svipall. The same five conditions, in the same order, on both.
-      </p>
-    </div>
-
-    <div class="compare">
-      <Panel title="A plain fetch" conditions={conditions} faulted={true} />
-      <Panel title="With Svipall" conditions={conditions} faulted={false} />
-    </div>
-
-    <p class="beat__hedge">
-      Some pages still refuse. You will know which ones, and why.
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content="give Claude web access, free web search MCP server, MCP server no API key, AI web browsing, read any website with AI, AI price tracker, summarize video with AI, local web scraping MCP, Firecrawl alternative, Tavily alternative" />
+    <link rel="canonical" href={`${site}/`} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Svipall" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={`${site}/`} />
+    <meta property="og:image" content={`${site}/og.png`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${site}/og.png`} />
+    <meta name="theme-color" content="#0B1A2B" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script is:inline>
+      (() => {
+        let t;
+        try { t = localStorage.getItem('starlight-theme'); } catch {}
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+  </head>
+  <body>
+    <Fragment set:html={html} />
+    <p class="credit">
+      <a href="https://ilien.dev" aria-label="Made by ilien">Made by <MakerMark size="1.6em" /></a>
+      <span>· <a href={RELEASES_URL}>Releases</a></span>
     </p>
-  </Row>
-
-  {/* ---- What you ask, what it does, what you get -------------------- */}
-  <Row>
-    <div class="beat">
-      <h2 class="beat__head">Three steps, and you only do the first one.</h2>
-    </div>
-
-    <Flow
-      beats={[
-        {
-          num: '01',
-          mark: 'ask',
-          title: 'You ask',
-          quote: '"Read this page and tell me what it costs."',
-          body: 'You say it the way you would say it to a person. Nothing changes about how you work.',
-        },
-        {
-          num: '02',
-          mark: 'fetch',
-          title: 'It goes and gets it',
-          body: 'A page that opens gets read. A page that refuses gets asked again a different way, up to six times. When it still refuses, Svipall stops and says so instead of making something up.',
-        },
-        {
-          num: '03',
-          mark: 'reading',
-          title: 'Your assistant gets the reading',
-          body: 'The part a person would have read, without the menus, the cookie banner and the footer. With it come three plain facts: whether it arrived complete, whether it is substance or filler, and whether it is the same thing you already looked at.',
-        },
-      ]}
-    />
-  </Row>
-
-  {/* ---- Four things that go wrong ----------------------------------- */}
-  <Row>
-    <div class="beat">
-      <h2 class="beat__head">You have had all four of these already.</h2>
-    </div>
-
-    <ProblemRow
-      problems={[
-        {
-          mark: 'wall',
-          title: 'The wall it never mentioned',
-          wrong:
-            'A page can refuse and still look like it worked. Your assistant reads the refusal, sums it up, and hands you an answer with nothing wrong on the surface.',
-          instead:
-            'Svipall names the wall rather than summarising it, including who put it there when that can be identified.',
-        },
-        {
-          mark: 'funnel',
-          title: 'The whole page, poured into the answer',
-          wrong:
-            'One page can be tens of thousands of words of things nobody reads: navigation, scripts, repeated footers. All of it competes with your actual question.',
-          instead:
-            'Svipall hands over the reading, and can write long results to a file so a thousand rows never pass through the conversation.',
-        },
-        {
-          mark: 'unlabelled',
-          title: 'Filler that nobody labelled',
-          wrong:
-            'Not every page that arrives is worth having. Some are a shell, some are cut off halfway, some are the same thing you fetched twenty minutes ago.',
-          instead:
-            'Svipall labels what came back so your assistant can tell those apart. It labels and keeps everything: it does not throw pages away and it does not rank them by how much it trusts them.',
-        },
-        {
-          mark: 'key',
-          title: 'A search that wants an account first',
-          wrong:
-            'Looking something up is the one thing an assistant does constantly, and it is usually the thing gated behind a plan, a signup and a key pasted somewhere before the first question.',
-          instead:
-            'Svipall asks three engines with nothing to register for and no key to paste, and can merge what they agree on.',
-        },
-      ]}
-    />
-  </Row>
-
-  {/* ---- Things you can ask for -------------------------------------- */}
-  <Row>
-    <div class="beat">
-      <h2 class="beat__head">Said the way you would actually say it.</h2>
-    </div>
-
-    <AskList
-      note="Your assistant picks the right one by itself. There are no commands to learn."
-      asks={[
-        { mark: 'read', text: 'Read this page and summarise the pricing.' },
-        { mark: 'crawl', text: 'Crawl these docs and write me a file my assistant can read later.' },
-        { mark: 'table', text: 'Get me every row of that table as a spreadsheet.' },
-        { mark: 'watch', text: 'Watch this listing and tell me when the price moves.' },
-        { mark: 'merge', text: 'Find the three best sources on this and tell me where they disagree.' },
-        { mark: 'threshold', text: 'Log me in once, then keep reading the pages behind it.' },
-        { mark: 'document', text: 'Read this PDF the same way you read a web page.' },
-      ]}
-    />
-  </Row>
-
-  {/* ---- Why you can believe any of this ----------------------------- */}
-  <Row>
-    <div class="beat">
-      <h2 class="beat__head">Three reasons, and none of them is a promise.</h2>
-    </div>
-
-    <ClaimList
-      claims={[
-        {
-          mark: 'machine',
-          title: 'It runs on your machine',
-          body: 'No account, no key, no service in the middle. The pages you read stay between you and the site. Nothing about what you looked at is sent anywhere else, and nothing tracks what you use it for.',
-          link: { label: 'What leaves your machine', href: '/docs/privacy' },
-        },
-        {
-          mark: 'measure',
-          title: 'Everything claimed here was measured',
-          body: 'Including the results that came out badly. Three independent collections of pages were used to score how well it reads, and the best and the worst are both published. Each number carries the command and the log that reproduce it.',
-          link: { label: 'How it was measured', href: '/docs/proof' },
-        },
-        {
-          mark: 'struck',
-          title: 'What it cannot do is written down too',
-          body: 'Some sites will refuse it, and no amount of trying changes that. Those situations have their own page, kept beside everything else rather than buried at the bottom of a FAQ.',
-          link: { label: "What it can't do", href: '/docs/limits' },
-        },
-      ]}
-    />
-  </Row>
-
-  {/* ---- If you open a terminal --------------------------------------
-       The one band where jargon is allowed. R-C2-02 binds sections 1 to 6;
-       this is where the technical reader is addressed, in one place. */}
-  <Row>
-    <div class="beat">
-      <h2 class="beat__head">
-        It is also a command-line tool, a local API, and readable source.
-      </h2>
-      <p class="beat__lede">
-        The same binary your assistant talks to answers on the command line,
-        and on a local HTTP API when you ask it to: nineteen routes, one per
-        tool, behind a key it generates for you. Written in Rust, shipped as a
-        single binary with no runtime to install, open source under AGPL-3.0.
-      </p>
-    </div>
-
-    <div class="shell">
-      <p class="shell__label"><Glyph name="prompt" />Three of the commands</p>
-      <pre class="shell__code">svipall fetch https://example.com/article
-svipall crawl https://docs.example/ --pages 50 --out pages.csv
-svipall search "rust async runtime" --engine all</pre>
-    </div>
-
-    <p class="beat__links">
-      <a href="/docs"><Glyph name="docs" />Read the docs</a>
-      <span aria-hidden="true"> · </span>
-      <a href="https://github.com/ilien-dev/svipall"><Glyph name="source" />Source</a>
-    </p>
-  </Row>
-
-  {/* ---- Final CTA ---------------------------------------------------- */}
-  <Row>
-    <div class="beat">
-      <h2 class="beat__head">One line, and your assistant does the rest.</h2>
-    </div>
-
-    <div class="close">
-      <InstallBlock
-        id="close-install"
-        variants={[
-          {
-            id: 'prompt',
-            tab: 'Any agent',
-            label: 'the install prompt',
-            icon: 'prompt',
-            lead: 'Install and configure Svipall by following the instructions here:',
-            url: 'https://raw.githubusercontent.com/ilien-dev/svipall/main/docs/install.md',
-          },
-          {
-            id: 'plugin',
-            tab: 'Claude plugin',
-            label: 'the plugin commands',
-            icon: 'claudecode-tile',
-            iconColor: 'var(--brand-claude)',
-            lines: [
-              [
-                { text: '/plugin', kind: 'cmd' },
-                { text: 'marketplace add', kind: 'sub' },
-                { text: 'ilien-dev/svipall', kind: 'key' },
-              ],
-              [
-                { text: '/plugin', kind: 'cmd' },
-                { text: 'install', kind: 'sub' },
-                { text: 'svipall@svipall', kind: 'cmd' },
-              ],
-              [{ text: '/svipall:setup', kind: 'cmd' }],
-            ],
-          },
-        ]}
-      />
-
-      <div class="close__terms">
-        <p>
-          Svipall is free and open source under AGPL-3.0. The name and the logo
-          are not covered by that licence.
-        </p>
-        <p>
-          It gives you no authorisation over any system you point it at.
-          Complying with the law, with data-protection rules and with a site's
-          terms is yours, not the author's.
-        </p>
-        {/* No separator glyphs. A middot between two links is punctuation
-            doing a rule's job, and on a row that wraps it lands on one margin
-            or the other - trailing the link before it, or opening the line
-            after it. There is no third side to bind it to. Space separates
-            them instead, which is what this idiom uses everywhere else. */}
-        <p class="close__meta">
-          <a href="/docs">Docs</a>
-          <a href="https://github.com/ilien-dev/svipall">Source</a>
-          <a href="/docs/limits">What it can't do</a>
-          <a href="/docs/privacy">Privacy</a>
-          <span class="close__by">Maintained by <a href="https://github.com/ilien-dev">ilien</a>.</span>
-        </p>
-      </div>
-    </div>
-  </Row>
-</Base>
-
-<style>
-  /* Shared by every band below the hero.
-     Two columns, not one: with the heading alone on the left, every band left
-     its whole right half empty above the content and then filled it edge to
-     edge, so all six read as the same shape stacked six times. The lede moves
-     into that space and the header becomes asymmetric - 5 to 7, not half and
-     half - which is the one thing the eye can use to tell the bands apart. */
-  .beat {
-    display: grid;
-    gap: var(--space-4) var(--space-6);
-    align-items: end;
-  }
-
-  @media (min-width: 900px) {
-    .beat:has(.beat__lede) {
-      grid-template-columns: 5fr 7fr;
-    }
-
-    .beat:has(.beat__lede) .beat__head {
-      grid-row: span 2;
-      align-self: start;
-    }
-
-    /* A band with no lede has nothing to put in the right seven columns, so
-       it gives that width to its heading instead of leaving it empty. The
-       SIZE is deliberately not changed: setting these a step larger made two
-       H2 sizes on one page with no semantic difference behind them, so
-       section 03 looked more important than section 02 for no reason a reader
-       could infer. The wider measure and the different content offset are
-       what make the two shapes read apart; the type scale is not. */
-    .beat:not(:has(.beat__lede)) .beat__head {
-      max-width: 46ch; /* ptah-allow: measure - a section heading */
-    }
-  }
-
-  .beat__head {
-    font-size: var(--text-xl);
-    letter-spacing: -0.02em;
-    max-width: 24ch; /* ptah-allow: measure - a section heading, not body copy */
-  }
-
-  .beat__lede {
-    font-size: var(--text-md);
-    color: var(--color-ink-muted);
-    max-width: 62ch;
-  }
-
-  /* The hedge does not move and is not a footnote: it is the sentence that
-     keeps the comparison honest. */
-  /* Kept whole: it was wrapping after "MAINTAINED" and leaving a two-word
-     orphan under a row of links. */
-  .close__by {
-    white-space: nowrap;
-  }
-
-  .close__meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-2) var(--space-5);
-  }
-
-  .beat__hedge {
-    /* The rule is the band's rule and runs the whole rail. It was inheriting
-       the paragraph measure from base.css, so it stopped at 662px while every
-       other rule in the design ran full width. The TEXT still holds its
-       measure; only the rule was wrong. */
-    max-width: none;
-    padding-top: var(--space-4);
-    border-top: var(--border-hair) solid var(--color-hairline);
-    font-size: var(--text-sm);
-    color: var(--color-ink);
-  }
-
-  .compare {
-    display: grid;
-    gap: var(--space-5);
-  }
-
-  .beat__links,
-  .close__meta {
-    max-width: none;
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-ink-muted);
-  }
-
-  .shell {
-    border: var(--border-hair) solid var(--color-hairline);
-    background: var(--color-cell);
-  }
-
-  .shell__label {
-    margin: 0;
-    max-width: none;
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-4);
-    border-bottom: var(--border-hair) solid var(--color-hairline);
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-ink-muted);
-  }
-
-  .shell__code {
-    margin: 0;
-    padding: var(--space-4);
-    overflow-x: auto;
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    line-height: var(--leading-body);
-    color: var(--color-ink);
-  }
-
-  .close {
-    display: grid;
-    gap: var(--space-6);
-  }
-
-  .close__terms {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-    font-size: var(--text-xs);
-    color: var(--color-ink-muted);
-  }
-
-  @media (min-width: 900px) {
-    .close {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      align-items: start;
-      gap: var(--space-7);
-    }
-  }
-
-  @media (min-width: 860px) {
-    /* TWO PANELS with ground between them, not one table with a divider.
-       Sharing a single rule down the middle was the right instinct for a cell
-       grid and the wrong one for D7: it made the two read as one instrument
-       split in half, which is the FALLBACK the direction named, not the risk
-       it named. Two annunciators are two objects, and the gap is what says so. */
-    .compare {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-5);
-    }
-  }
-
-  /* The hero is a Row like every other band. Its own rules live here; the
-     Row's rail and rules come from the component. */
-  .hero__grid {
-    display: grid;
-    gap: var(--space-7);
-  }
-
-  /* Two by two once there is room. Row one is the claim and the
-     demonstration, row two is where it runs and how to get it. The grid
-     stretches each row to its taller cell, which is what makes the terminal
-     exactly as tall as the heading and lede beside it. */
-  @media (min-width: 1000px) {
-    .hero__grid {
-      grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
-      align-items: stretch;
-      column-gap: var(--space-7);
-    }
-  }
-
-  /* The belt and the note under it are one cell, the same height as the
-     paste block beside it: the label starts on the tabs' line and the note
-     ends on the block's foot, so the row reads as two blocks of a kind rather
-     than a strip of marks floating beside a box. A wrapper, not a rule on
-     .agents: that class carries Clients.astro's scope hash. */
-  .hero__belt {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-width: 0;
-  }
-
-  .hero__say {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-5);
-  }
-
-  .hero__turn {
-    font-size: var(--text-3xl);
-    line-height: var(--leading-tight);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    max-width: 17ch; /* ptah-allow: measure - the hero turn, display size */
-  }
-
-  /* Full ink, not muted, and this is the ONE lede on the site that is.
-     It is the only body text on this page standing on the hero film, and it
-     was the single thing sizing the veil over the whole copy column: muted
-     ink measures Lc 80.0 on the bare dark ground and 75.6 on the light one -
-     the body floor is 75, so in light it shipped with six tenths of a level
-     to spend. Holding it there needed 82% of the ground laid back over the
-     film in dark and 97% in light, which is a picture nobody can see.
-     Full ink measures 91.5 and 87.3, and that headroom is what pays for the
-     veil to come down to 57% and 83%. The reading under it is Lc 75.4.
-     The cost is the tonal step below the heading, and it is a real cost.
-     What carries the hierarchy instead is size and weight - 76px at 700
-     against 21px at 400 - plus the measure. Chosen by the author over the
-     two alternatives, which were leaving the film invisible here or
-     reporting the lede as failing. */
-  .hero__lede {
-    font-size: var(--text-md);
-    color: var(--color-ink);
-    max-width: 48ch;
-  }
-
-  /* The one mark on the site that is not always a solid fill, because it is
-     the only one standing on the film. Softened in LIGHT ONLY - the value and
-     the reason are both in --color-accent-mark, and the short version is that
-     thinning it helps the light theme and would wreck the dark one. R-G3-14
-     holds either way: the keyword is marked rather than coloured, and nothing
-     else about the accent changes. The docs prose keeps base.css's solid
-     fill; there is no film under it to see. */
-  .hero__lede mark {
-    background: var(--color-accent-mark);
-  }
-
-  .hero__act {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-
-  /* The note and the link, under the belt. The margin is the floor of the
-     space between them and the marks, so they read as the install row's
-     caption rather than as a third line of the belt; when the paste block
-     beside it is taller, space-between on .hero__belt adds the rest. */
-  .hero__foot {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    margin-top: var(--space-5);
-  }
-
-  /* The same treatment the claim links get: the arrow travels with the words
-     rather than sitting in the row as a second object. The footer row below
-     stays bare - it is legal and meta text, and a mark on each of four links
-     there is noise, not navigation. */
-  :global(.hero__onward) {
-    display: inline-block;
-    vertical-align: -0.15em;
-    margin-left: 0.4em;
-  }
-
-  /* Body size, not caption size: it is the left half of the install row
-     now, and at --text-xs it was a footnote beside a block of 14px mono. */
-  .hero__note {
-    max-width: var(--measure);
-    font-size: var(--text-sm);
-    color: var(--color-ink-muted);
-  }
-
-  /* Rows of several standalone links: section 7's pair and the footer's row.
-     Same 24px target as the single-link paragraphs above; :only-child cannot
-     reach them because each row holds more than one. */
-  .beat__links a,
-  .close__meta a {
-    display: inline-flex;
-    align-items: center;
-    /* The mark rides inside the link, so it is part of the target rather than
-       a thing beside it that looks pressable and is not. */
-    gap: var(--space-2);
-    min-height: var(--hit-min);
-  }
-
-  .hero__secondary {
-    max-width: none;
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  /* At a short window the display steps down so the paste block stays in the
-     first frame. These come after the base rules on purpose: at equal
-     specificity the later rule wins. */
-  @media (max-height: 820px) {
-    .hero__turn {
-      font-size: var(--text-2xl);
-    }
-
-    .hero__lede {
-      font-size: var(--text-sm);
-    }
-
-    .hero__grid {
-      gap: var(--space-6);
-    }
-  }
-</style>
+    <script is:inline define:vars={{ setupMessage }}>
+      const root = document.documentElement;
+      const toggle = document.getElementById('theme-toggle');
+      const label = () =>
+        toggle && toggle.setAttribute('aria-label', root.dataset.theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+      label();
+      toggle?.addEventListener('click', () => {
+        const next = root.dataset.theme === 'light' ? 'dark' : 'light';
+        root.dataset.theme = next;
+        try { localStorage.setItem('starlight-theme', next); } catch {}
+        label();
+      });
+      for (const button of document.querySelectorAll('[data-copy]')) {
+        const text = button.querySelector('[data-copy-label]');
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(setupMessage);
+            if (text) text.textContent = 'Copied — now paste it into your AI';
+          } catch {
+            if (text) text.textContent = 'Copy failed — see the docs';
+          }
+          setTimeout(() => { if (text) text.textContent = 'Copy the setup message'; }, 3200);
+        });
+      }
+    </script>
+  </body>
+</html>

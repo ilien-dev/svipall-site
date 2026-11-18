@@ -1,0 +1,86 @@
+@font-face{font-family:'Archivo';src:url('/fonts/archivo-variable.woff2') format('woff2-variations');font-weight:100 900;font-stretch:62% 125%;font-display:swap}
+html,body{margin:0}body{background:var(--bg)}
+:root,:root[data-theme='dark']{--bg:#0B1A2B;--sf:#122539;--sf2:#1A3048;--ink:#EFE7DA;--muted:#DAD5CA;--quiet:#C1BEB7;--line:rgba(239,231,218,.18);--line2:rgba(239,231,218,.32);--ac:#FFB03A;--on-ac:#0B1A2B;--ac-text:#FFB03A;--gr:#5CD6A0;--sky:#8FD0FF;--red:#FE775F;--ta:#24405E;--tb:#2E5076;--star:rgba(239,231,218,.45);--star2:rgba(255,176,58,.4);--band:#EFE7DA;--band-ink:#0B1A2B;--band-line:rgba(11,26,43,.18)}
+:root[data-theme='light']{--bg:#F4F7FA;--sf:#FFFFFF;--sf2:#DCE3EB;--ink:#0B1A2B;--muted:#3B4550;--quiet:#3B4550;--line:rgba(11,26,43,.14);--line2:rgba(11,26,43,.28);--ac:#FFB03A;--on-ac:#0B1A2B;--ac-text:#983E25;--gr:#0C6244;--sky:#175E8A;--red:#983E25;--ta:#C3D0DC;--tb:#A9BACB;--star:rgba(11,26,43,.18);--star2:rgba(204,85,0,.3);--band:#0B1A2B;--band-ink:#EFE7DA;--band-line:rgba(239,231,218,.25)}
+.th{background-color:var(--bg);color:var(--ink);font-family:'Archivo',system-ui,sans-serif;overflow:hidden;transition:background-color .5s,color .5s}
+.th a{color:var(--ac-text)}
+:root[data-theme='light'] .only-d,:root:not([data-theme='light']) .only-l{display:none}
+:root[data-theme='light'] .tg-sun,:root:not([data-theme='light']) .tg-moon{display:none}
+.c-ink{fill:var(--ink)}.c-bg{fill:var(--bg)}.c-sf{fill:var(--sf)}.c-sf2{fill:var(--sf2)}.c-ac{fill:var(--ac)}.c-gr{fill:var(--gr)}.c-sky{fill:var(--sky)}.c-red{fill:var(--red)}.c-ta{fill:var(--ta)}.c-tb{fill:var(--tb)}.c-q{fill:var(--quiet)}.c-onac{fill:var(--on-ac)}
+.s-ink{stroke:var(--ink)}.s-line{stroke:var(--line2)}.s-ac{stroke:var(--ac)}.s-gr{stroke:var(--gr)}.s-sky{stroke:var(--sky)}.s-q{stroke:var(--quiet)}.s-bg{stroke:var(--bg)}.s-onac{stroke:var(--on-ac)}
+@keyframes enter{from{opacity:0;transform:translateY(60px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+@keyframes leave{from{opacity:1;transform:none;filter:none}to{opacity:0;transform:translateY(-40px);filter:blur(6px)}}
+@keyframes slideL{from{opacity:0;transform:translateX(-80px)}to{opacity:1;transform:none}}
+@keyframes slideR{from{opacity:0;transform:translateX(80px)}to{opacity:1;transform:none}}
+.rv{animation:enter linear both,leave linear both;animation-timeline:view(),view();animation-range:entry 5% entry 90%,exit 10% exit 95%}
+.rl{animation:slideL linear both,leave linear both;animation-timeline:view(),view();animation-range:entry 5% entry 80%,exit 10% exit 95%}
+.rr{animation:slideR linear both,leave linear both;animation-timeline:view(),view();animation-range:entry 5% entry 80%,exit 10% exit 95%}
+@supports not (animation-timeline:view()){.rv{animation:enter .9s both}.rl{animation:slideL .9s both}.rr{animation:slideR .9s both}}
+.in{animation:enter 1s cubic-bezier(.2,.7,.2,1) both}.in2{animation:enter 1s .2s cubic-bezier(.2,.7,.2,1) both}.in3{animation:enter 1s .4s cubic-bezier(.2,.7,.2,1) both}
+@keyframes drift{to{background-position:240px 120px,-220px 330px}}
+.sky{background-image:radial-gradient(var(--star) 1px,transparent 1.6px),radial-gradient(var(--star2) 1.2px,transparent 1.8px);background-size:60px 60px,110px 110px;animation:drift 50s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spinr{to{transform:rotate(-360deg)}}
+.o1{transform-origin:300px 300px;animation:spin 48s linear infinite}
+.o2{transform-origin:300px 300px;animation:spinr 30s linear infinite}
+.o3{transform-origin:300px 300px;animation:spinr 64s linear infinite}
+.cu1{transform-box:fill-box;transform-origin:center;animation:spinr 48s linear infinite}
+.cu3{transform-box:fill-box;transform-origin:center;animation:spin 64s linear infinite}
+.sp{transform-box:fill-box;transform-origin:center;animation:spin 10s linear infinite}
+.orb{position:absolute;left:50%;top:50%;width:36.67%;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none}
+.orb-spin{width:100%;height:100%;animation:spin 18s linear infinite;position:relative}
+.orb-badge{position:absolute;left:50%;top:0;width:24%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:var(--sf);border:2px solid var(--ac);display:flex;align-items:center;justify-content:center;box-sizing:border-box}
+.orb-badge img{width:52%;height:auto;animation:spinr 18s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-60}}
+.f{stroke-dasharray:10 20;animation:flow 1.4s linear infinite}
+.fr{stroke-dasharray:10 20;animation:flow 1.4s linear infinite reverse}
+@keyframes out{from{transform:translateX(0)}to{transform:translateX(var(--d))}}
+@keyframes back{from{transform:translateX(var(--d))}to{transform:translateX(0)}}
+.po{animation:out 2.4s linear infinite}.pb{animation:back 2.4s linear infinite}
+@keyframes pulse{from{transform:scale(1);opacity:.35}to{transform:scale(4.2);opacity:0}}
+.pu{transform-box:fill-box;transform-origin:center;animation:pulse 3.2s ease-out infinite}
+@keyframes ripple{from{transform:scale(1);opacity:.9}to{transform:scale(2.4);opacity:0}}
+.rp{transform-box:fill-box;transform-origin:center;animation:ripple 1.8s ease-out infinite}
+@keyframes scrollx{to{transform:translateX(-50%)}}
+.mq{animation:scrollx 36s linear infinite}
+@keyframes film{to{transform:translateX(-832px)}}
+.film{animation:film 18s linear infinite}
+@keyframes head{from{transform:translateX(0)}to{transform:translateX(400px)}}
+.head{animation:head 18s linear infinite}
+@keyframes scan{from{transform:translateX(0)}to{transform:translateX(420px)}}
+.scan{animation:scan 5s linear infinite}
+@keyframes rowsup{to{transform:translateY(-200px)}}
+.rows{animation:rowsup 6s linear infinite}
+@keyframes hl{0%,30%{transform:translateY(0)}33%,63%{transform:translateY(44px)}66%,96%{transform:translateY(88px)}100%{transform:translateY(0)}}
+.hl{animation:hl 4.5s ease-in-out infinite}
+@keyframes eq{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+.eq{transform-box:fill-box;transform-origin:bottom;animation:eq 1.1s ease-in-out infinite}
+@keyframes gateT{0%,22%,78%,100%{transform:translateY(0)}50%{transform:translateY(-46px)}}
+@keyframes gateB{0%,22%,78%,100%{transform:translateY(0)}50%{transform:translateY(46px)}}
+.gt{animation:gateT 1s ease-in-out infinite}.gb{animation:gateB 1s ease-in-out infinite}
+@keyframes trip{from{transform:translateX(0)}to{transform:translateX(470px)}}
+@keyframes face{0%{fill:var(--ac)}34%{fill:var(--sky)}55%{fill:var(--gr)}77%{fill:var(--ink)}100%{fill:var(--ink)}}
+.trip{animation:trip 3s linear infinite,face 3s step-end infinite}
+@keyframes wob{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}}
+.wob{transform-box:fill-box;transform-origin:50% 0;animation:wob 1.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.bob{animation:bob 3s ease-in-out infinite}
+@keyframes bar{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+.bar{animation:bar 2.8s ease-in-out infinite}
+.btn{display:inline-flex;align-items:center;gap:10px;transition:transform .3s,background .3s,color .3s}
+.btn:hover{transform:translateY(-3px) scale(1.03)}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(255,176,58,.55)}50%{box-shadow:0 0 0 14px rgba(255,176,58,0)}}
+.glow{animation:glow 2.4s ease-in-out infinite}
+.ico{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.chip{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;background:var(--ac);color:var(--on-ac);flex:none}
+.chip .ico{width:26px;height:26px}
+.row{transition:background .3s}.row:hover{background:var(--sf)}
+.app{display:inline-flex;align-items:center;gap:12px;padding:14px 22px;border-radius:14px;border:1.5px solid var(--band-line);font-weight:700;font-size:19px;white-space:nowrap;transition:transform .25s,background .25s}
+.app:hover{transform:translateY(-4px);background:rgba(255,176,58,.22)}
+.app svg{width:24px;height:24px;fill:currentColor;flex:none}
+.tgl{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;border:1px solid var(--line2);background:transparent;color:var(--ink);cursor:pointer;transition:transform .3s,background .3s}
+.tgl:hover{transform:rotate(-20deg);background:var(--sf)}
+details summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:14px}
+details summary .pl{margin-left:auto;transition:transform .3s}details[open] summary .pl{transform:rotate(45deg)}
+details[open] p{animation:enter .5s both}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

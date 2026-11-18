@@ -4,18 +4,17 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
+    "dev": "node scripts/sync-docs.mjs && astro dev",
+    "sync": "node scripts/sync-docs.mjs",
+    "build": "node scripts/sync-docs.mjs && astro build",
     "preview": "astro preview",
     "check:links": "node scripts/check-links.mjs",
-    "verify": "npm run build && npm run check:links && npm run check:glyphs",
-    "check:glyphs": "node scripts/check-glyphs.mjs"
+    "verify": "npm run build && npm run check:links"
   },
   "dependencies": {
+    "@astrojs/starlight": "0.37.7",
     "astro": "^5.0.0",
-    "lucide-static": "^1.43.0"
-  },
-  "devDependencies": {
-    "pagefind": "^1.3.0"
+    "github-slugger": "2.0.0",
+    "starlight-links-validator": "0.19.2"
   }
 }

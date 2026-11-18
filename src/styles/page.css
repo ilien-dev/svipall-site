@@ -1,0 +1,6 @@
+button.btn{border:0;font:inherit;cursor:pointer}
+.ver{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted);text-decoration:none;border:1px solid var(--line2);border-radius:999px;padding:7px 12px}
+.ver:hover{color:var(--ink)}
+.credit{display:flex;justify-content:center;align-items:center;gap:10px;padding:0 32px 36px;font-size:14px;color:var(--quiet);background:var(--bg)}
+.credit a{color:inherit;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+.th :focus-visible{outline:3px solid var(--ac);outline-offset:3px}

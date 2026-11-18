@@ -1,12 +1,9 @@
 name: verify
 
-# Three gates, in the order that fails cheapest first. The glyph check runs on
-# source and needs no build; the link check needs dist, so it runs after.
-#
-# The glyph check IS a hard gate. It is mechanical - a table, not judgement -
-# it stands at zero findings, and it catches the one failure the marks can
-# still have now that they come from lucide: a slug lucide does not ship, or a
-# GlyphName with no icon behind it. Both reach the page as an empty box.
+# Build, then check every internal link in the output. The build itself is the
+# stricter gate: it pulls the docs from the newest stable svipall tag (CI is
+# set, so scripts/sync-docs.mjs never reads a local checkout) and Starlight's
+# links validator fails it on any docs link that does not resolve.
 
 on:
   push:
@@ -26,18 +23,14 @@ jobs:
 
       - run: npm ci
 
-      - name: Mark table
-        run: node scripts/check-glyphs.mjs
-
       - name: Build
         run: npm run build
         env:
-          # The build asks the GitHub API for the product's newest stable
+          # The home asks the GitHub API for the product's newest stable
           # release and writes it into the nav. Anonymous callers get sixty
           # requests an hour per IP and a CI runner shares its IP widely, so
-          # the build is authenticated. It is not required: without a token
-          # the request simply may not answer, and a build that cannot reach
-          # the API ships no version rather than a wrong one.
+          # the build is authenticated. Without a token the request may simply
+          # not answer, and the build then ships no version rather than a wrong one.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Internal links
