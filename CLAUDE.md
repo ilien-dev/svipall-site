@@ -45,6 +45,13 @@ Astro 5.18 + Starlight 0.37 (the last Starlight on Astro 5; 0.38+ needs Astro 6+
    rather than swapping. Decorative SVGs loop without a fade. Only
    `prefers-reduced-motion` may make a change instant. The owner asked for
    this explicitly after a set-up tab swapped with no motion.
+6. **Motion must never stutter.** Loops animate only `transform` and
+   `opacity` (the sky drifted by `background-position` repainted the whole
+   page each frame; a live `backdrop-filter` over it did the same). Remove a
+   transform animation's class when it ends: while in effect it makes the
+   element the containing block of its fixed children. Docs pages swap
+   through `docs-router.ts` without a view transition, whose snapshot of a
+   long page cost a 50 ms frame. Measure frames before calling it smooth.
 
 ## The product page
 
