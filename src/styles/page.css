@@ -106,7 +106,10 @@ html{scroll-behavior:smooth}
 /* Questions: the whole row opens its answer, not only the line of text. The
    padding lives on the summary, so the target is the full width and 104px
    tall, and the row lights up under the pointer. */
-details.faq > summary{min-height:104px;box-sizing:border-box;padding:28px 18px;margin:0 -18px;border-radius:16px;transition:background-color .25s}
+details.faq{overflow:visible clip}
+details.faq > summary{min-height:104px;box-sizing:border-box;padding:28px 18px;margin:0 -18px;transition:background-color .25s}
+/* Opening and closing are animated by the page script, every time. */
+details.faq[open] p{animation:none}
 details.faq > summary:hover{background:color-mix(in srgb,var(--sf2) 55%,transparent)}
 details.faq > summary:hover .pl{color:var(--ac-text)}
 @media (prefers-reduced-motion:reduce){details.faq > summary{transition:none}}
