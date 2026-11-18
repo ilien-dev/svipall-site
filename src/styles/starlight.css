@@ -1,0 +1,68 @@
+/*
+ * The docs in the product's colours. Starlight reads its whole palette from
+ * these custom properties; nothing below restyles a component directly.
+ * Values are the brand's: ink #0B1A2B, cell #122539, bone #EFE7DA, amber
+ * #FFB03A (a fill), and #983E25 / #CC5500 where amber has to be text on light.
+ */
+@font-face {
+  font-family: 'Archivo';
+  src: url('/fonts/archivo-variable.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Commit Mono';
+  src: url('/fonts/commitmono-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Commit Mono';
+  src: url('/fonts/commitmono-700.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  --sl-font: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sl-font-mono: 'Commit Mono', ui-monospace, Menlo, Consolas, monospace;
+
+  /* dark (Starlight's default) */
+  --sl-color-accent-low: #3d2c10;
+  --sl-color-accent: #ffb03a;
+  --sl-color-accent-high: #ffd28a;
+  --sl-color-white: #efe7da;
+  --sl-color-gray-1: #dad5ca;
+  --sl-color-gray-2: #c1beb7;
+  --sl-color-gray-3: #8e98a5;
+  --sl-color-gray-4: #4f6075;
+  --sl-color-gray-5: #24405e;
+  --sl-color-gray-6: #122539;
+  --sl-color-black: #0b1a2b;
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #ffe6bf;
+  --sl-color-accent: #cc5500;
+  --sl-color-accent-high: #983e25;
+  --sl-color-white: #0b1a2b;
+  --sl-color-gray-1: #172636;
+  --sl-color-gray-2: #3b4550;
+  --sl-color-gray-3: #5b6875;
+  --sl-color-gray-4: #8a97a4;
+  --sl-color-gray-5: #c3d0dc;
+  --sl-color-gray-6: #dce3eb;
+  --sl-color-gray-7: #eef2f6;
+  --sl-color-black: #f4f7fa;
+}
+
+/* Wide tables scroll inside their own box instead of the page. */
+.sl-markdown-content table {
+  display: block;
+  overflow-x: auto;
+}
+
+/* The "written from docs/x.md at vX" line at the foot of every page. */
+.sl-markdown-content small {
+  color: var(--sl-color-gray-3);
+}

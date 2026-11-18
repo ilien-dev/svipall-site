@@ -17,3 +17,12 @@ hero-image-video/
 # The lockfile this project builds from is package-lock.json. bun.lock is a
 # second answer to the same question, written by whichever run used bun.
 bun.lock
+
+# Promotional renders: the reel and its covers. Built from the site, not
+# part of it.
+promo/
+
+# Generated at build time by scripts/sync-docs.mjs from the product repo.
+src/content/docs/
+src/generated/
+.svipall-src/
