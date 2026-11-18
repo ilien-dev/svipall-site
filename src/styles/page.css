@@ -7,4 +7,47 @@ button.btn{border:0;font:inherit;cursor:pointer}
 /* The nav travels with the page. The design's header is a centred 1280px
    column; stuck, it needs a full-width ground behind it. */
 html{scroll-padding-top:96px}
-.th > .sky > header.in{position:sticky;top:0;z-index:50;max-width:none!important;box-sizing:border-box;padding-inline:max(32px,calc((100% - 1216px) / 2))!important;background:color-mix(in srgb,var(--bg) 82%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);transition:background-color .5s}
+.th > .sky > header.in{position:sticky;top:0;z-index:50;max-width:none!important;box-sizing:border-box;padding-inline:max(32px,calc((100% - 1216px) / 2))!important;background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);transition:background-color .5s}
+
+/* Keep watch: a point lights as the watcher passes it; the drop glows. */
+@keyframes wflow{to{stroke-dashoffset:-24}}
+.wflow{stroke-dasharray:6 6;animation:wflow 1.4s linear infinite}
+@keyframes wdrop{to{stroke-dashoffset:-36}}
+.wdrop{stroke-dasharray:10 8;animation:wdrop 1s linear infinite;filter:drop-shadow(0 0 5px var(--gr))}
+@keyframes wping{0%{transform:scale(1.9);fill:var(--ac)}12%,100%{transform:scale(1);fill:var(--ink)}}
+.wpt{transform-box:fill-box;transform-origin:center;animation:wping 5s ease-out infinite}
+@keyframes wpingg{0%{transform:scale(2.4)}15%,100%{transform:scale(1)}}
+.wptg{transform-box:fill-box;transform-origin:center;animation:wpingg 5s ease-out infinite}
+
+/* Set up: pick your app, copy what is shown, see what happens next. */
+.spick{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center}
+.slead{font-size:17px;color:var(--muted);margin-right:4px}
+.spill{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:10px 20px;border-radius:999px;border:2px solid var(--line2);background:transparent;color:var(--ink);font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:transform .25s,background .25s,color .25s,border-color .25s}
+.spill:hover{transform:translateY(-2px)}
+.spill[aria-selected="true"]{background:var(--ac);border-color:var(--ac);color:var(--on-ac);font-weight:800}
+.srec{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:3px 8px;background:var(--sf);color:var(--ac-text)}
+.spill[aria-selected="true"] .srec{background:var(--on-ac);color:var(--ac)}
+.spanel{display:flex;flex-wrap:wrap;gap:28px}
+.spanel[hidden]{display:none}
+.scol{flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.sstep{margin:0;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ac-text)}
+.sbox{position:relative;display:flex}
+.scode{margin:0;flex:1;white-space:pre-wrap;word-break:break-all;background:#081422;color:#EFE7DA;border:1px solid var(--line);border-radius:16px;padding:18px 18px 66px;font-family:'Commit Mono',ui-monospace,Menlo,Consolas,monospace;font-size:15px;line-height:1.7;min-height:150px;user-select:all}
+.scopy{position:absolute;right:12px;bottom:12px;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 16px;border:0;border-radius:10px;background:var(--ac);color:var(--on-ac);font:inherit;font-size:15px;font-weight:800;cursor:pointer;transition:transform .2s}
+.scopy:hover{transform:translateY(-2px)}
+.sblurb{margin:0;font-size:17px;line-height:1.55;color:var(--muted)}
+.swin{flex:1 1 420px;min-width:0;background:var(--sf);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column}
+.swin-bar{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.swin-bar>span{width:10px;height:10px;border-radius:50%}
+.swin-bar strong{margin-left:10px;display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+.swin-body{flex:1;padding:22px;display:flex;flex-direction:column;gap:14px}
+.smsg{max-width:88%;padding:12px 14px;font-size:15px;line-height:1.55}
+.sme{align-self:flex-end;background:var(--ink);color:var(--bg);border-radius:16px 16px 4px 16px;font-family:'Commit Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px;word-break:break-all}
+.sai{align-self:flex-start;background:var(--sf2);border-radius:16px 16px 16px 4px;display:flex;gap:10px;align-items:center}
+.sok{color:var(--gr)}
+.sdots{display:inline-flex;gap:3px;color:var(--ac-text)}
+.sdots i{width:6px;height:6px;border-radius:50%;background:currentColor;animation:bob 1s ease-in-out infinite}
+.sdots i:nth-child(2){animation-delay:.15s}.sdots i:nth-child(3){animation-delay:.3s}
+@keyframes srise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.spanel .m1{animation:srise .4s .05s both}.spanel .m2{animation:srise .4s .5s both}.spanel .m3{animation:srise .4s 1s both}
+@keyframes sblink{50%{opacity:0}}.cur{animation:sblink 1s steps(1) infinite}

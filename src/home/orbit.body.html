@@ -218,11 +218,13 @@
 
 <div class="row" style="display:flex;flex-wrap:wrap-reverse;gap:48px;align-items:center;border-top:1px solid var(--line);padding:48px 24px;border-radius:24px">
 <div class="rl" style="flex:1 1 440px;min-width:0;background:var(--sf);border:1px solid var(--line);border-radius:22px;padding:24px">
-<svg viewBox="0 0 480 240" width="100%" aria-hidden="true" style="display:block">
+<svg viewBox="0 0 480 240" width="100%" aria-hidden="true" style="display:block;overflow:visible">
 <path d="M30 200 H450" class="s-line" stroke-width="1.5"></path><path d="M30 60 H450 M30 130 H450" class="s-line" stroke-width="1" stroke-dasharray="3 6"></path>
-<path d="M30 90 L90 96 L150 82 L210 100 L270 88 L330 92 L360 160 L450 166" fill="none" class="s-ink" stroke-width="3" stroke-linejoin="round"></path>
+<path d="M30 90 L90 96 L150 82 L210 100 L270 88 L330 92 L360 160 L450 166" fill="none" class="s-ink wflow" stroke-width="2.5" stroke-linejoin="round"></path>
+<path d="M330 92 L360 160 L450 166" fill="none" class="s-gr wdrop" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"></path>
+<circle cx="30" cy="90" r="5" class="wpt" style="animation-delay:-4.99s"></circle><circle cx="90" cy="96" r="5" class="wpt" style="animation-delay:-4.27s"></circle><circle cx="150" cy="82" r="5" class="wpt" style="animation-delay:-3.56s"></circle><circle cx="210" cy="100" r="5" class="wpt" style="animation-delay:-2.85s"></circle><circle cx="270" cy="88" r="5" class="wpt" style="animation-delay:-2.13s"></circle><circle cx="330" cy="92" r="5" class="wpt" style="animation-delay:-1.42s"></circle><circle cx="450" cy="166" r="5" class="wpt" style="animation-delay:-5s"></circle>
 <g class="scan"><rect x="28" y="40" width="2" height="160" class="c-sky"></rect><rect x="18" y="32" width="22" height="10" rx="5" class="c-sky"></rect></g>
-<circle cx="360" cy="160" r="8" class="c-gr"></circle><circle cx="360" cy="160" r="8" fill="none" class="s-gr rp" stroke-width="2"></circle>
+<circle cx="360" cy="160" r="8" class="c-gr wptg" style="animation-delay:-1.06s"></circle><circle cx="360" cy="160" r="8" fill="none" class="s-gr rp" stroke-width="2"></circle>
 <g transform="translate(370,26)"><rect width="84" height="38" rx="19" class="c-gr"></rect><text x="42" y="25" text-anchor="middle" font-size="17" font-weight="800" class="c-bg" font-family="Archivo,sans-serif">−$20</text></g>
 <g transform="translate(316,28)"><g class="wob"><path d="M14 4 a10 10 0 0 1 10 10 v8 l4 6 h-28 l4 -6 v-8 a10 10 0 0 1 10 -10z" class="c-ac"></path><circle cx="14" cy="32" r="3.5" class="c-ac"></circle></g></g>
 <text x="30" y="226" font-size="12" class="c-q" font-family="Archivo,sans-serif">Mon</text><text x="150" y="226" font-size="12" class="c-q" font-family="Archivo,sans-serif">Wed</text><text x="270" y="226" font-size="12" class="c-q" font-family="Archivo,sans-serif">Fri</text><text x="420" y="226" font-size="12" class="c-q" font-family="Archivo,sans-serif">Sun</text>
@@ -327,15 +329,71 @@
 </div>
 </section>
 
-<section id="get" style="max-width:1280px;margin:0 auto;padding:120px 32px;display:flex;flex-direction:column;gap:44px">
+<section id="get" class="setup" style="max-width:1280px;margin:0 auto;padding:120px 32px;display:flex;flex-direction:column;gap:36px">
 <h2 class="rv" style="margin:0;font-size:clamp(36px,4.6vw,62px);line-height:1;font-weight:900;font-stretch:112%;text-align:center">Set up in about a minute</h2>
-<div class="rv" style="position:relative;height:4px;background:var(--line);border-radius:2px;overflow:hidden"><div class="bar" style="position:absolute;top:0;bottom:0;width:40%;background:linear-gradient(90deg,transparent,#FFB03A,transparent)"></div></div>
-<ol style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
-<li class="rv" style="background:var(--sf);border:1px solid var(--line);border-radius:24px;padding:32px;display:flex;flex-direction:column;gap:14px"><div style="display:flex;justify-content:space-between;align-items:center"><span class="chip"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg></span><span style="font-size:44px;font-weight:900;color:var(--ac-text);line-height:1">01</span></div><h3 style="margin:0;font-size:24px">Copy our setup message</h3><p style="margin:0;font-size:17px;line-height:1.55;color:var(--muted)">One sentence that tells your AI what to do.</p></li>
-<li class="rv" style="background:var(--sf);border:1px solid var(--line);border-radius:24px;padding:32px;display:flex;flex-direction:column;gap:14px"><div style="display:flex;justify-content:space-between;align-items:center"><span class="chip"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 14l2 2 4-4"></path></svg></span><span style="font-size:44px;font-weight:900;color:var(--ac-text);line-height:1">02</span></div><h3 style="margin:0;font-size:24px">Paste it into your AI</h3><p style="margin:0;font-size:17px;line-height:1.55;color:var(--muted)">It installs Svipall and checks that it works.</p></li>
-<li class="rv" style="background:var(--sf);border:1px solid var(--line);border-radius:24px;padding:32px;display:flex;flex-direction:column;gap:14px"><div style="display:flex;justify-content:space-between;align-items:center"><span class="chip"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 9h8M8 13h5"></path></svg></span><span style="font-size:44px;font-weight:900;color:var(--ac-text);line-height:1">03</span></div><h3 style="margin:0;font-size:24px">Ask about anything online</h3><p style="margin:0;font-size:17px;line-height:1.55;color:var(--muted)">That’s it. No account, no card, no key.</p></li>
-</ol>
-<div class="rv" style="display:flex;justify-content:center"><button type="button" data-copy class="btn glow" style="background:var(--ac);color:var(--on-ac);text-decoration:none;font-weight:800;padding:20px 32px;border-radius:14px;font-size:19px"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg><span data-copy-label>Copy the setup message</span></button></div>
+<div class="rv spick" role="tablist" aria-label="Which AI app do you use?"><span class="slead">I use</span>
+<button type="button" role="tab" id="tab-claude" aria-controls="setup-claude" aria-selected="true" data-setup="claude" class="spill"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"></path></svg><span>Claude Code</span><span class="srec">Recommended</span></button>
+<button type="button" role="tab" id="tab-agent" aria-controls="setup-agent" aria-selected="false" data-setup="agent" class="spill"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 9h8M8 13h5"></path></svg><span>Another AI app</span></button>
+<button type="button" role="tab" id="tab-manual" aria-controls="setup-manual" aria-selected="false" data-setup="manual" class="spill"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 9l3 3-3 3M12 15h5"></path></svg><span>A terminal</span></button>
+</div>
+<div class="rv">
+<div role="tabpanel" id="setup-claude" aria-labelledby="tab-claude" class="spanel">
+<div class="scol">
+<p class="sstep">1 · Copy this — Three lines</p>
+<div class="sbox"><pre id="code-claude" class="scode" aria-label="Three lines">/plugin marketplace add ilien-dev/svipall
+/plugin install svipall@svipall
+/svipall:setup</pre><button type="button" class="scopy" data-copy-from="code-claude"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg><span data-copy-label>Copy</span></button></div>
+<p class="sstep">2 · Paste them into Claude Code, one at a time</p>
+<p class="sblurb">The plugin installs Svipall, checks that it works and keeps it up to date. It asks before each step.</p>
+</div>
+<div class="swin" aria-label="What it looks like">
+<div class="swin-bar"><span style="background:#FE775F"></span><span style="background:#FFB03A"></span><span style="background:#5CD6A0"></span><strong><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"></path></svg>Claude Code</strong></div>
+<div class="swin-body">
+<div class="smsg sme m1">/svipall:setup</div>
+<div class="smsg sai m2"><span class="sdots" aria-hidden="true"><i></i><i></i><i></i></span>Installing Svipall and checking that it answers…</div>
+<div class="smsg sai m3"><b class="sok">✓</b> Svipall is ready. Try: “What does this page say about returns?”<span class="cur" aria-hidden="true">▍</span></div>
+</div>
+</div>
+</div>
+<div role="tabpanel" id="setup-agent" aria-labelledby="tab-agent" class="spanel" hidden>
+<div class="scol">
+<p class="sstep">1 · Copy this — One message</p>
+<div class="sbox"><pre id="code-agent" class="scode" aria-label="One message">Install and configure Svipall by following the instructions here:
+https://raw.githubusercontent.com/ilien-dev/svipall/main/docs/install.md</pre><button type="button" class="scopy" data-copy-from="code-agent"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg><span data-copy-label>Copy</span></button></div>
+<p class="sstep">2 · Paste it into Cursor, Codex, opencode or any AI app that runs commands</p>
+<p class="sblurb">Your AI reads the install guide, installs Svipall and checks it. It asks whether you want CLI + Skill (lighter) or MCP + Skill (full).</p>
+</div>
+<div class="swin" aria-label="What it looks like">
+<div class="swin-bar"><span style="background:#FE775F"></span><span style="background:#FFB03A"></span><span style="background:#5CD6A0"></span><strong><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 9h8M8 13h5"></path></svg>Your AI app</strong></div>
+<div class="swin-body">
+<div class="smsg sme m1">Install and configure Svipall by following the instructions here: …/docs/install.md</div>
+<div class="smsg sai m2"><span class="sdots" aria-hidden="true"><i></i><i></i><i></i></span>Reading the guide and installing Svipall…</div>
+<div class="smsg sai m3"><b class="sok">✓</b> Done, and checked. Do you want CLI + Skill or MCP + Skill?<span class="cur" aria-hidden="true">▍</span></div>
+</div>
+</div>
+</div>
+<div role="tabpanel" id="setup-manual" aria-labelledby="tab-manual" class="spanel" hidden>
+<div class="scol">
+<p class="sstep">1 · Copy this — One line</p>
+<div class="sbox"><pre id="code-manual" class="scode" aria-label="One line"># macOS, Linux
+curl -fsSL https://raw.githubusercontent.com/ilien-dev/svipall/main/install.sh | sh
+
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/ilien-dev/svipall/main/install.ps1 | iex</pre><button type="button" class="scopy" data-copy-from="code-manual"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg><span data-copy-label>Copy</span></button></div>
+<p class="sstep">2 · Run it in a terminal</p>
+<p class="sblurb">No toolchain needed. The install guide then shows how to connect it to your AI app, and svipall doctor tells you what works.</p>
+</div>
+<div class="swin" aria-label="What it looks like">
+<div class="swin-bar"><span style="background:#FE775F"></span><span style="background:#FFB03A"></span><span style="background:#5CD6A0"></span><strong><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 9l3 3-3 3M12 15h5"></path></svg>Terminal</strong></div>
+<div class="swin-body">
+<div class="smsg sme m1">$ curl -fsSL …/install.sh | sh</div>
+<div class="smsg sai m2"><span class="sdots" aria-hidden="true"><i></i><i></i><i></i></span>Downloading and checking the release…</div>
+<div class="smsg sai m3"><b class="sok">✓</b> Installed. Next: svipall doctor<span class="cur" aria-hidden="true">▍</span></div>
+</div>
+</div>
+</div>
+</div>
+<p class="rv" style="margin:0;text-align:center;font-size:15px;color:var(--quiet)">Every line is shown before you copy it. Nothing runs until you paste it. No account, no card, no key.</p>
 </section>
 
 <section style="max-width:900px;margin:0 auto;padding:0 32px 120px;display:flex;flex-direction:column;gap:12px">
