@@ -33,6 +33,12 @@ Astro 5.18 + Starlight 0.37 (the last Starlight on Astro 5; 0.38+ needs Astro 6+
    covers the docs and `scripts/check-links.mjs` covers `dist/`. A dead
    same-page anchor in a released tag can't be fixed after the fact, so
    sync-docs unlinks it and prints it. Fix it in the product repo.
+5. **Nothing on the product page appears or disappears statically.** Every
+   element has an entrance and an exit: sections on scroll, and every state
+   change (tabs, panels, toggles, copied labels, theme) animates out and in
+   rather than swapping. Decorative SVGs loop without a fade. Only
+   `prefers-reduced-motion` may make a change instant. The owner asked for
+   this explicitly after a set-up tab swapped with no motion.
 
 ## The product page
 

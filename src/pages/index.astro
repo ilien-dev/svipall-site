@@ -97,17 +97,47 @@ const jsonLd = {
       });
       /* Set up: one tab per way in. Switching replays the little conversation. */
       const tabs = [...document.querySelectorAll('[data-setup]')];
+      /* Never a static swap: the open panel leaves toward the side you moved
+         away from, the next one enters from the other, and the stage animates
+         its height between the two. Reduced motion swaps at once. */
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let seq = 0;
       const pick = (tab, focus) => {
+        const next = document.getElementById(tab.getAttribute('aria-controls'));
+        const cur = document.querySelector('.spanel:not([hidden])');
+        const from = tabs.findIndex((t) => cur && t.getAttribute('aria-controls') === cur.id);
+        const dir = tabs.indexOf(tab) >= from ? 1 : -1;
         for (const t of tabs) {
           const on = t === tab;
           t.setAttribute('aria-selected', String(on));
           t.tabIndex = on ? 0 : -1;
-          const panel = document.getElementById(t.getAttribute('aria-controls'));
-          if (!panel) continue;
-          panel.hidden = !on;
-          if (on) for (const m of panel.querySelectorAll('.smsg')) { m.style.animation = 'none'; void m.offsetWidth; m.style.animation = ''; }
         }
         if (focus) tab.focus();
+        if (!next || cur === next) return;
+        const run = ++seq;
+        const stage = next.parentElement;
+        const show = () => {
+          if (run !== seq) return;
+          const h0 = stage.offsetHeight;
+          for (const p of document.querySelectorAll('.spanel')) { p.classList.remove('s-in', 's-out'); p.hidden = p !== next; }
+          next.style.setProperty('--dir', dir);
+          void next.offsetWidth;
+          next.classList.add('s-in');
+          for (const m of next.querySelectorAll('.smsg')) { m.style.animation = 'none'; void m.offsetWidth; m.style.animation = ''; }
+          if (reduce) return;
+          const h1 = stage.offsetHeight;
+          stage.style.height = `${h0}px`;
+          void stage.offsetHeight;
+          stage.style.transition = 'height .4s cubic-bezier(.2,.7,.2,1)';
+          stage.style.height = `${h1}px`;
+          setTimeout(() => { if (run === seq) { stage.style.height = ''; stage.style.transition = ''; } }, 420);
+        };
+        if (cur && !reduce) {
+          cur.style.setProperty('--dir', dir);
+          cur.classList.remove('s-in');
+          cur.classList.add('s-out');
+          setTimeout(show, 200);
+        } else show();
       };
       tabs.forEach((tab, i) => {
         tab.tabIndex = tab.getAttribute('aria-selected') === 'true' ? 0 : -1;
@@ -123,13 +153,20 @@ const jsonLd = {
         const label = button.querySelector('[data-copy-label]');
         button.addEventListener('click', async () => {
           const source = document.getElementById(button.dataset.copyFrom);
+          const say = (text) => {
+            if (!label) return;
+            label.textContent = text;
+            label.classList.remove('flash');
+            void label.offsetWidth;
+            label.classList.add('flash');
+          };
           try {
             await navigator.clipboard.writeText(source ? source.textContent : '');
-            if (label) label.textContent = 'Copied';
+            say('Copied');
           } catch {
-            if (label) label.textContent = 'Select and copy';
+            say('Select and copy');
           }
-          setTimeout(() => { if (label) label.textContent = 'Copy'; }, 2400);
+          setTimeout(() => say('Copy'), 2400);
         });
       }
     </script>
