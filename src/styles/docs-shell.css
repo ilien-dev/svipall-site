@@ -117,9 +117,18 @@ a.dh-banner:hover{transform:translateY(-4px);border-color:#FFB03A}
 .sidebar-content a[aria-current='page']{view-transition-name:docs-active}
 body{animation-delay:var(--sky-delay,0s)}
 ::view-transition-old(root),::view-transition-new(root){animation:none}
+/* The header is the same on both sides: nothing to animate. */
+::view-transition-group(site-header),::view-transition-old(site-header),::view-transition-new(site-header){animation:none}
 ::view-transition-group(docs-sidebar),::view-transition-old(docs-sidebar),::view-transition-new(docs-sidebar){animation:none}
 ::view-transition-group(docs-active){animation-duration:.22s;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
-::view-transition-old(docs-main){animation:vt-fade-out .1s linear both}
+/* The reading column never morphs: between the docs home (no sidebar) and a
+   page (sidebar), its box changes size and place, and a morph stretched the
+   snapshots into a jerky zoom with both pages overlapping. It swaps in place:
+   the old one fades fast, the new one rises. Same for the rail. */
+::view-transition-group(docs-main),::view-transition-group(docs-toc){animation:none}
+/* Each snapshot keeps its own size, so neither is squeezed into the other box. */
+::view-transition-old(docs-main),::view-transition-new(docs-main){inline-size:auto;block-size:auto}
+::view-transition-old(docs-main){animation:vt-fade-out .08s linear both}
 ::view-transition-new(docs-main){animation:vt-in .2s cubic-bezier(.2,.7,.2,1) both}
 ::view-transition-old(docs-toc){animation:vt-fade-out .1s linear both}
 ::view-transition-new(docs-toc){animation:vt-fade-in .2s ease-out both}
@@ -127,6 +136,11 @@ body{animation-delay:var(--sky-delay,0s)}
 @keyframes vt-in{from{opacity:.2;transform:translateY(6px)}}
 @keyframes vt-fade-out{to{opacity:0}}
 @keyframes vt-fade-in{from{opacity:0}}
+/* A sidebar that arrives (docs home → page) slides in; one that leaves slides out. */
+::view-transition-new(docs-sidebar):only-child{animation:sb-in .3s cubic-bezier(.2,.7,.2,1) both}
+::view-transition-old(docs-sidebar):only-child{animation:sb-out .16s ease-in both}
+@keyframes sb-in{from{opacity:0;transform:translateX(-24px)}}
+@keyframes sb-out{to{opacity:0;transform:translateX(-24px)}}
 /* The page's own entrances would replay on top of the transition: on an
    arrival through one, the column is already animated by it. */
 html.vt .content-panel,html.vt .sl-markdown-content > *{animation:none}
