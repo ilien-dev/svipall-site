@@ -42,7 +42,7 @@ export default defineConfig({
       head: [
         /* A same-site navigation that arrives through a view transition does not
            replay the header's entrance: the header is already on screen. */
-        { tag: 'script', content: "try{if(sessionStorage.getItem('svt')){document.documentElement.classList.add('vt');sessionStorage.removeItem('svt')}}catch(e){}addEventListener('pageswap',function(e){if(e.viewTransition){try{sessionStorage.setItem('svt','1')}catch(_){}}})" },
+        { tag: 'script', content: "try{document.documentElement.style.setProperty('--sky-delay',-(Date.now()%50000)+'ms')}catch(e){}try{if(sessionStorage.getItem('svt')){document.documentElement.classList.add('vt');sessionStorage.removeItem('svt')}}catch(e){}addEventListener('pageswap',function(e){if(e.viewTransition){try{sessionStorage.setItem('svt','1')}catch(_){}}})" },
         { tag: 'meta', attrs: { property: 'og:image', content: 'https://svipall.ilien.dev/og.png' } },
         { tag: 'meta', attrs: { name: 'twitter:card', content: 'summary_large_image' } },
       ],
