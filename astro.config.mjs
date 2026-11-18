@@ -13,7 +13,7 @@ import starlightLinksValidator from 'starlight-links-validator';
 const GENERATED = './src/generated/docs.json';
 /* `npm run build` syncs first; a bare `astro build` (or a host's own build step)
    gets the same sync here rather than a missing sidebar. */
-if (!existsSync(GENERATED)) {
+if (!existsSync(GENERATED) || !existsSync('./src/generated/sidebar.css')) {
   execFileSync(process.execPath, ['scripts/sync-docs.mjs'], { stdio: 'inherit' });
 }
 const docs = JSON.parse(readFileSync(GENERATED, 'utf8'));
@@ -21,6 +21,8 @@ const docs = JSON.parse(readFileSync(GENERATED, 'utf8'));
 export default defineConfig({
   site: 'https://svipall.ilien.dev',
   trailingSlash: 'ignore',
+  /* Pages load on hover, so a click lands on a page that is already here. */
+  prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   integrations: [
     starlight({
       title: 'Svipall docs',
@@ -32,11 +34,15 @@ export default defineConfig({
       },
       favicon: '/favicon.svg',
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/ilien-dev/svipall' }],
-      customCss: ['./src/styles/starlight.css'],
+      customCss: ['./src/styles/starlight.css', './src/styles/docs-shell.css', './src/generated/sidebar.css'],
+      components: { Header: './src/components/DocsHeader.astro' },
       sidebar: docs.sidebar,
       lastUpdated: false,
       pagination: true,
       head: [
+        /* A same-site navigation that arrives through a view transition does not
+           replay the header's entrance: the header is already on screen. */
+        { tag: 'script', content: "try{if(sessionStorage.getItem('svt')){document.documentElement.classList.add('vt');sessionStorage.removeItem('svt')}}catch(e){}addEventListener('pageswap',function(e){if(e.viewTransition){try{sessionStorage.setItem('svt','1')}catch(_){}}})" },
         { tag: 'meta', attrs: { property: 'og:image', content: 'https://svipall.ilien.dev/og.png' } },
         { tag: 'meta', attrs: { name: 'twitter:card', content: 'summary_large_image' } },
       ],
