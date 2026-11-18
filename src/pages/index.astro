@@ -26,8 +26,6 @@ const site = 'https://svipall.ilien.dev';
 const title = 'Svipall — free web access for your AI, no API key';
 const description =
   'Svipall is a free, open-source add-on that lets Claude, Cursor, Codex and other AI apps read websites, get past "checking your browser" screens, search without a key, watch videos and track page changes. Runs on your computer; no account.';
-const setupMessage =
-  'Install and configure Svipall by following the instructions here:\nhttps://raw.githubusercontent.com/ilien-dev/svipall/main/docs/install.md';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -85,7 +83,7 @@ const jsonLd = {
       <a href="https://ilien.dev" aria-label="Made by ilien">Made by <MakerMark size="1.6em" /></a>
       <span>· <a href={RELEASES_URL}>Releases</a></span>
     </p>
-    <script is:inline define:vars={{ setupMessage }}>
+    <script is:inline>
       const root = document.documentElement;
       const toggle = document.getElementById('theme-toggle');
       const label = () =>
@@ -97,16 +95,41 @@ const jsonLd = {
         try { localStorage.setItem('starlight-theme', next); } catch {}
         label();
       });
-      for (const button of document.querySelectorAll('[data-copy]')) {
-        const text = button.querySelector('[data-copy-label]');
+      /* Set up: one tab per way in. Switching replays the little conversation. */
+      const tabs = [...document.querySelectorAll('[data-setup]')];
+      const pick = (tab, focus) => {
+        for (const t of tabs) {
+          const on = t === tab;
+          t.setAttribute('aria-selected', String(on));
+          t.tabIndex = on ? 0 : -1;
+          const panel = document.getElementById(t.getAttribute('aria-controls'));
+          if (!panel) continue;
+          panel.hidden = !on;
+          if (on) for (const m of panel.querySelectorAll('.smsg')) { m.style.animation = 'none'; void m.offsetWidth; m.style.animation = ''; }
+        }
+        if (focus) tab.focus();
+      };
+      tabs.forEach((tab, i) => {
+        tab.tabIndex = tab.getAttribute('aria-selected') === 'true' ? 0 : -1;
+        tab.addEventListener('click', () => pick(tab, false));
+        tab.addEventListener('keydown', (e) => {
+          const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+          if (step) { e.preventDefault(); pick(tabs[(i + step + tabs.length) % tabs.length], true); }
+        });
+      });
+
+      /* Copy exactly the text shown in the box beside the button. */
+      for (const button of document.querySelectorAll('[data-copy-from]')) {
+        const label = button.querySelector('[data-copy-label]');
         button.addEventListener('click', async () => {
+          const source = document.getElementById(button.dataset.copyFrom);
           try {
-            await navigator.clipboard.writeText(setupMessage);
-            if (text) text.textContent = 'Copied — now paste it into your AI';
+            await navigator.clipboard.writeText(source ? source.textContent : '');
+            if (label) label.textContent = 'Copied';
           } catch {
-            if (text) text.textContent = 'Copy failed — see the docs';
+            if (label) label.textContent = 'Select and copy';
           }
-          setTimeout(() => { if (text) text.textContent = 'Copy the setup message'; }, 3200);
+          setTimeout(() => { if (label) label.textContent = 'Copy'; }, 2400);
         });
       }
     </script>
