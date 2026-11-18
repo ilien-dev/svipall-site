@@ -14,8 +14,9 @@ Published at **svipall.ilien.dev**. Two surfaces:
   Builds, `wrangler.jsonc` serves `dist/`) or CI build reads the newest stable `vX.Y.Z` tag. Locally the
   build reads `..` (this repo as svipall's `site/` submodule) or `../svipall`.
 
-The docs wear the product page's shell: `src/components/DocsHeader.astro`
-replaces Starlight's header, `src/styles/docs-shell.css` brings the sky, cards
+The docs wear the product page's shell. Both surfaces render one header,
+`src/components/SiteHeader.astro` (the product page swaps the design's own
+header for it; `DocsHeader.astro` wraps it for Starlight), `src/styles/docs-shell.css` brings the sky, cards
 and motion, and sync-docs writes the portal home and the sidebar icons
 (`src/generated/sidebar.css`). Both surfaces use cross-document view
 transitions, sharing `view-transition-name: site-header`.

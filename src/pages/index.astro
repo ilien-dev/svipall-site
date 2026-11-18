@@ -15,13 +15,18 @@ import '../styles/orbit.css';
 import '../styles/page.css';
 import '../styles/transitions.css';
 import MakerMark from '../components/MakerMark.astro';
+import SiteHeader from '../components/SiteHeader.astro';
 import { latestRelease, RELEASES_URL } from '../lib/release';
 
+/* The design's own header is replaced by the site's one header, SiteHeader,
+   the same component the docs render. */
+const headerAt = body.search(/<header class="in"/);
+const headerEnd = body.indexOf('</header>', headerAt) + '</header>'.length;
+if (headerAt < 0 || headerEnd < headerAt) throw new Error('index: the design no longer has its header');
+const before = body.slice(0, headerAt);
+const after = body.slice(headerEnd);
+
 const release = await latestRelease();
-const chip = release
-  ? `<a class="ver" href="${release.url}" title="Released ${release.date}">${release.version}</a>`
-  : '';
-const html = body.replace('<a href="#get" class="btn" style="border', `${chip}<a href="#get" class="btn" style="border`);
 
 const site = 'https://svipall.ilien.dev';
 const title = 'Svipall — free web access for your AI, no API key';
@@ -80,7 +85,7 @@ const jsonLd = {
     </script>
   </head>
   <body>
-    <Fragment set:html={html} />
+    <Fragment set:html={before} /><header class="site-bar"><SiteHeader home /></header><Fragment set:html={after} />
     <p class="credit">
       <a href="https://ilien.dev" aria-label="Made by ilien">Made by <MakerMark size="1.6em" /></a>
       <span>· <a href={RELEASES_URL}>Releases</a></span>
