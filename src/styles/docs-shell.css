@@ -143,7 +143,7 @@ a.dh-banner:hover{transform:translateY(-4px);border-color:#FFB03A}
 ::view-transition-old(docs-sidebar):only-child{animation:sb-out .16s ease-in both}
 @keyframes sb-in{from{opacity:0;transform:translateX(-24px)}}
 @keyframes sb-out{to{opacity:0;transform:translateX(-24px)}}
-/* The router's swap (no view transition: see docs-router.ts). */
+/* The router's swap (no view transition: see site-router.ts). */
 @keyframes swap-out{to{opacity:0}}
 @keyframes swap-in{from{opacity:0;transform:translateY(6px)}}
 @keyframes swap-side{from{opacity:0;transform:translateX(-24px)}}

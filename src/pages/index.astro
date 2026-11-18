@@ -91,17 +91,9 @@ const jsonLd = {
       <span>· <a href={RELEASES_URL}>Releases</a></span>
     </p>
     <script is:inline>
-      const root = document.documentElement;
-      const toggle = document.getElementById('theme-toggle');
-      const label = () =>
-        toggle && toggle.setAttribute('aria-label', root.dataset.theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
-      label();
-      toggle?.addEventListener('click', () => {
-        const next = root.dataset.theme === 'light' ? 'dark' : 'light';
-        root.dataset.theme = next;
-        try { localStorage.setItem('starlight-theme', next); } catch {}
-        label();
-      });
+      /* A block: the router runs this again each time the page comes back, and
+         top-level const in a classic script cannot be declared twice. */
+      {
       /* Set up: one tab per way in. Switching replays the little conversation. */
       const tabs = [...document.querySelectorAll('[data-setup]')];
       /* Never a static swap: the open panel leaves toward the side you moved
@@ -176,6 +168,11 @@ const jsonLd = {
           setTimeout(() => say('Copy'), 2400);
         });
       }
+      }
+    </script>
+    <script>
+      /* Moving to the docs and back without a reload; also the theme switch. */
+      import '../scripts/site-router';
     </script>
   </body>
 </html>
