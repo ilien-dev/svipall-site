@@ -118,13 +118,13 @@ a.dh-banner:hover{transform:translateY(-4px);border-color:#FFB03A}
 body{animation-delay:var(--sky-delay,0s)}
 ::view-transition-old(root),::view-transition-new(root){animation:none}
 ::view-transition-group(docs-sidebar),::view-transition-old(docs-sidebar),::view-transition-new(docs-sidebar){animation:none}
-::view-transition-group(docs-active){animation-duration:.38s;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
-::view-transition-old(docs-main){animation:vt-out .2s ease-in both}
-::view-transition-new(docs-main){animation:vt-in .38s cubic-bezier(.2,.7,.2,1) both}
-::view-transition-old(docs-toc){animation:vt-fade-out .18s ease-in both}
-::view-transition-new(docs-toc){animation:vt-fade-in .3s ease-out both}
+::view-transition-group(docs-active){animation-duration:.22s;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+::view-transition-old(docs-main){animation:vt-fade-out .1s linear both}
+::view-transition-new(docs-main){animation:vt-in .2s cubic-bezier(.2,.7,.2,1) both}
+::view-transition-old(docs-toc){animation:vt-fade-out .1s linear both}
+::view-transition-new(docs-toc){animation:vt-fade-in .2s ease-out both}
 @keyframes vt-out{to{opacity:0;transform:translateX(-16px)}}
-@keyframes vt-in{from{opacity:0;transform:translateX(18px)}}
+@keyframes vt-in{from{opacity:.2;transform:translateY(6px)}}
 @keyframes vt-fade-out{to{opacity:0}}
 @keyframes vt-fade-in{from{opacity:0}}
 /* The page's own entrances would replay on top of the transition: on an
