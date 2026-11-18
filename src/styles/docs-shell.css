@@ -26,12 +26,9 @@ header.header{
   background:var(--sl-color-black);
   border-bottom:1px solid var(--sl-color-gray-6);
   padding-inline:max(1.5rem,calc((100% - 80rem) / 2));
+  /* SiteHeader's bar on the product page (page.css) keeps these same sizes. */
 }
-@keyframes hdr-in{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
-html:not(.vt) header.header .dh{animation:hdr-in .6s cubic-bezier(.2,.7,.2,1) both}
 
-/* Search button in the header: a pill like the product page's controls. */
-site-search button[data-open-modal]{border-radius:12px;border-color:var(--sl-color-gray-5);background:var(--sl-color-gray-6);min-height:44px}
 
 /* Sidebar: the ground lets the sky through; every top-level entry carries its
    icon (src/generated/sidebar.css picks which). */

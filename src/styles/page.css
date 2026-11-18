@@ -1,13 +1,12 @@
 button.btn{border:0;font:inherit;cursor:pointer}
-.ver{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted);text-decoration:none;border:1px solid var(--line2);border-radius:999px;padding:7px 12px}
-.ver:hover{color:var(--ink)}
 .credit{display:flex;justify-content:center;align-items:center;gap:10px;padding:0 32px 36px;font-size:14px;color:var(--quiet);background:var(--bg)}
 .credit a{color:inherit;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
 .th :focus-visible{outline:3px solid var(--ac);outline-offset:3px}
 /* The nav travels with the page. The design's header is a centred 1280px
    column; stuck, it needs a full-width ground behind it. */
 html{scroll-padding-top:96px}
-.th > .sky > header.in{position:sticky;top:0;z-index:50;max-width:none!important;box-sizing:border-box;padding-inline:max(32px,calc((100% - 1216px) / 2))!important;background:var(--bg);border-bottom:1px solid var(--line);transition:background-color .5s}
+.th > .sky > header.site-bar{position:sticky;top:0;z-index:50;box-sizing:border-box;height:4.75rem;padding:.75rem max(1.5rem,calc((100% - 80rem) / 2));background:var(--bg);border-bottom:1px solid var(--line);transition:background-color .5s}
+@media (max-width:72rem){.th > .sky > header.site-bar{height:auto}}
 
 /* Keep watch: a point lights as the watcher passes it; the drop glows. */
 @keyframes wflow{to{stroke-dashoffset:-24}}
@@ -85,3 +84,21 @@ html{scroll-behavior:smooth}
   animation:sky-drift 180s linear infinite;animation-delay:var(--sky-delay,0s);
 }
 @media (prefers-reduced-motion:reduce){.th::before{animation:none}}
+
+/* The centre of the orbit: "your AI" is a coin that keeps turning, one AI app
+   on each face, in its own colours (the monochrome marks take the ink). Each
+   face turns in edge-on, holds, and turns out as the next turns in; only
+   transform and opacity move. Reduced motion shows the first face, still. */
+.coin{position:absolute;left:50%;top:50%;width:21.67%;aspect-ratio:1;transform:translate(-50%,-50%);perspective:700px;pointer-events:none}
+.coin-face{position:absolute;inset:0;box-sizing:border-box;border-radius:50%;border:2px solid var(--ink);background:var(--sf);display:flex;align-items:center;justify-content:center;backface-visibility:hidden;opacity:0;animation:coin-turn 12.5s linear infinite}
+.coin-face svg{width:56%;height:56%;fill:var(--ink)}
+.cf-claude svg{fill:#D97757}
+.coin-face:nth-child(1){animation-delay:-12.5s}.coin-face:nth-child(2){animation-delay:-10s}.coin-face:nth-child(3){animation-delay:-7.5s}.coin-face:nth-child(4){animation-delay:-5s}.coin-face:nth-child(5){animation-delay:-2.5s}
+@keyframes coin-turn{
+  0%{opacity:1;transform:rotateY(-90deg);animation-timing-function:cubic-bezier(.2,.8,.3,1)}
+  4%{transform:rotateY(0)}
+  16%{transform:rotateY(0);animation-timing-function:cubic-bezier(.7,0,.8,.2)}
+  20%{opacity:1;transform:rotateY(90deg)}
+  20.1%,100%{opacity:0;transform:rotateY(90deg)}
+}
+@media (prefers-reduced-motion:reduce){.coin-face{animation:none}.coin-face:first-child{opacity:1}}

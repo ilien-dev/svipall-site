@@ -73,7 +73,8 @@ for (const [route, html] of pages) {
   for (const match of html.matchAll(/\shref="([^"]+)"/g)) {
     const href = match[1];
     if (!href.startsWith('/')) continue;      // external, mailto, or a bare #
-    const [path, hash] = href.split('#');
+    const [withQuery, hash] = href.split('#');
+    const path = withQuery.split('?')[0];   // a query names the same page
 
     const target = path.endsWith('/') || path === '' ? path : path + '/';
     const normalised = target === '' ? route : target;
