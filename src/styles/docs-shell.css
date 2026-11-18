@@ -5,20 +5,25 @@
 :root{--sl-nav-height:4.75rem;--sl-content-width:50rem}
 html{scroll-behavior:smooth}
 
-/* The sky: two layers of dots drifting, as on the product page. */
-@keyframes sky-drift{to{background-position:240px 120px,-220px 330px}}
-body{
+/* The sky: two layers of dots drifting, as on the product page. It is a
+   fixed layer moved by transform, which the compositor does on its own;
+   animating background-position on body repainted the whole viewport every
+   frame. It moves 660 px (a multiple of both tile sizes), so the loop is
+   seamless, and it starts from the clock (--sky-delay) so pages agree. */
+@keyframes sky-drift{to{transform:translate3d(-660px,-660px,0)}}
+body::before{
+  content:'';position:fixed;top:0;left:0;right:-660px;bottom:-660px;z-index:-1;pointer-events:none;
   background-image:radial-gradient(rgba(239,231,218,.32) 1px,transparent 1.6px),radial-gradient(rgba(255,176,58,.3) 1.2px,transparent 1.8px);
   background-size:60px 60px,110px 110px;
-  animation:sky-drift 50s linear infinite;
+  will-change:transform;
+  animation:sky-drift 180s linear infinite;animation-delay:var(--sky-delay,0s);
 }
-:root[data-theme='light'] body{background-image:radial-gradient(rgba(11,26,43,.16) 1px,transparent 1.6px),radial-gradient(rgba(204,85,0,.22) 1.2px,transparent 1.8px)}
+:root[data-theme='light'] body::before{background-image:radial-gradient(rgba(11,26,43,.16) 1px,transparent 1.6px),radial-gradient(rgba(204,85,0,.22) 1.2px,transparent 1.8px)}
 
 /* The header: translucent ground, blurred, the same one the product page keeps. */
 header.header{
   view-transition-name:site-header;
-  background:color-mix(in srgb,var(--sl-color-black) 92%,transparent);
-  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  background:var(--sl-color-black);
   border-bottom:1px solid var(--sl-color-gray-6);
   padding-inline:max(1.5rem,calc((100% - 80rem) / 2));
 }
@@ -30,7 +35,7 @@ site-search button[data-open-modal]{border-radius:12px;border-color:var(--sl-col
 
 /* Sidebar: the ground lets the sky through; every top-level entry carries its
    icon (src/generated/sidebar.css picks which). */
-.sidebar-pane{background:color-mix(in srgb,var(--sl-color-black) 70%,transparent);border-inline-end:1px solid var(--sl-color-gray-6)}
+.sidebar-pane{background:color-mix(in srgb,var(--sl-color-black) 80%,transparent);border-inline-end:1px solid var(--sl-color-gray-6)}
 .sidebar-content ul.top-level > li > details > summary .group-label,
 .sidebar-content ul.top-level > li > a{display:flex;align-items:center;gap:.6rem}
 .sidebar-content ul.top-level > li > details > summary .group-label::before,
@@ -41,9 +46,10 @@ site-search button[data-open-modal]{border-radius:12px;border-color:var(--sl-col
 .sidebar-content ul.top-level > li > details > summary .group-label .large{font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--sl-color-gray-2)}
 .sidebar-content a{border-radius:10px;transition:background .25s,color .25s,transform .25s}
 .sidebar-content a:hover{transform:translateX(3px)}
-.sidebar-content a[aria-current='page']{background:#FFB03A;color:#0B1A2B!important;font-weight:800;animation:pill-glow 2.4s ease-in-out infinite}
+.sidebar-content a[aria-current='page']{position:relative;background:#FFB03A;color:#0B1A2B!important;font-weight:800}
+.sidebar-content a[aria-current='page']::after{content:'';position:absolute;inset:-3px;border-radius:12px;border:2px solid #FFB03A;pointer-events:none;animation:pill-ring 2.4s ease-out infinite}
+@keyframes pill-ring{0%{opacity:.7;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.06)}}
 .sidebar-content a[aria-current='page']::before{background:#0B1A2B!important}
-@keyframes pill-glow{0%,100%{box-shadow:0 0 0 0 rgba(255,176,58,.45)}50%{box-shadow:0 0 0 7px rgba(255,176,58,0)}}
 
 /* Page title and content: everything enters, in order. */
 @keyframes doc-up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
@@ -115,7 +121,6 @@ a.dh-banner:hover{transform:translateY(-4px);border-color:#FFB03A}
 .right-sidebar-container{view-transition-name:docs-toc}
 .main-pane{view-transition-name:docs-main}
 .sidebar-content a[aria-current='page']{view-transition-name:docs-active}
-body{animation-delay:var(--sky-delay,0s)}
 ::view-transition-old(root),::view-transition-new(root){animation:none}
 /* The header is the same on both sides: nothing to animate. */
 ::view-transition-group(site-header),::view-transition-old(site-header),::view-transition-new(site-header){animation:none}
@@ -141,6 +146,16 @@ body{animation-delay:var(--sky-delay,0s)}
 ::view-transition-old(docs-sidebar):only-child{animation:sb-out .16s ease-in both}
 @keyframes sb-in{from{opacity:0;transform:translateX(-24px)}}
 @keyframes sb-out{to{opacity:0;transform:translateX(-24px)}}
+/* The router's swap (no view transition: see docs-router.ts). */
+@keyframes swap-out{to{opacity:0}}
+@keyframes swap-in{from{opacity:0;transform:translateY(6px)}}
+@keyframes swap-side{from{opacity:0;transform:translateX(-24px)}}
+@keyframes pill-in{from{transform:scale(.94);opacity:.4}}
+.swap-out{animation:swap-out .07s linear both}
+.swap-in{animation:swap-in .2s cubic-bezier(.2,.7,.2,1) backwards}
+.swap-fade{animation:swap-out .2s ease-out reverse backwards}
+.swap-side{animation:swap-side .3s cubic-bezier(.2,.7,.2,1) backwards}
+.sidebar-content a.pill-in{animation:pill-in .22s cubic-bezier(.2,.7,.2,1) backwards}
 /* The page's own entrances would replay on top of the transition: on an
    arrival through one, the column is already animated by it. */
 html.vt .content-panel,html.vt .sl-markdown-content > *{animation:none}

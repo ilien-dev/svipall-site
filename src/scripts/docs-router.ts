@@ -100,14 +100,32 @@ async function go(url: URL, push: boolean) {
   if (push) history.pushState({ docs: true }, '', url.href);
   /* A result picked in the search dialog closes it. */
   document.querySelector<HTMLDialogElement>('dialog[open]')?.close();
-  const run = () => swap(next, url);
-  const vt = (document as Document & { startViewTransition?: (cb: () => void) => { finished: Promise<void> } })
-    .startViewTransition;
-  if (vt && !reduce) {
-    document.documentElement.classList.add('vt');
-    await vt.call(document, run).finished.catch(() => {});
-  } else {
-    run();
+  /* No view transition here: it snapshots the whole reading column (pages
+     run to thousands of pixels) and that capture alone cost a 50 ms frame.
+     The motion is plain CSS on the swapped elements instead, which the
+     compositor runs: the old column fades for 70 ms, the new one rises. */
+  const root = document.documentElement;
+  root.classList.add('vt');
+  if (!reduce) {
+    const leaving = document.querySelectorAll('.main-pane, .right-sidebar-container');
+    for (const el of leaving) el.classList.add('swap-out');
+    await new Promise((r) => setTimeout(r, 70));
+  }
+  const hadSidebar = Boolean(document.querySelector('nav.sidebar'));
+  swap(next, url);
+  if (!reduce) {
+    /* Each class comes off when its animation ends: an element with a
+       transform animation in effect becomes the containing block of its
+       fixed children, which pushed the fixed On this page rail down. */
+    const animate = (el: Element | null, cls: string) => {
+      if (!el) return;
+      el.classList.add(cls);
+      el.addEventListener('animationend', () => el.classList.remove(cls), { once: true });
+    };
+    animate(document.querySelector('.main-pane'), 'swap-in');
+    animate(document.querySelector('.right-sidebar-container'), 'swap-fade');
+    if (!hadSidebar) animate(document.querySelector('nav.sidebar'), 'swap-side');
+    animate(document.querySelector('.sidebar-content a[aria-current="page"]'), 'pill-in');
   }
   shown = url.pathname;
   document.dispatchEvent(new Event('astro:page-load'));

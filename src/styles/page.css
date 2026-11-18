@@ -7,7 +7,7 @@ button.btn{border:0;font:inherit;cursor:pointer}
 /* The nav travels with the page. The design's header is a centred 1280px
    column; stuck, it needs a full-width ground behind it. */
 html{scroll-padding-top:96px}
-.th > .sky > header.in{position:sticky;top:0;z-index:50;max-width:none!important;box-sizing:border-box;padding-inline:max(32px,calc((100% - 1216px) / 2))!important;background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);transition:background-color .5s}
+.th > .sky > header.in{position:sticky;top:0;z-index:50;max-width:none!important;box-sizing:border-box;padding-inline:max(32px,calc((100% - 1216px) / 2))!important;background:var(--bg);border-bottom:1px solid var(--line);transition:background-color .5s}
 
 /* Keep watch: a point lights as the watcher passes it; the drop glows. */
 @keyframes wflow{to{stroke-dashoffset:-24}}
@@ -69,3 +69,19 @@ html{scroll-padding-top:96px}
 /* In-page links (nav, "Watch it work", "Get it free") travel, they don't jump. */
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* The sky, composited. The design animated background-position on .sky, a
+   div as tall as the page, which repainted all of it on every frame. Here
+   the dots are a fixed layer the compositor slides by transform, 660 px (a
+   multiple of both tiles) so the loop has no seam. */
+.th > .sky{animation:none!important;background-image:none!important}
+.th{position:relative;isolation:isolate}
+@keyframes sky-drift{to{transform:translate3d(-660px,-660px,0)}}
+.th::before{
+  content:'';position:fixed;top:0;left:0;right:-660px;bottom:-660px;z-index:-1;pointer-events:none;
+  background-image:radial-gradient(var(--star) 1px,transparent 1.6px),radial-gradient(var(--star2) 1.2px,transparent 1.8px);
+  background-size:60px 60px,110px 110px;
+  will-change:transform;
+  animation:sky-drift 180s linear infinite;animation-delay:var(--sky-delay,0s);
+}
+@media (prefers-reduced-motion:reduce){.th::before{animation:none}}
