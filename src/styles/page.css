@@ -102,3 +102,11 @@ html{scroll-behavior:smooth}
   20.1%,100%{opacity:0;transform:rotateY(90deg)}
 }
 @media (prefers-reduced-motion:reduce){.coin-face{animation:none}.coin-face:first-child{opacity:1}}
+
+/* Questions: the whole row opens its answer, not only the line of text. The
+   padding lives on the summary, so the target is the full width and 70px
+   tall, and the row lights up under the pointer. */
+details.faq > summary{padding:22px 14px;margin:0 -14px;border-radius:14px;transition:background-color .25s}
+details.faq > summary:hover{background:color-mix(in srgb,var(--sf2) 55%,transparent)}
+details.faq > summary:hover .pl{color:var(--ac-text)}
+@media (prefers-reduced-motion:reduce){details.faq > summary{transition:none}}
