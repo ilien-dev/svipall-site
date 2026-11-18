@@ -4,3 +4,7 @@ button.btn{border:0;font:inherit;cursor:pointer}
 .credit{display:flex;justify-content:center;align-items:center;gap:10px;padding:0 32px 36px;font-size:14px;color:var(--quiet);background:var(--bg)}
 .credit a{color:inherit;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
 .th :focus-visible{outline:3px solid var(--ac);outline-offset:3px}
+/* The nav travels with the page. The design's header is a centred 1280px
+   column; stuck, it needs a full-width ground behind it. */
+html{scroll-padding-top:96px}
+.th > .sky > header.in{position:sticky;top:0;z-index:50;max-width:none!important;box-sizing:border-box;padding-inline:max(32px,calc((100% - 1216px) / 2))!important;background:color-mix(in srgb,var(--bg) 82%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);transition:background-color .5s}
