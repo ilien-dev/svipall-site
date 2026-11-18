@@ -245,7 +245,15 @@ function start() {
 
     for (const a of [...document.body.attributes]) document.body.removeAttribute(a.name);
     for (const a of next.body.attributes) document.body.setAttribute(a.name, a.value);
+    /* The brand is the same on both sides: the one on screen stays, so a
+       bounce it is playing carries on, and takes the new page's link. */
+    const oldBrand = document.querySelector('.dh-brand');
     document.body.replaceChildren(...[...next.body.childNodes].map((n) => document.importNode(n, true)));
+    const newBrand = document.querySelector('.dh-brand');
+    if (oldBrand && newBrand) {
+      oldBrand.setAttribute('href', newBrand.getAttribute('href') || '/');
+      newBrand.replaceWith(oldBrand);
+    }
 
     for (const el of added) {
       const media = (el as HTMLElement).dataset.media;
@@ -325,6 +333,15 @@ function start() {
       try { localStorage.setItem('starlight-theme', nextTheme); } catch {}
       labelTheme();
       return;
+    }
+    /* The brand answers a click with a small bounce, whether it scrolls this
+       page to the top or leads home from the docs. */
+    const brand = (e.target as Element | null)?.closest?.('.dh-brand');
+    if (brand) {
+      brand.classList.remove('dh-pop');
+      void (brand as HTMLElement).offsetWidth;
+      brand.classList.add('dh-pop');
+      brand.addEventListener('animationend', () => brand.classList.remove('dh-pop'), { once: true });
     }
     /* A search button anywhere on a docs page opens Starlight's search, once
        this click is over: the dialog closes on any click outside it, and this
