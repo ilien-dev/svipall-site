@@ -12,3 +12,6 @@ html.vt .th > .sky > header.in{animation:none}
 @media (prefers-reduced-motion:reduce){
   ::view-transition-old(*),::view-transition-new(*),::view-transition-group(*){animation:none!important}
 }
+
+/* The sky keeps drifting across pages instead of restarting. */
+.sky{animation-delay:var(--sky-delay,0s)}

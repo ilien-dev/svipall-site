@@ -104,14 +104,32 @@ a.dh-banner:hover{transform:translateY(-4px);border-color:#FFB03A}
 .sl-markdown-content .dh-card-ask p{margin:0;color:var(--sl-color-gray-2)}
 
 /* ---------- Moving between pages ---------- */
-/* Pages change like an app: the header stays, the page underneath leaves
-   upward and the next one rises in. Browsers without cross-document view
-   transitions navigate as before. */
+/* Pages change like an app. What stays the same does not move: the header,
+   the sidebar and the On this page rail are captured on their own and stay
+   put; the amber pill slides from the page you left to the one you chose;
+   only the reading column leaves and the next one arrives. The rest (the
+   sky) swaps in place, and the sky's drift continues from the same point
+   (--sky-delay, set from the clock before first paint). */
 @view-transition{navigation:auto}
-::view-transition-old(root){animation:vt-out .22s ease-in both}
-::view-transition-new(root){animation:vt-in .42s cubic-bezier(.2,.7,.2,1) both}
-@keyframes vt-out{to{opacity:0;transform:translateY(-14px)}}
-@keyframes vt-in{from{opacity:0;transform:translateY(18px)}}
+.sidebar-pane{view-transition-name:docs-sidebar}
+.right-sidebar-container{view-transition-name:docs-toc}
+.main-pane{view-transition-name:docs-main}
+.sidebar-content a[aria-current='page']{view-transition-name:docs-active}
+body{animation-delay:var(--sky-delay,0s)}
+::view-transition-old(root),::view-transition-new(root){animation:none}
+::view-transition-group(docs-sidebar),::view-transition-old(docs-sidebar),::view-transition-new(docs-sidebar){animation:none}
+::view-transition-group(docs-active){animation-duration:.38s;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+::view-transition-old(docs-main){animation:vt-out .2s ease-in both}
+::view-transition-new(docs-main){animation:vt-in .38s cubic-bezier(.2,.7,.2,1) both}
+::view-transition-old(docs-toc){animation:vt-fade-out .18s ease-in both}
+::view-transition-new(docs-toc){animation:vt-fade-in .3s ease-out both}
+@keyframes vt-out{to{opacity:0;transform:translateX(-16px)}}
+@keyframes vt-in{from{opacity:0;transform:translateX(18px)}}
+@keyframes vt-fade-out{to{opacity:0}}
+@keyframes vt-fade-in{from{opacity:0}}
+/* The page's own entrances would replay on top of the transition: on an
+   arrival through one, the column is already animated by it. */
+html.vt .content-panel,html.vt .sl-markdown-content > *{animation:none}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
