@@ -13,6 +13,7 @@
 import body from '../home/orbit.body.html?raw';
 import '../styles/orbit.css';
 import '../styles/page.css';
+import '../styles/transitions.css';
 import MakerMark from '../components/MakerMark.astro';
 import { latestRelease, RELEASES_URL } from '../lib/release';
 
@@ -75,6 +76,7 @@ const jsonLd = {
         if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
         document.documentElement.dataset.theme = t;
       })();
+      try{if(sessionStorage.getItem('svt')){document.documentElement.classList.add('vt');sessionStorage.removeItem('svt')}}catch(e){}addEventListener('pageswap',function(e){if(e.viewTransition){try{sessionStorage.setItem('svt','1')}catch(_){}}});
     </script>
   </head>
   <body>

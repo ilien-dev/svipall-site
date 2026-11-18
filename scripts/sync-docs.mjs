@@ -201,6 +201,16 @@ function splitTitle(text) {
   return { title: null, body: lines.join('\n') };
 }
 
+/** Markdown to plain text, whole: keeps underscores (tool names) and length. */
+function unmark(md) {
+  return md
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/[`*]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function cap(s) {
   return s ? s[0].toUpperCase() + s.slice(1) : s;
 }
@@ -259,6 +269,7 @@ function flush() {
     const fm = ['---', `title: ${yaml(page.title)}`];
     if (page.description) fm.push(`description: ${yaml(page.description)}`);
     if (page.editUrl) fm.push(`editUrl: ${yaml(page.editUrl)}`);
+    if (page.extraFm) fm.push(...page.extraFm);
     fm.push('---', '');
     writeFileSync(page.file, fm.join('\n') + page.body.trimEnd() + (page.sourceNote ? `\n\n---\n\n<small>${page.sourceNote}</small>\n` : '\n'));
   }
@@ -271,6 +282,28 @@ function flush() {
 function urlOf(file) {
   const rel = file.slice(OUT.length + 1).replace(/\\/g, '/').replace(/\.md$/, '');
   return rel === 'index' ? '/docs/' : `/docs/${rel}/`;
+}
+
+
+/* ---------- icons, per sidebar group ---------- */
+
+const ICONS = {
+  overview: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+  "what's new": '<path d="M12 3l1.9 4.8L19 9l-4 3.4L16.2 18 12 15.2 7.8 18 9 12.4 5 9l5.1-1.2z"/>',
+  'start here': '<path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.9A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22.4 22.4 0 0 1-4 2z"/>',
+  'using it': '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/>',
+  evidence: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
+  internals: '<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/>',
+  reference: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/>',
+};
+const DEFAULT_ICON = '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>';
+const iconPaths = (label) => ICONS[String(label).toLowerCase()] || DEFAULT_ICON;
+function iconSvg(label) {
+  return `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${iconPaths(label)}</svg>`;
+}
+function iconMask(label) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${iconPaths(label)}</svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
 
 /* ---------- main ---------- */
@@ -341,15 +374,50 @@ for (const page of pages) {
   });
 }
 
-/* The docs home: the index itself, links pointing at the site. */
+/* The docs home: a portal, not a list. Its cards are the index's groups,
+   each with its icon and first pages; the banner is the newest changelog
+   entry. Written as HTML inside the Markdown so Starlight renders it as is. */
 {
-  const rewrite = makeRewriter({ docPath: 'README.md', published, ref: src.ref });
-  const { body } = splitTitle(indexText);
+  const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const urlOfSlug = (slug) => `/${slug}/`;
+  const flat = (items) => items.flatMap((i) => (i.items ? flat(i.items) : [i]));
+  const cards = groups
+    .filter((g) => g.label)
+    .map((g) => {
+      const pages = flat(g.items).filter((i) => i.label !== 'Overview');
+      const shown = pages.slice(0, 4);
+      const more = pages.length - shown.length;
+      return `<section class="dh-card"><span class="dh-card-ico">${iconSvg(g.label)}</span><h2>${esc(g.label)}</h2><ul>${shown
+        .map((p) => `<li><a href="${urlOfSlug(p.slug)}">${esc(p.label)}</a></li>`)
+        .join('')}${more > 0 ? `<li><a class="dh-more" href="${urlOfSlug(pages[shown.length].slug)}">+ ${more} more</a></li>` : ''}</ul></section>`;
+    })
+    .join('');
+  let banner = '';
+  const changelog = join(src.dir, 'CHANGELOG.md');
+  if (existsSync(changelog)) {
+    const text = readFileSync(changelog, 'utf8').replace(/\r\n/g, '\n');
+    const m = /^##\s+([^\n]+)\n+([\s\S]*?)(?:\n\n|$)/m.exec(text);
+    if (m) {
+      const version = m[1].split(/\s+[—–-]\s+/)[0].trim();
+      const first = unmark(m[2]).split(/(?<=\.)\s/)[0];
+      banner = `<a class="dh-banner" href="/docs/changelog/"><span class="dh-badge">New in ${esc(version)}</span><span class="dh-banner-text">${esc(first)}</span><span class="dh-banner-go">What’s new →</span></a>`;
+    }
+  }
+  const introFull = unmark(index.intro);
+  const intro = introFull || 'How to install Svipall, how each part works, and the evidence behind every number.';
+  const body = [
+    `<div class="dh-home">`,
+    `<button type="button" class="dh-search" data-open-search><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg><span>Search the docs</span><kbd>Ctrl K</kbd></button>`,
+    banner,
+    `<div class="dh-cards">${cards}<section class="dh-card dh-card-ask"><h2>Not sure where to start?</h2><p>Ask your AI: “Read the Svipall docs and tell me how to …”. It can read them with Svipall itself.</p></section></div>`,
+    `</div>`,
+  ].join('\n');
   writePage(join(OUT, 'index.md'), {
     title: index.title || 'Documentation',
-    description: plain(index.intro) || 'Svipall documentation.',
-    body: rewriteLinks(body, rewrite),
-    editUrl: indexFromRepo ? `${editBase}/docs/README.md` : false,
+    description: intro,
+    body,
+    editUrl: false,
+    extraFm: ['template: splash', 'hero:', `  title: ${yaml('Documentation')}`, `  tagline: ${yaml(intro)}`],
   });
 }
 
@@ -378,4 +446,14 @@ const sidebar = [
 
 mkdirSync(GENERATED, { recursive: true });
 writeFileSync(join(GENERATED, 'docs.json'), JSON.stringify({ sidebar, ref: src.ref, version: src.version }, null, 2));
+/* The sidebar's top level gets one icon per entry, matched by position:
+   Starlight gives a group no hook of its own, but the order is ours. */
+{
+  const rules = sidebar.map((entry, i) => {
+    const sel = `.sidebar-content ul.top-level > li:nth-child(${i + 1})`;
+    const target = entry.items ? `${sel} > details > summary .group-label` : `${sel} > a`;
+    return `${target}::before{-webkit-mask-image:${iconMask(entry.label)};mask-image:${iconMask(entry.label)}}`;
+  });
+  writeFileSync(join(GENERATED, 'sidebar.css'), '/* Generated by scripts/sync-docs.mjs. */\n' + rules.join('\n') + '\n');
+}
 console.log(`sync-docs: ${pages.length} pages from ${src.origin}${indexFromRepo ? '' : ' (fallback index)'}`);
