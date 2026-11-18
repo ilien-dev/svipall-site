@@ -31,7 +31,12 @@ function load(url: URL): Promise<Document | null> {
       fetch(url.pathname, { credentials: 'same-origin' })
         .then((res) => (res.ok && (res.headers.get('content-type') || '').includes('text/html') ? res.text() : null))
         .then((html) => (html ? new DOMParser().parseFromString(html, 'text/html') : null))
-        .catch(() => null),
+        .catch(() => null)
+        /* A failure is not remembered: the next click asks again. */
+        .then((doc) => {
+          if (!doc) cache.delete(key);
+          return doc;
+        }),
     );
   }
   return cache.get(key)!;
