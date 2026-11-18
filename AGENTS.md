@@ -10,8 +10,8 @@ Published at **svipall.ilien.dev**. Two surfaces:
   `docs/README.md` is the index (each `##` is a sidebar group, each
   `- [Title](file.md): summary` is a page, in order), page titles come from
   each file's first `# heading`, links are rewritten to site URLs or GitHub at
-  the same ref, and `CHANGELOG.md` becomes "What's new". A deploy (Cloudflare,
-  `CF_PAGES`) or CI build reads the newest stable `vX.Y.Z` tag. Locally the
+  the same ref, and `CHANGELOG.md` becomes "What's new". A deploy (Cloudflare Workers
+  Builds, `wrangler.jsonc` serves `dist/`) or CI build reads the newest stable `vX.Y.Z` tag. Locally the
   build reads `..` (this repo as svipall's `site/` submodule) or `../svipall`.
 
 Astro 5.18 + Starlight 0.37 (the last Starlight on Astro 5; 0.38+ needs Astro 6+).

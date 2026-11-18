@@ -25,7 +25,7 @@ Astro 5 with Starlight, fully static. Search is Pagefind, built into Starlight.
 
 | Where the build runs | Docs source |
 |---|---|
-| Cloudflare Pages or any CI | The newest stable `vX.Y.Z` tag of ilien-dev/svipall, cloned shallow and sparse |
+| Cloudflare (Workers Builds or Pages) or any CI | The newest stable `vX.Y.Z` tag of ilien-dev/svipall, cloned shallow and sparse |
 | Your machine, with this repo as svipall's `site/` submodule | The parent checkout (`..`) |
 | Your machine, with svipall checked out beside this repo | `../svipall` |
 | `SVIPALL_SRC=<dir>` | That checkout |

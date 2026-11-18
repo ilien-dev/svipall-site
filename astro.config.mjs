@@ -1,4 +1,5 @@
 import { readFileSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightLinksValidator from 'starlight-links-validator';
@@ -10,8 +11,10 @@ import starlightLinksValidator from 'starlight-links-validator';
  * leaves the sidebar it derived from docs/README.md in src/generated/docs.json.
  */
 const GENERATED = './src/generated/docs.json';
+/* `npm run build` syncs first; a bare `astro build` (or a host's own build step)
+   gets the same sync here rather than a missing sidebar. */
 if (!existsSync(GENERATED)) {
-  throw new Error('src/generated/docs.json is missing: run `node scripts/sync-docs.mjs` first (npm run dev/build do).');
+  execFileSync(process.execPath, ['scripts/sync-docs.mjs'], { stdio: 'inherit' });
 }
 const docs = JSON.parse(readFileSync(GENERATED, 'utf8'));
 

@@ -66,7 +66,7 @@ function resolveSource() {
     if (!isCheckout(dir)) throw new Error(`SVIPALL_SRC=${dir} is not a svipall checkout`);
     return { dir, ref: 'main', version: null, origin: dir };
   }
-  const remote = process.env.CF_PAGES || process.env.CI || process.env.SVIPALL_DOCS_FROM_TAG;
+  const remote = process.env.CF_PAGES || process.env.WORKERS_CI || process.env.CI || process.env.SVIPALL_DOCS_FROM_TAG;
   if (!remote) {
     for (const dir of ['..', '../svipall']) {
       if (isCheckout(dir)) return { dir, ref: 'main', version: null, origin: `local ${dir}` };
