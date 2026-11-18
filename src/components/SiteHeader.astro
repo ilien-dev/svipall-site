@@ -26,13 +26,14 @@ const at = (hash: string) => (home ? hash : `/${hash}`);
   <a class="dh-brand" href={home ? '#top' : '/'} aria-label="Svipall home">
     <img class="dh-mark dh-dark" src="/brand/svipall-mark-dark.svg" alt="" width="28" height="33" />
     <img class="dh-mark dh-light" src="/brand/svipall-mark.svg" alt="" width="28" height="33" />
-    <svg viewBox="0 0 600 120" width="104" height="21" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="15"><g transform="translate(14,10)"><path d="M66 22 L54 6 L18 6 L6 22 L6 34 L18 44 L54 56 L66 68 L66 78 L54 94 L18 94 L6 78"></path><path transform="translate(92,0)" d="M6 6 L28 94 L44 94 L66 6"></path><path transform="translate(184,0)" d="M14 6 L14 94"></path><path transform="translate(232,0)" d="M8 94 L8 6 L46 6 L64 24 L64 38 L46 54 L8 54"></path><path transform="translate(322,0)" d="M6 94 L28 8 L44 8 L66 94 M18 62 L54 62"></path><path transform="translate(414,0)" d="M10 6 L10 94 L62 94"></path><path transform="translate(500,0)" d="M10 6 L10 94 L62 94"></path></g></g></svg>
+    <svg class="dh-word" viewBox="0 0 600 120" width="104" height="21" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="15"><g transform="translate(14,10)"><path d="M66 22 L54 6 L18 6 L6 22 L6 34 L18 44 L54 56 L66 68 L66 78 L54 94 L18 94 L6 78"></path><path transform="translate(92,0)" d="M6 6 L28 94 L44 94 L66 6"></path><path transform="translate(184,0)" d="M14 6 L14 94"></path><path transform="translate(232,0)" d="M8 94 L8 6 L46 6 L64 24 L64 38 L46 54 L8 54"></path><path transform="translate(322,0)" d="M6 94 L28 8 L44 8 L66 94 M18 62 L54 62"></path><path transform="translate(414,0)" d="M10 6 L10 94 L62 94"></path><path transform="translate(500,0)" d="M10 6 L10 94 L62 94"></path></g></g></svg>
   </a>
   <nav class="dh-nav" aria-label="Main">
     <a href={at('#flow')}>How it works</a>
     <a href={at('#abilities')}>Abilities</a>
     <a href={at('#apps')}>Your AI apps</a>
-    <a href="/docs/" class:list={[{ 'dh-on': current === 'docs' }]} aria-current={current === 'docs' ? 'true' : undefined}>Docs</a>
+    <span class="dh-sep" aria-hidden="true"></span>
+    <a href="/docs/" class:list={['dh-page', { 'dh-on': current === 'docs' }]} aria-current={current === 'docs' ? 'true' : undefined}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"></path><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"></path></svg>Docs</a>
   </nav>
   <div class="dh-right">
     <slot name="search" />
@@ -57,7 +58,26 @@ const at = (hash: string) => (home ? hash : `/${hash}`);
   .dh,.dh *,.dh *::before,.dh *::after{box-sizing:border-box}
   :root[data-theme='light'] .dh{--hd-ink:#0B1A2B;--hd-muted:#3B4550;--hd-line:rgba(11,26,43,.28);--hd-sf:#DCE3EB;--hd-ac-text:#983E25}
   .dh a{text-decoration:none}
-  .dh a.dh-brand{display:flex;align-items:center;gap:.75rem;color:var(--hd-ink);flex:none}
+  .dh a.dh-brand{display:flex;align-items:center;gap:.75rem;color:var(--hd-ink);flex:none;border-radius:10px}
+
+  /* The brand leads home: the mark leans in on hover, and a click gives it a
+     small spin and bounce (the router adds .dh-pop and keeps this element
+     across a page swap, so the motion is never cut). */
+  .dh-mark,.dh-word{transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+  .dh a.dh-brand:hover .dh-mark{transform:rotate(-10deg) scale(1.08)}
+  .dh a.dh-brand:hover .dh-word{transform:translateX(3px)}
+  .dh a.dh-brand:active .dh-mark{transform:rotate(-10deg) scale(.92)}
+  @keyframes dh-pop-mark{0%{transform:rotate(-10deg) scale(.9)}45%{transform:rotate(14deg) scale(1.14)}75%{transform:rotate(-4deg) scale(.98)}100%{transform:none}}
+  @keyframes dh-pop-word{0%{transform:translateX(0)}40%{transform:translateX(6px)}70%{transform:translateX(-2px)}100%{transform:none}}
+  .dh a.dh-brand.dh-pop .dh-mark{animation:dh-pop-mark .55s cubic-bezier(.2,.7,.2,1)}
+  .dh a.dh-brand.dh-pop .dh-word{animation:dh-pop-word .55s cubic-bezier(.2,.7,.2,1)}
+
+  /* Docs is another page, not a section of this one: set apart by a rule
+     and carrying a book. */
+  .dh-sep{align-self:center;width:1px;height:20px;margin:0 .35rem;background:var(--hd-line)}
+  .dh .dh-nav a.dh-page{gap:.4rem}
+  .dh .dh-nav a.dh-page svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s cubic-bezier(.2,.7,.2,1)}
+  .dh .dh-nav a.dh-page:hover svg{transform:rotate(-8deg) translateY(-1px)}
   :root[data-theme='light'] .dh-dark,:root:not([data-theme='light']) .dh-light{display:none}
 
   /* The links: an underline grows from the centre and the text warms to the
@@ -91,11 +111,11 @@ const at = (hash: string) => (home ? hash : `/${hash}`);
   @keyframes hdr-in{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
   html:not(.vt) .dh{animation:hdr-in .6s cubic-bezier(.2,.7,.2,1) both}
 
-  @media (max-width:84rem){.dh-nav{gap:0}.dh .dh-nav a{padding:0 .5rem;font-size:.95rem}.dh .dh-nav a::after{left:.5rem;right:.5rem}}
+  @media (max-width:84rem){.dh-nav{gap:0}.dh .dh-nav a{padding:0 .5rem;font-size:.95rem}.dh .dh-nav a::after{left:.5rem;right:.5rem}.dh-sep{margin:0 .2rem}}
   /* Narrow: the docs have their menu; the product page keeps its links on a second row. */
   @media (max-width:72rem){.dh .dh-nav{display:none}.dh-wrap{flex-wrap:wrap;row-gap:.25rem}.dh-wrap.dh .dh-nav{display:flex;white-space:nowrap;scrollbar-width:none;order:3;width:100%;overflow-x:auto;margin-inline:-.5rem}}
   @media (max-width:62rem){.dh .dh-search span,.dh .dh-search kbd{display:none}.dh .dh-search{width:44px;padding:0;justify-content:center}}
   @media (max-width:50rem){.dh a.dh-ver,.dh a.dh-get{display:none}}
   @media (max-width:26rem){.dh{gap:.5rem}.dh-right{gap:.5rem}}
-  @media (prefers-reduced-motion:reduce){.dh,.dh-tgl svg{animation:none!important}.dh *{transition:none!important}}
+  @media (prefers-reduced-motion:reduce){.dh,.dh *,.dh-tgl svg{animation:none!important}.dh a.dh-brand:hover *{transform:none}.dh *{transition:none!important}}
 </style>
