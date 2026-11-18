@@ -135,3 +135,18 @@ window.addEventListener('popstate', () => {
 });
 
 history.replaceState({ docs: true }, '', location.href);
+
+/* Every docs page is fetched once the page is idle, one after another, so a
+   click never waits on the network: the whole docs set is a few hundred KB
+   compressed. */
+const idle = (cb: () => void) =>
+  'requestIdleCallback' in window ? (window as any).requestIdleCallback(cb, { timeout: 2000 }) : setTimeout(cb, 800);
+idle(async () => {
+  const seen = new Set<string>();
+  for (const a of document.querySelectorAll<HTMLAnchorElement>('.sidebar-content a, .dh-card a, .pagination-links a')) {
+    const url = new URL(a.href, location.href);
+    if (url.origin !== location.origin || !url.pathname.startsWith('/docs') || seen.has(url.pathname)) continue;
+    seen.add(url.pathname);
+    await load(url);
+  }
+});
