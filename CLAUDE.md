@@ -14,12 +14,12 @@ Published at **svipall.ilien.dev**. Two surfaces:
   Builds, `wrangler.jsonc` serves `dist/`) or CI build reads the newest stable `vX.Y.Z` tag. Locally the
   build reads `..` (this repo as svipall's `site/` submodule) or `../svipall`.
 
-The docs wear the product page's shell. Both surfaces render one header,
-`src/components/SiteHeader.astro` (the product page swaps the design's own
-header for it; `DocsHeader.astro` wraps it for Starlight), `src/styles/docs-shell.css` brings the sky, cards
-and motion, and sync-docs writes the portal home and the sidebar icons
-(`src/generated/sidebar.css`). Both surfaces use cross-document view
-transitions, sharing `view-transition-name: site-header`.
+Both surfaces render one header, `src/components/SiteHeader.astro`
+(`DocsHeader.astro` wraps it for Starlight); `docs-shell.css` brings the sky,
+cards and motion; sync-docs writes the portal home and sidebar icons.
+`src/scripts/site-router.ts`, loaded by both, moves between them and between
+docs pages without a reload (cross-document view transitions are only the
+fallback), and owns the theme switch.
 
 Astro 5.18 + Starlight 0.37 (the last Starlight on Astro 5; 0.38+ needs Astro 6+).
 
@@ -50,9 +50,9 @@ Astro 5.18 + Starlight 0.37 (the last Starlight on Astro 5; 0.38+ needs Astro 6+
    `opacity` (the sky drifted by `background-position` repainted the whole
    page each frame; a live `backdrop-filter` over it did the same). Remove a
    transform animation's class when it ends: while in effect it makes the
-   element the containing block of its fixed children. Docs pages swap
-   through `docs-router.ts` without a view transition, whose snapshot of a
-   long page cost a 50 ms frame. Measure frames before calling it smooth.
+   element the containing block of its fixed children. Pages swap through
+   `site-router.ts` without a view transition, whose snapshot of a long page
+   cost a 50 ms frame. Measure frames before calling it smooth.
 
 ## The product page
 
