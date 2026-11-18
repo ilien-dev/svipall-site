@@ -8,7 +8,8 @@
  * `home` keeps the links in-page on the product page (no reload, they
  * scroll). `current` marks the section the reader is in. The search pill
  * opens Starlight's search in the docs (DocsHeader wires `data-open-search`)
- * and leads to it from the product page (`/docs/?search`).
+ * and leads to it from the product page (`/docs/?search`, opened by the
+ * router, which also runs the theme switch on both pages).
  */
 import { latestRelease } from '../lib/release';
 
@@ -38,7 +39,7 @@ const at = (hash: string) => (home ? hash : `/${hash}`);
     {home
       ? <a class="dh-search" href="/docs/?search" data-search-link><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span>Search</span><kbd>Ctrl K</kbd></a>
       : <button type="button" class="dh-search" data-open-search><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span>Search</span><kbd>Ctrl K</kbd></button>}
-    <button type="button" class="dh-tgl" id={home ? 'theme-toggle' : undefined} data-theme-toggle={home ? undefined : ''} aria-label="Switch colour theme">
+    <button type="button" class="dh-tgl" data-theme-toggle aria-label="Switch colour theme">
       <svg class="dh-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
       <svg class="dh-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
     </button>
@@ -46,18 +47,6 @@ const at = (hash: string) => (home ? hash : `/${hash}`);
     <a class="dh-get" href={at('#get')}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"></path></svg>Get it free</a>
   </div>
 </div>
-
-<script>
-  /* Ctrl/Cmd+K on the product page leads to the docs' search, as it opens it there. */
-  if (document.querySelector('[data-search-link]')) {
-    addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        location.href = '/docs/?search';
-      }
-    });
-  }
-</script>
 
 <style is:global>
   .dh{
