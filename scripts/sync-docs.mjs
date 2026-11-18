@@ -102,7 +102,7 @@ function parseIndex(text) {
     if (item) {
       if (!current) { current = { label: null, items: [] }; groups.push(current); }
       current.items.push({ label: item[1].replace(/[`*_]/g, ''), href: item[2], summary: item[3]?.trim() || '' });
-    } else if (!current && line.trim()) {
+    } else if (!current && line.trim() && !/^<!--.*-->$/.test(line.trim())) {
       intro.push(line);
     }
   }

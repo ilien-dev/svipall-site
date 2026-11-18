@@ -1,8 +1,7 @@
+<!-- Used only for a release with no docs/README.md of its own; from the next release on, the product repo's index is read and this file is ignored. -->
 # Svipall documentation
 
-Used only when the release being published has no `docs/README.md` of its own
-(every release before the index was added). From the next release on, the
-product repository's index is the one read, and this file is ignored.
+Svipall gives your AI app the web: it reads pages, searches, crawls, watches pages and videos, and says plainly when a site would not open. These pages explain how to install it, how each part works, and the evidence behind every number.
 
 ## Start here
 
