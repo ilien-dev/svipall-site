@@ -41,11 +41,12 @@ const AMBER = '#FFB03A';
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 
 // The mark, with its own sizing stripped so the card's CSS controls it. Its
-// one fill is the navy, which on the night ground becomes the bone.
+// one fill is the light-theme ember, which on the night ground becomes the
+// dark-theme ember, as on the site.
 const mark = read('src/assets/brand/svipall-mark.svg')
   .replace(/<title>[\s\S]*?<\/title>/g, '')
   .replace(/\swidth="[^"]*"|\sheight="[^"]*"/g, '')
-  .replace(/fill="#0B1A2B"/g, `fill="${BONE}"`);
+  .replace(/fill="#C2532F"/g, 'fill="#FF7A52"');
 
 // The wordmark is stroked, not filled, and the file hard-codes the brand navy.
 // On the night ground that would be invisible, so the stroke becomes the bone.
