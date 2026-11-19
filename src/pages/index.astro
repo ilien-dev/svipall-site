@@ -24,9 +24,18 @@ const headerAt = body.search(/<header class="in"/);
 const headerEnd = body.indexOf('</header>', headerAt) + '</header>'.length;
 if (headerAt < 0 || headerEnd < headerAt) throw new Error('index: the design no longer has its header');
 const before = body.slice(0, headerAt);
-const after = body.slice(headerEnd);
-
 const release = await latestRelease();
+
+/* The release sits in the hero, under the two calls to action, rather than in
+   the header: it is news about the product, not navigation. Not drawn at all
+   when the build could not read it (see lib/release). */
+const cta = /Watch it work<\/a>\r?\n<\/div>/;
+const afterHeader = body.slice(headerEnd);
+if (!cta.test(afterHeader)) throw new Error('index: the hero no longer has its two calls to action');
+const releaseTag = release
+  ? `<a class="hero-ver in3" href="${release.url}"><span class="hero-ver-dot" aria-hidden="true"></span><b>${release.version}</b><span>Released ${release.date}</span><span class="hero-ver-go">Release notes<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></a>`
+  : '';
+const after = afterHeader.replace(cta, (m) => m + releaseTag);
 
 const site = 'https://svipall.ilien.dev';
 const title = 'Svipall — free web access for your AI, no API key';
@@ -78,6 +87,7 @@ const jsonLd = {
       (() => {
         let t;
         try { t = localStorage.getItem('starlight-theme'); } catch {}
+        document.documentElement.dataset.themeChoice = t === 'light' || t === 'dark' ? t : 'system';
         if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
         document.documentElement.dataset.theme = t;
       })();
