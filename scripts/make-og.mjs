@@ -41,10 +41,11 @@ const AMBER = '#FFB03A';
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 
 // The mark, with its own sizing stripped so the card's CSS controls it. Its
-// four fills resolve through --svipall-*, declared on :root below.
+// one fill is the navy, which on the night ground becomes the bone.
 const mark = read('src/assets/brand/svipall-mark.svg')
   .replace(/<title>[\s\S]*?<\/title>/g, '')
-  .replace(/\swidth="[^"]*"|\sheight="[^"]*"/g, '');
+  .replace(/\swidth="[^"]*"|\sheight="[^"]*"/g, '')
+  .replace(/fill="#0B1A2B"/g, `fill="${BONE}"`);
 
 // The wordmark is stroked, not filled, and the file hard-codes the brand navy.
 // On the night ground that would be invisible, so the stroke becomes the bone.
@@ -71,16 +72,6 @@ const html = `<!doctype html>
     font-display: block;
     src: url(data:font/woff2;base64,${fontData('commitmono-400.woff2')}) format('woff2');
   }
-  /* The mark's own two inks, inverted the way the site's dark theme inverts
-     them: on the night ground the silhouette is the bone and the knotwork cut
-     out of it is the ground. Declaring these the other way round paints a navy
-     figure on a navy field. */
-  :root {
-    --svipall-ink: ${BONE};
-    --svipall-rust: ${BONE};
-    --svipall-bone: ${NIGHT};
-    --svipall-amber: ${AMBER};
-  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     width: ${WIDTH}px; height: ${HEIGHT}px;
@@ -105,8 +96,8 @@ const html = `<!doctype html>
     gap: 60px;
     padding: 0 76px;
   }
-  .mark { width: 286px; }
-  .mark svg { width: 100%; height: auto; display: block; }
+  .mark { width: 286px; display: flex; justify-content: center; }
+  .mark svg { width: auto; height: 260px; display: block; }
   .wordmark { width: 340px; }
   .wordmark svg { width: 100%; height: auto; display: block; }
   .line {
