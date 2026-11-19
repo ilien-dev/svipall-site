@@ -274,6 +274,41 @@ function start() {
     else window.scrollTo({ top: (history.state && history.state.y) || 0, behavior: 'instant' as ScrollBehavior });
   }
 
+  /* Starlight builds its search UI on DOMContentLoaded, which a page reached
+     through this router never fires: arriving in the docs from the product
+     page left the dialog empty. After such a swap the router builds it itself,
+     with the same options Starlight passes. */
+  async function ensureSearchUI() {
+    const host = document.querySelector<HTMLElement>('site-search');
+    const mount = document.getElementById('starlight__search');
+    if (!host || !mount || mount.childElementCount || mount.dataset.mounted) return;
+    mount.dataset.mounted = 'router';
+    const [{ PagefindUI }, { pagefindUserConfig }] = await Promise.all([
+      // @ts-expect-error — the package ships no types.
+      import('@pagefind/default-ui'),
+      // @ts-expect-error — a Starlight virtual module.
+      import('virtual:starlight/pagefind-config'),
+    ]);
+    let translations = {};
+    try { translations = JSON.parse(host.dataset.translations || '{}'); } catch {}
+    const strip = host.dataset.stripTrailingSlash !== undefined;
+    const format = (path: string) => (strip ? path.replace(/(.)\/(#.*)?$/, '$1$2') : path);
+    const base = import.meta.env.BASE_URL;
+    new PagefindUI({
+      ...pagefindUserConfig,
+      element: '#starlight__search',
+      baseUrl: base,
+      bundlePath: base.replace(/\/$/, '') + '/pagefind/',
+      showImages: false,
+      translations,
+      showSubResults: true,
+      processResult: (result: { url: string; sub_results: Array<{ url: string }> }) => {
+        result.url = format(result.url);
+        result.sub_results = result.sub_results.map((sub) => ({ ...sub, url: format(sub.url) }));
+      },
+    });
+  }
+
   function openSearchIfAsked() {
     if (!new URLSearchParams(location.search).has('search')) return;
     history.replaceState(history.state, '', location.pathname + location.hash);
@@ -282,10 +317,32 @@ function start() {
     );
   }
 
-  function labelTheme() {
-    const light = document.documentElement.dataset.theme === 'light';
-    for (const b of document.querySelectorAll('[data-theme-toggle]')) b.setAttribute('aria-label', light ? 'Switch to dark theme' : 'Switch to light theme');
+  /* The theme has three choices, kept where Starlight keeps it: `light`,
+     `dark`, or empty for the system's. The button cycles light, dark,
+     system; <html data-theme-choice> tells it which icon to show, and
+     <html data-theme> stays what both pages' CSS reads. */
+  const NEXT: Record<string, string> = { light: 'dark', dark: '', '': 'light' };
+  const NAME: Record<string, string> = { light: 'Light', dark: 'Dark', '': 'System' };
+  const systemDark = matchMedia('(prefers-color-scheme: dark)');
+  function themeChoice(): string {
+    let t: string | null = null;
+    try { t = localStorage.getItem('starlight-theme'); } catch {}
+    return t === 'light' || t === 'dark' ? t : '';
   }
+  function applyTheme(choice: string) {
+    const root = document.documentElement;
+    root.dataset.theme = choice || (systemDark.matches ? 'dark' : 'light');
+    root.dataset.themeChoice = choice || 'system';
+  }
+  function labelTheme() {
+    const choice = themeChoice();
+    applyTheme(choice);
+    for (const b of document.querySelectorAll('[data-theme-toggle]')) {
+      b.setAttribute('aria-label', `Theme: ${NAME[choice]}. Switch to ${NAME[NEXT[choice]]}`);
+      b.setAttribute('title', `Theme: ${NAME[choice]}`);
+    }
+  }
+  systemDark.addEventListener('change', () => { if (!themeChoice()) applyTheme(''); });
 
   async function go(url: URL, push: boolean) {
     const ticket = ++busy;
@@ -319,6 +376,7 @@ function start() {
     }
     shown = url.pathname;
     labelTheme();
+    if (to === 'docs' && from !== 'docs') await ensureSearchUI();
     openSearchIfAsked();
     document.dispatchEvent(new Event('astro:page-load'));
   }
@@ -327,9 +385,7 @@ function start() {
     /* The theme switch, on either page: the same key Starlight uses. */
     const toggle = (e.target as Element | null)?.closest?.('[data-theme-toggle]');
     if (toggle) {
-      const root = document.documentElement;
-      const nextTheme = root.dataset.theme === 'light' ? 'dark' : 'light';
-      root.dataset.theme = nextTheme;
+      const nextTheme = NEXT[themeChoice()];
       try { localStorage.setItem('starlight-theme', nextTheme); } catch {}
       labelTheme();
       return;

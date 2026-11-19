@@ -110,3 +110,17 @@ details.faq{overflow:visible clip}
 details.faq > summary{min-height:104px;box-sizing:border-box;padding:28px 0}
 /* Opening and closing are animated by the page script, every time. */
 details.faq[open] p{animation:none}
+/* The latest release, in the hero under the calls to action: a live dot, the
+   tag, its date, and a way to the notes. */
+.hero-ver{align-self:flex-start;display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px 12px;min-height:44px;padding:8px 16px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);text-decoration:none;font-size:15px;transition:border-color .3s,transform .3s cubic-bezier(.2,.7,.2,1)}
+.hero-ver b{color:var(--ac-text);font-weight:800}
+.hero-ver > span:not(.hero-ver-go):not(.hero-ver-dot){color:var(--muted)}
+.hero-ver-dot{position:relative;width:8px;height:8px;border-radius:50%;background:var(--gr)}
+.hero-ver-dot::after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--gr);animation:ver-ping 2.4s ease-out infinite}
+@keyframes ver-ping{from{transform:scale(1);opacity:.6}to{transform:scale(2.6);opacity:0}}
+.hero-ver-go{display:inline-flex;align-items:center;gap:4px;color:var(--ink);font-weight:600}
+.hero-ver-go svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s cubic-bezier(.2,.7,.2,1)}
+.hero-ver:hover{border-color:var(--ac);transform:translateY(-2px)}
+.hero-ver:hover .hero-ver-go svg{transform:translateX(3px)}
+.hero-ver:focus-visible{outline:3px solid var(--ac);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.hero-ver-dot::after{animation:none}}
