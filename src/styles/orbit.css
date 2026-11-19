@@ -1,7 +1,7 @@
 @font-face{font-family:'Archivo';src:url('/fonts/archivo-variable.woff2') format('woff2-variations');font-weight:100 900;font-stretch:62% 125%;font-display:swap}
 html,body{margin:0}body{background:var(--bg)}
-:root,:root[data-theme='dark']{--bg:#0B1A2B;--sf:#122539;--sf2:#1A3048;--ink:#EFE7DA;--muted:#DAD5CA;--quiet:#C1BEB7;--line:rgba(239,231,218,.18);--line2:rgba(239,231,218,.32);--ac:#FFB03A;--on-ac:#0B1A2B;--ac-text:#FFB03A;--gr:#5CD6A0;--sky:#8FD0FF;--red:#FE775F;--ta:#24405E;--tb:#2E5076;--star:rgba(239,231,218,.45);--star2:rgba(255,176,58,.4);--band:#EFE7DA;--band-ink:#0B1A2B;--band-line:rgba(11,26,43,.18)}
-:root[data-theme='light']{--bg:#F4F7FA;--sf:#FFFFFF;--sf2:#DCE3EB;--ink:#0B1A2B;--muted:#3B4550;--quiet:#3B4550;--line:rgba(11,26,43,.14);--line2:rgba(11,26,43,.28);--ac:#FFB03A;--on-ac:#0B1A2B;--ac-text:#983E25;--gr:#0C6244;--sky:#175E8A;--red:#983E25;--ta:#C3D0DC;--tb:#A9BACB;--star:rgba(11,26,43,.18);--star2:rgba(204,85,0,.3);--band:#0B1A2B;--band-ink:#EFE7DA;--band-line:rgba(239,231,218,.25)}
+:root,:root[data-theme='dark']{--bg:#0B1A2B;--sf:#122539;--sf2:#1A3048;--ink:#EFE7DA;--muted:#DAD5CA;--quiet:#C1BEB7;--line:rgba(239,231,218,.18);--line2:rgba(239,231,218,.32);--ac:#FFB03A;--on-ac:#0B1A2B;--ac-text:#FFB03A;--gr:#5CD6A0;--sky:#8FD0FF;--red:#FE775F;--ta:#24405E;--tb:#2E5076;--star:rgba(239,231,218,.45);--star2:rgba(255,176,58,.4);--band:#EFE7DA;--band-ink:#0B1A2B;--band-line:rgba(11,26,43,.18);--brand:#FF7A52}
+:root[data-theme='light']{--bg:#F4F7FA;--sf:#FFFFFF;--sf2:#DCE3EB;--ink:#0B1A2B;--muted:#3B4550;--quiet:#3B4550;--line:rgba(11,26,43,.14);--line2:rgba(11,26,43,.28);--ac:#FFB03A;--on-ac:#0B1A2B;--ac-text:#983E25;--gr:#0C6244;--sky:#175E8A;--red:#983E25;--ta:#C3D0DC;--tb:#A9BACB;--star:rgba(11,26,43,.18);--star2:rgba(204,85,0,.3);--band:#0B1A2B;--band-ink:#EFE7DA;--band-line:rgba(239,231,218,.25);--brand:#C2532F}
 .th{background-color:var(--bg);color:var(--ink);font-family:'Archivo',system-ui,sans-serif;overflow-x:clip;transition:background-color .5s,color .5s}
 .th a{color:var(--ac-text)}
 :root[data-theme='light'] .only-d,:root:not([data-theme='light']) .only-l{display:none}
@@ -29,8 +29,17 @@ html,body{margin:0}body{background:var(--bg)}
 .sp{transform-box:fill-box;transform-origin:center;animation:spin 10s linear infinite}
 .orb{position:absolute;left:50%;top:50%;width:36.67%;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none}
 .orb-spin{width:100%;height:100%;animation:spin 18s linear infinite;position:relative}
-.orb-badge{position:absolute;left:50%;top:0;width:24%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:var(--sf);border:2px solid var(--ac);display:flex;align-items:center;justify-content:center;box-sizing:border-box}
-.orb-badge img{height:52%;width:auto;animation:spinr 18s linear infinite}
+/* Svipall: a filled badge in its own colour, the rune cut in the ground, and a beam it sends out to the web while it orbits: a dot goes out, an answer comes back. Radii in units of the 600 artboard: the orbit is 110, the outer ring 270. */
+.orb-badge{position:absolute;left:50%;top:0;width:27.3%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:var(--brand);box-shadow:0 0 0 4px var(--bg);display:flex;align-items:center;justify-content:center;box-sizing:border-box}
+.orb-badge::before{content:'';position:absolute;inset:0;border-radius:50%;background:var(--brand);animation:orb-halo 1.4s ease-out infinite;z-index:-1}
+@keyframes orb-halo{from{transform:scale(1);opacity:.4}to{transform:scale(1.5);opacity:0}}
+.orb-badge svg{height:56%;width:auto;fill:var(--bg);animation:spinr 18s linear infinite}
+.orb-beam{position:absolute;left:50%;bottom:113.6%;width:3px;height:59%;transform:translateX(-50%);background:repeating-linear-gradient(to top,var(--brand) 0 3px,transparent 3px 11px);border-radius:2px}
+.orb-run{position:absolute;inset:0}.orb-run i{position:absolute;left:50%;bottom:0;width:11px;height:11px;margin-left:-5.5px;border-radius:50%}
+.orb-out{animation:orb-out 1.4s linear infinite}.orb-out i{background:var(--brand)}
+.orb-back{animation:orb-back 1.4s linear -.7s infinite}.orb-back i{background:var(--gr)}
+@keyframes orb-out{from{transform:translateY(0);opacity:1}to{transform:translateY(-100%);opacity:0}}
+@keyframes orb-back{from{transform:translateY(-100%);opacity:0}15%{opacity:1}to{transform:translateY(0);opacity:1}}
 @keyframes flow{to{stroke-dashoffset:-60}}
 .f{stroke-dasharray:10 20;animation:flow 1.4s linear infinite}
 .fr{stroke-dasharray:10 20;animation:flow 1.4s linear infinite reverse}
