@@ -115,9 +115,11 @@ function initHero() {
     const back = u > DUR[v.kind] - 1.6, key = (back ? 'b' : 'a') + v.host;
     if (ask.dataset.key === key) return;
     ask.dataset.key = key;
-    swap(ask, () => {
+    /* only the words move: the bubble's own transform is its place on the field */
+    const inner = ask.firstElementChild as HTMLElement;
+    swap(inner, () => {
       ask.classList.toggle('back', back && v.kind !== 'no'); ask.classList.toggle('no', back && v.kind === 'no');
-      ask.innerHTML = `<small>${back ? 'Back to your AI' : 'Your AI asks'}</small><span>${back ? v.got : v.ask}</span>`;
+      inner.innerHTML = `<small>${back ? 'Back to your AI' : 'Your AI asks'}</small><span>${back ? v.got : v.ask}</span>`;
     });
   };
 
@@ -163,13 +165,13 @@ function initHero() {
     const heatCol = (v: number) => { const x = Math.min(3.999, Math.max(0, v * 0.82 * 4)), i = Math.floor(x); return col.copy(pal.heat[i]).lerp(pal.heat[i + 1], x - i); };
     const heat = (x: number, y: number, t: number) => Math.min(1, Math.max(Math.max(0, 1 - Math.hypot(x - 9, y - 12) / 10), 0.8 * Math.max(0, 1 - Math.hypot(x - 20 + Math.sin(t * 0.4) * 2, y - 8) / 6.5), 0.5 * Math.max(0, 1 - Math.hypot(x - 16, y - 22) / 6)) + 0.05 * Math.sin(x * 0.9 + t * 1.3) * Math.cos(y * 0.7 + t));
 
-    let w = 1, h = 1;
-    const size = () => { w = cv.clientWidth || 1; h = cv.clientHeight || 1; R.setSize(w, h, false); C.aspect = w / h; C.updateProjectionMatrix(); };
+    let w = 1, h = 1, minX = 4;
+    const size = () => { w = cv.clientWidth || 1; h = cv.clientHeight || 1; minX = Math.max(4, 4 - stage.offsetLeft); R.setSize(w, h, false); C.aspect = w / h; C.updateProjectionMatrix(); };
     const ro = new ResizeObserver(size); ro.observe(stage); size();
     teardown.push(() => ro.disconnect());
     const proj = (v: import('three').Vector3) => { const p = v.clone().project(C); return [(p.x + 1) / 2 * w, (1 - p.y) / 2 * h] as const; };
     const put = (el: HTMLElement, x: number, y: number, ew: number, eh: number) => {
-      const cx = Math.max(4, Math.min(w - ew - 4, x)), cy = Math.max(4, Math.min(h - eh - 4, y));
+      const cx = Math.max(minX, Math.min(w - ew - 4, x)), cy = Math.max(4, Math.min(h - eh - 4, y));
       el.style.transform = `translate(${cx.toFixed(1)}px,${cy.toFixed(1)}px)`;
     };
     let mx = 0, my = 0;
@@ -226,7 +228,6 @@ function initHero() {
       const ok2 = (t * 0.6) % 1; oring.scale.setScalar(1 + ok2 * 1.6); (oring.material as import('three').MeshBasicMaterial).opacity = 1 - ok2;
       const ang = -0.72 + Math.sin(t * 0.07) * 0.18 + mx * 0.35; C.position.set(Math.cos(ang) * 44, 27 - my * 8, Math.sin(ang) * 44); C.lookAt(2, 0, 1);
       R.render(S, C);
-      if (!hero.classList.contains('gl')) hero.classList.add('gl');
 
       /* overlays: the frame around the site, its name, Svipall, the question */
       const pts = [proj(tgv.clone().setY(th)), proj(tgv), proj(tgv.clone().add(new THREE.Vector3(-0.9, th * 0.5, 0))), proj(tgv.clone().add(new THREE.Vector3(0.9, th * 0.5, 0)))];
@@ -244,6 +245,7 @@ function initHero() {
       put(tagO, po[0] + 24, po[1] + 6, dims[2], dims[3]);
       put(ask, po[0] - dims[4] * 0.55, po[1] - dims[5] - 40, dims[4], dims[5]);
       renderCard(v, u, k); renderAsk(v, u);
+      if (!hero.classList.contains('gl')) hero.classList.add('gl');
       raf = requestAnimationFrame(frameFn);
     }
     function start() { if (!raf && alive && visible && !document.hidden) { last = 0; raf = requestAnimationFrame(frameFn); } }
