@@ -1,7 +1,7 @@
 /*
  * The product page's moving parts: the hero's heat field (WebGL, loaded only
  * when it can run), the card that follows its visits, the "different face at
- * every gate" player and the before/after divider.
+ * every gate" rings (pure CSS) and the before/after divider.
  *
  * This module is bundled and runs once per document; the router swaps the
  * body in and out without a reload and fires `astro:page-load` after each
@@ -253,87 +253,6 @@ function initHero() {
   }).catch(() => {});
 }
 
-/* ── a different face at every gate: one card turn per way of visiting ── */
-function initGates() {
-  const root = $('#gates'); if (!root) return;
-  const idc = $('[data-idc]', root)!, fa = $('.idf-a', idc)!, fb = $('.idf-b', idc)!, cap = $('[data-gcap]', root)!, prog = $('[data-gprog]', root)!;
-  const tabs = $$<HTMLButtonElement>('[data-scen] button', root), rungs = $$('[data-ladder] li', root);
-  const TIERS = [['A plain request', 'Asks for the page, nothing more'], ['A hidden browser', 'Runs the page like a browser would'], ['A disguised browser', 'Hides the signs of automation'], ['A real browser', 'With its own profile for this site'], ['A patient visit', 'Waits and answers the challenge']];
-  const S = [
-    { host: 'docs.example.dev', need: 1, fails: [] as string[], got: '2,480 words', cap: 'No wall: a plain request is enough.' },
-    { host: 'shop.example.com', need: 2, fails: ['A blank page: it only fills in with JavaScript'], got: '48 products', cap: 'The page is empty until a browser runs it, so Svipall opens a hidden one.' },
-    { host: 'news.example.org', need: 3, fails: ['“Checking your browser…”', 'Automation spotted'], got: '2,140 words', cap: 'A “checking your browser” screen: a disguised browser gets through.' },
-    { host: 'tickets.example.com', need: 4, fails: ['“Checking your browser…”', 'Automation spotted', 'The browser itself was rejected'], got: 'Seat map, 312 seats', cap: 'The site inspects the browser itself: a real browser with its own profile passes.' },
-    { host: 'forum.example.net', need: 5, fails: ['“Checking your browser…”', 'Automation spotted', 'The browser itself was rejected', 'A challenge waits to be answered'], got: 'Thread, 61 posts', cap: 'A challenge to answer: the patient visit waits for it and answers it.' },
-    { host: 'members.example.com', need: 0, fails: ['A sign-in wall'], got: '', cap: 'A sign-in wall: Svipall never signs in for you, so it stops and tells your AI.' },
-  ];
-  const ICON: Record<string, string> = {
-    try: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
-    wall: '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 12h18M9 5v7M15 12v7"/>',
-    ok: '<path d="M5 13l4 4L19 7"/>', no: '<circle cx="12" cy="12" r="9"/><path d="M6 6l12 12"/>',
-  };
-  const CHIP: Record<string, string> = { try: 'Trying', wall: 'Wall · a stronger way next', ok: 'Got in', no: 'Refused · your AI is told' };
-  const face = (s: (typeof S)[number], t: number, st: string, why = '') => {
-    const pv = st === 'try' ? '<div class="pv try"><i></i><i></i><i></i><span>Visiting…</span></div>'
-      : st === 'wall' ? `<div class="pv wall"><b>${why}</b><span>Not the page. Trying a stronger way.</span></div>`
-      : st === 'ok' ? `<div class="pv ok"><i></i><i></i><i></i><i></i><span>Read · ${s.got}</span></div>`
-      : `<div class="pv no"><b>${why}</b><span>Stopped. Svipall never signs in for you; your AI is told.</span></div>`;
-    return `<span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[st]}</svg></span><small>WAY ${t + 1} OF 5</small><h3>${TIERS[t][0]}</h3><p class="what">${TIERS[t][1]}</p><div class="host">${s.host}</div><div class="face">One face for this site, kept the whole visit</div>${pv}<span class="chip3 ${st}"><i></i>${CHIP[st]}</span>`;
-  };
-  let rot = 0, front = fa, token = 0, timer = 0;
-  const sleep = (ms: number) => new Promise<void>((r) => { timer = window.setTimeout(r, ms); });
-  const show = (html: string, st: string, flip: boolean) => {
-    if (flip && !reduce()) {
-      const back = front === fa ? fb : fa;
-      back.innerHTML = html; back.className = `idf ${back === fa ? 'idf-a' : 'idf-b'} ${st}`;
-      rot += 180; idc.style.transform = `rotateY(${rot}deg) rotateX(6deg)`; front = back;
-    } else {
-      const el = front; el.classList.add('swap');
-      window.setTimeout(() => { el.innerHTML = html; el.className = `idf ${el === fa ? 'idf-a' : 'idf-b'} ${st}`; }, reduce() ? 0 : 180);
-    }
-  };
-  const rung = (i: number, cls: string, txt: string) => { const r = rungs[i]; if (!r) return; r.className = cls; const em = r.querySelector('em')!; if (em.textContent !== txt) swap(em, () => { em.textContent = txt; }); };
-  const caption = (t: string) => { if (cap.textContent !== t) swap(cap, () => { cap.textContent = t; }); };
-  const select = (k: number) => tabs.forEach((b, j) => { b.setAttribute('aria-selected', String(j === k)); b.tabIndex = j === k ? 0 : -1; });
-  const setProg = (sec: number) => { prog.style.transition = 'none'; prog.style.transform = 'scaleX(0)'; void prog.offsetWidth; prog.style.transition = `transform ${sec}s linear`; prog.style.transform = 'scaleX(1)'; };
-
-  /* reduced motion: the result of the chosen site, at once, no turning */
-  const still = (k: number) => {
-    const s = S[k]; select(k); caption(s.cap); prog.style.transform = 'scaleX(1)';
-    const last = s.need ? s.need - 1 : 0;
-    rungs.forEach((r, i) => rung(i, i < last ? 'wall' : '', i < last ? 'wall' : '—'));
-    if (s.need === 0) { rung(0, 'no', 'stops here'); show(face(s, 0, 'no', s.fails[0]), 'no', false); }
-    else { rung(last, 'ok', 'got in'); show(face(s, last, 'ok'), 'ok', false); }
-  };
-  async function play(k: number, tk: number) {
-    const s = S[k]; select(k); caption(s.cap);
-    rungs.forEach((_, i) => rung(i, '', '—'));
-    const last = s.need ? s.need - 1 : 0; setProg((last + 1) * 2.6 + 3);
-    for (let t = 0; t <= last; t++) {
-      if (tk !== token) return;
-      show(face(s, t, 'try'), 'try', t > 0); rung(t, 'on', 'trying…'); await sleep(1300); if (tk !== token) return;
-      if (s.need === 0) { show(face(s, t, 'no', s.fails[0]), 'no', false); rung(t, 'no', 'stops here'); await sleep(3200); break; }
-      if (t < last) { show(face(s, t, 'wall', s.fails[t]), 'wall', false); rung(t, 'wall', 'wall'); await sleep(1300); }
-      else { show(face(s, t, 'ok'), 'ok', false); rung(t, 'ok', 'got in'); await sleep(3200); }
-    }
-    if (tk === token && running) play((k + 1) % S.length, tk);
-  }
-  let running = false, started = false, current = 0;
-  const go = (k: number) => { current = k; token++; clearTimeout(timer); if (reduce()) still(k); else { running = true; play(k, token); } };
-  tabs.forEach((b, j) => {
-    b.addEventListener('click', () => { started = true; idc.setAttribute('aria-live', 'polite'); go(j); });
-    b.addEventListener('keydown', (e) => { const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (d) { e.preventDefault(); const n = (j + d + tabs.length) % tabs.length; tabs[n].focus(); started = true; go(n); } });
-  });
-  /* plays while on screen, pauses (and resumes on the same site) when not */
-  const io = new IntersectionObserver((es) => {
-    if (es[0].isIntersecting) { if (!started) { started = true; go(0); } else if (!running) go(current); }
-    else if (running) { running = false; token++; clearTimeout(timer); }
-  }, { threshold: 0.25 });
-  io.observe(idc);
-  if (reduce()) still(0);
-  teardown.push(() => { io.disconnect(); token++; clearTimeout(timer); running = false; });
-}
-
 /* ── before / after: the clean layer slides by transform only ── */
 function initCompare() {
   const box = $('[data-cmp]'); if (!box) return;
@@ -359,7 +278,7 @@ function initCompare() {
 function init() {
   cleanup();
   if (!$('.hx')) return;
-  initHero(); initGates(); initCompare();
+  initHero(); initCompare();
 }
 document.addEventListener('astro:page-load', init);
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true }); else init();
