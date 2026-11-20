@@ -56,13 +56,17 @@ Astro 5.18 + Starlight 0.37 (the last Starlight on Astro 5; 0.38+ needs Astro 6+
 
 ## The product page
 
-The markup in `src/home/orbit.body.html` and the tokens and animations in
-`src/styles/orbit.css` are the approved canvas design ("Orbit"), ported by
-`scripts/port-orbit.mjs`. Edit them in place, or revise the design and re-run
-the port. A re-run overwrites both files, which is why what the live page adds
-lives in `src/styles/page.css`. Colours are tokens keyed off
-`:root[data-theme]`. SVG artwork uses the `c-*` (fill) and `s-*` (stroke)
-classes so it follows the theme.
+`src/home/home.body.html` holds the markup, `src/styles/home.css` its tokens
+and motion, and `src/scripts/home.ts` the moving parts (hero heat field, gate
+player, before/after). `page.css` keeps the set-up tabs, questions and release
+tag. Colours are tokens keyed off `:root[data-theme]`; SVG art uses the `c-*`
+(fill), `s-*` (stroke) and `t-*` (text) classes so it follows the theme.
+
+`home.ts` is bundled and runs once per document: it sets up on
+`astro:page-load` and tears down its loops, timers and observers before the
+next. Loops pause off screen and in a hidden tab. three.js loads lazily
+through the named re-exports in `src/scripts/heat-three.ts`; importing `three`
+as a namespace ships the whole library.
 
 Animated SVG loops must be seamless. Move by an exact multiple of the repeated
 content in px; a `%` transform on SVG resolves against the viewport, not the
@@ -77,8 +81,8 @@ element. Clip with `<clipPath>`, never `clip-path: inset()` on a `<g>`.
   published asset, byte for byte, never an icon set's guess at it.
 - **A flex item that may shrink below its content overlaps; it does not
   squash.** Render at 320px before calling a header done.
-- **Astro reads `{ }` in markup as an expression.** The port refuses a body
-  that contains a brace.
+- **Astro reads `{ }` in markup as an expression.** `home.body.html` must not
+  contain a brace; inline styles and scripts go in `home.css` and `home.ts`.
 
 ## Verifying
 

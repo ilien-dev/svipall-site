@@ -10,7 +10,7 @@
  * that did not change would cost more than it saves.
  *
  * Headless Chromium rather than resvg or rsvg-convert, for one reason: the
- * card sets type in Archivo and Commit Mono, and both ship here as woff2,
+ * card sets type in Urbanist and IBM Plex Mono, and both ship here as woff2,
  * which the SVG rasterisers' font databases do not read. A browser does, and
  * it is the same engine the site itself is drawn by, so the card's type is
  * the site's type rather than a near miss.
@@ -32,28 +32,22 @@ const out = path.join(root, 'public', 'og.png');
 const WIDTH = 1200;
 const HEIGHT = 630;
 
-/* The card's ink, lifted from tokens.css rather than invented here:
-   ink-950 is the ground, ground is the bone, amber-400 is the eye. */
-const NIGHT = '#0B1A2B';
-const BONE = '#EFE7DA';
-const AMBER = '#FFB03A';
+/* The brand's ink, paper and alert red (svipall assets/brand/tokens.json). */
+const NIGHT = '#050506';
+const BONE = '#EDEBE8';
+const RED = '#E5303A';
 
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 
-// The mark, with its own sizing stripped so the card's CSS controls it. Its
-// one fill is the light-theme ember, which on the night ground becomes the
-// dark-theme ember, as on the site.
-const mark = read('src/assets/brand/svipall-mark.svg')
-  .replace(/<title>[\s\S]*?<\/title>/g, '')
-  .replace(/\swidth="[^"]*"|\sheight="[^"]*"/g, '')
-  .replace(/fill="#C2532F"/g, 'fill="#FF7A52"');
+// The mark for dark grounds (a paper hat and the red eye), sized by the card's CSS.
+const mark = read('src/assets/brand/svipall-mark-dark.svg')
+  .replace(/<!--[sS]*?-->/g, '')
+  .replace(/swidth="[^"]*"|sheight="[^"]*"/g, '');
 
-// The wordmark is stroked, not filled, and the file hard-codes the brand navy.
-// On the night ground that would be invisible, so the stroke becomes the bone.
+// The wordmark is outlined in currentColor, so the card's text colour paints it.
 const wordmark = read('src/assets/brand/svipall-wordmark.svg')
-  .replace(/<title>[\s\S]*?<\/title>/g, '')
-  .replace(/\swidth="[^"]*"|\sheight="[^"]*"/g, '')
-  .replace(/stroke="#12161F"/g, `stroke="${BONE}"`);
+  .replace(/<!--[sS]*?-->/g, '')
+  .replace(/swidth="[^"]*"|sheight="[^"]*"/g, '');
 
 const fontData = (file) =>
   fs.readFileSync(path.join(root, 'public', 'fonts', file)).toString('base64');
@@ -62,22 +56,22 @@ const html = `<!doctype html>
 <html><head><meta charset="utf-8">
 <style>
   @font-face {
-    font-family: 'Archivo';
+    font-family: 'Urbanist';
     font-weight: 100 900;
     font-display: block;
-    src: url(data:font/woff2;base64,${fontData('archivo-variable.woff2')}) format('woff2');
+    src: url(data:font/woff2;base64,${fontData('urbanist-variable.woff2')}) format('woff2');
   }
   @font-face {
-    font-family: 'Commit Mono';
+    font-family: 'IBM Plex Mono';
     font-weight: 400;
     font-display: block;
-    src: url(data:font/woff2;base64,${fontData('commitmono-400.woff2')}) format('woff2');
+    src: url(data:font/woff2;base64,${fontData('plexmono-400.woff2')}) format('woff2');
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     width: ${WIDTH}px; height: ${HEIGHT}px;
     background: ${NIGHT};
-    font-family: 'Archivo', sans-serif;
+    font-family: 'Urbanist', sans-serif;
     color: ${BONE};
     overflow: hidden;
   }
@@ -86,7 +80,7 @@ const html = `<!doctype html>
      of this size and anything stronger reads as a smudge there. */
   .glow {
     position: absolute; inset: 0;
-    background: radial-gradient(60% 75% at 22% 50%, rgba(255, 176, 58, 0.10), transparent 70%);
+    background: radial-gradient(60% 75% at 22% 50%, rgba(229, 48, 58, 0.12), transparent 70%);
   }
   .card {
     position: relative;
@@ -98,8 +92,8 @@ const html = `<!doctype html>
     padding: 0 76px;
   }
   .mark { width: 286px; display: flex; justify-content: center; }
-  .mark svg { width: auto; height: 260px; display: block; }
-  .wordmark { width: 340px; }
+  .mark svg { width: 286px; height: auto; display: block; }
+  .wordmark { width: 340px; color: ${BONE}; }
   .wordmark svg { width: 100%; height: auto; display: block; }
   .line {
     margin-top: 30px;
@@ -112,16 +106,16 @@ const html = `<!doctype html>
   .foot {
     margin-top: 38px;
     display: flex; align-items: center; gap: 20px;
-    font-family: 'Commit Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 21px;
     white-space: nowrap;
   }
   .chip {
-    border: 1.5px solid rgba(239, 231, 218, 0.32);
+    border: 1.5px solid rgba(237, 235, 232, 0.32);
     border-radius: 9px;
     padding: 10px 18px;
   }
-  .host { color: rgba(239, 231, 218, 0.60); }
+  .host { color: rgba(237, 235, 232, 0.66); }
 </style></head>
 <body>
   <div class="glow"></div>
@@ -129,7 +123,7 @@ const html = `<!doctype html>
     <div class="mark">${mark}</div>
     <div>
       <div class="wordmark">${wordmark}</div>
-      <p class="line">The page, or the reason it never arrived.</p>
+      <p class="line">Your AI asks. Svipall goes and gets the page.</p>
       <div class="foot">
         <span class="chip">/plugin install svipall@svipall</span>
         <span class="host">svipall.ilien.dev</span>
@@ -142,7 +136,7 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'svipall-og-'));
 const page = path.join(tmp, 'card.html');
 fs.writeFileSync(page, html);
 
-const chromium = ['chromium', 'chromium-browser', 'google-chrome-stable', 'google-chrome'].find(
+const chromium = process.env.CHROMIUM || ['chromium', 'chromium-browser', 'google-chrome-stable', 'google-chrome'].find(
   (bin) => {
     try {
       execFileSync('which', [bin], { stdio: 'ignore' });
