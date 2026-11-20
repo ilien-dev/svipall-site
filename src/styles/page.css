@@ -31,7 +31,7 @@ html{scroll-padding-top:96px}
 .scol{flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:14px}
 .sstep{margin:0;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ac-text)}
 .sbox{position:relative;display:flex}
-.scode{margin:0;flex:1;white-space:pre-wrap;word-break:break-all;background:#081422;color:#EFE7DA;border:1px solid var(--line);border-radius:16px;padding:18px 18px 66px;font-family:'Commit Mono',ui-monospace,Menlo,Consolas,monospace;font-size:15px;line-height:1.7;min-height:150px;user-select:all}
+.scode{margin:0;flex:1;white-space:pre-wrap;word-break:break-all;background:var(--code);color:var(--code-ink);border:1px solid var(--line);border-radius:16px;padding:18px 18px 66px;font-family:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;font-size:15px;line-height:1.7;min-height:150px;user-select:all}
 .scopy{position:absolute;right:12px;bottom:12px;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 16px;border:0;border-radius:10px;background:var(--ac);color:var(--on-ac);font:inherit;font-size:15px;font-weight:800;cursor:pointer;transition:transform .2s}
 .scopy:hover{transform:translateY(-2px)}
 .sblurb{margin:0;font-size:17px;line-height:1.55;color:var(--muted)}
@@ -41,7 +41,7 @@ html{scroll-padding-top:96px}
 .swin-bar strong{margin-left:10px;display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
 .swin-body{flex:1;padding:22px;display:flex;flex-direction:column;gap:14px}
 .smsg{max-width:88%;padding:12px 14px;font-size:15px;line-height:1.55}
-.sme{align-self:flex-end;background:var(--ink);color:var(--bg);border-radius:16px 16px 4px 16px;font-family:'Commit Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px;word-break:break-all}
+.sme{align-self:flex-end;background:var(--ink);color:var(--bg);border-radius:16px 16px 4px 16px;font-family:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px;word-break:break-all}
 .sai{align-self:flex-start;background:var(--sf2);border-radius:16px 16px 16px 4px;display:flex;gap:10px;align-items:center}
 .sok{color:var(--gr)}
 .sdots{display:inline-flex;gap:3px;color:var(--ac-text)}
@@ -68,40 +68,6 @@ html{scroll-padding-top:96px}
 /* In-page links (nav, "Watch it work", "Get it free") travel, they don't jump. */
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-
-/* The sky, composited. The design animated background-position on .sky, a
-   div as tall as the page, which repainted all of it on every frame. Here
-   the dots are a fixed layer the compositor slides by transform, 660 px (a
-   multiple of both tiles) so the loop has no seam. */
-.th > .sky{animation:none!important;background-image:none!important}
-.th{position:relative;isolation:isolate}
-@keyframes sky-drift{to{transform:translate3d(-660px,-660px,0)}}
-.th::before{
-  content:'';position:fixed;top:0;left:0;right:-660px;bottom:-660px;z-index:-1;pointer-events:none;
-  background-image:radial-gradient(var(--star) 1px,transparent 1.6px),radial-gradient(var(--star2) 1.2px,transparent 1.8px);
-  background-size:60px 60px,110px 110px;
-  will-change:transform;
-  animation:sky-drift 180s linear infinite;animation-delay:var(--sky-delay,0s);
-}
-@media (prefers-reduced-motion:reduce){.th::before{animation:none}}
-
-/* The centre of the orbit: "your AI" is a coin that keeps turning, one AI app
-   on each face, in its own colours (the monochrome marks take the ink). Each
-   face turns in edge-on, holds, and turns out as the next turns in; only
-   transform and opacity move. Reduced motion shows the first face, still. */
-.coin{position:absolute;left:50%;top:50%;width:21.67%;aspect-ratio:1;transform:translate(-50%,-50%);perspective:700px;pointer-events:none}
-.coin-face{position:absolute;inset:0;box-sizing:border-box;border-radius:50%;border:2px solid var(--ink);background:var(--sf);display:flex;align-items:center;justify-content:center;backface-visibility:hidden;opacity:0;animation:coin-turn 12.5s linear infinite}
-.coin-face svg{width:56%;height:56%;fill:var(--ink)}
-.cf-claude svg{fill:#D97757}
-.coin-face:nth-child(1){animation-delay:-12.5s}.coin-face:nth-child(2){animation-delay:-10s}.coin-face:nth-child(3){animation-delay:-7.5s}.coin-face:nth-child(4){animation-delay:-5s}.coin-face:nth-child(5){animation-delay:-2.5s}
-@keyframes coin-turn{
-  0%{opacity:1;transform:rotateY(-90deg);animation-timing-function:cubic-bezier(.2,.8,.3,1)}
-  4%{transform:rotateY(0)}
-  16%{transform:rotateY(0);animation-timing-function:cubic-bezier(.7,0,.8,.2)}
-  20%{opacity:1;transform:rotateY(90deg)}
-  20.1%,100%{opacity:0;transform:rotateY(90deg)}
-}
-@media (prefers-reduced-motion:reduce){.coin-face{animation:none}.coin-face:first-child{opacity:1}}
 
 /* Questions: the whole row opens its answer, not only the line of text. The
    padding lives on the summary, so the target is the full width and 104px

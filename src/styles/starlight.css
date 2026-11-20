@@ -1,59 +1,60 @@
 /*
  * The docs in the product's colours. Starlight reads its whole palette from
  * these custom properties; nothing below restyles a component directly.
- * Values are the brand's: ink #0B1A2B, cell #122539, bone #EFE7DA, amber
- * #FFB03A (a fill), and #983E25 / #CC5500 where amber has to be text on light.
+ * Values are the brand's (svipall assets/brand/tokens.json): ink #0D0D0F,
+ * paper #F3F1EF, alert red #E5303A as a fill, and #FFA3A8 / #B51A28 where red
+ * has to be text on dark / on light.
  */
 @font-face {
-  font-family: 'Archivo';
-  src: url('/fonts/archivo-variable.woff2') format('woff2-variations');
+  font-family: 'Urbanist';
+  src: url('/fonts/urbanist-variable.woff2') format('woff2-variations');
   font-weight: 100 900;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Commit Mono';
-  src: url('/fonts/commitmono-400.woff2') format('woff2');
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/plexmono-400.woff2') format('woff2');
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Commit Mono';
-  src: url('/fonts/commitmono-700.woff2') format('woff2');
-  font-weight: 700;
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/plexmono-500.woff2') format('woff2');
+  font-weight: 500 700;
   font-display: swap;
 }
 
 :root {
-  --sl-font: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --sl-font-mono: 'Commit Mono', ui-monospace, Menlo, Consolas, monospace;
+  --sl-font: 'Urbanist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sl-font-mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
 
   /* dark (Starlight's default) */
-  --sl-color-accent-low: #3d2c10;
-  --sl-color-accent: #ffb03a;
-  --sl-color-accent-high: #ffd28a;
-  --sl-color-white: #efe7da;
-  --sl-color-gray-1: #dad5ca;
-  --sl-color-gray-2: #c1beb7;
-  --sl-color-gray-3: #8e98a5;
-  --sl-color-gray-4: #4f6075;
-  --sl-color-gray-5: #24405e;
-  --sl-color-gray-6: #122539;
-  --sl-color-black: #0b1a2b;
+  --sl-color-accent-low: #3a1416;
+  --sl-color-accent: #ffa3a8;
+  --sl-color-accent-high: #ffb3b7;
+  --sl-color-white: #edebe8;
+  --sl-color-gray-1: #d6d3cf;
+  --sl-color-gray-2: #d0ccc8;
+  --sl-color-gray-3: #b4b0ac;
+  --sl-color-gray-4: #4a4a50;
+  --sl-color-gray-5: #26262b;
+  --sl-color-gray-6: #141417;
+  --sl-color-black: #050506;
 }
 
 :root[data-theme='light'] {
-  --sl-color-accent-low: #ffe6bf;
-  --sl-color-accent: #cc5500;
-  --sl-color-accent-high: #983e25;
-  --sl-color-white: #0b1a2b;
-  --sl-color-gray-1: #172636;
-  --sl-color-gray-2: #3b4550;
-  --sl-color-gray-3: #5b6875;
-  --sl-color-gray-4: #8a97a4;
-  --sl-color-gray-5: #c3d0dc;
-  --sl-color-gray-6: #dce3eb;
-  --sl-color-gray-7: #eef2f6;
-  --sl-color-black: #f4f7fa;
+  --sl-color-accent-low: #fadadc;
+  --sl-color-accent: #b51a28;
+  --sl-color-accent-high: #7a1219;
+  --sl-color-white: #0d0d0f;
+  --sl-color-gray-1: #1d1c1b;
+  --sl-color-gray-2: #3e3b38;
+  --sl-color-gray-3: #5e5a56;
+  --sl-color-gray-4: #8f8b87;
+  --sl-color-gray-5: #cfcac5;
+  --sl-color-gray-6: #e7e3df;
+  --sl-color-gray-7: #f7f5f3;
+  --sl-color-black: #f3f1ef;
 }
 
 /* Wide tables scroll inside their own box instead of the page. */

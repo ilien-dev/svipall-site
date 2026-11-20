@@ -1,17 +1,19 @@
 ---
 /*
- * The product page. The markup is the approved canvas design ("Orbit"),
- * ported by scripts/port-orbit.mjs into src/home/orbit.body.html; edit it
- * there or re-run the port. This file adds only what a real page needs on
- * top of the design: the head (SEO), the shared theme, the release tag, the
- * copy button and the maker's credit.
+ * The product page, "heat" direction. The markup lives in
+ * src/home/home.body.html (no braces: Astro would read them as expressions),
+ * its tokens and motion in src/styles/home.css, and its moving parts (the 3D
+ * heat field, the gate player, the before/after) in src/scripts/home.ts. This
+ * file adds what a real page needs on top: the head (SEO), the shared theme,
+ * the release tag, the set-up tabs, the questions, the copy button and the
+ * maker's credit.
  *
  * The theme is the SAME one the docs use: Starlight keeps it in
  * localStorage under `starlight-theme` and in <html data-theme>. Both pages
  * read and write that one key, so switching on one switches the other.
  */
-import body from '../home/orbit.body.html?raw';
-import '../styles/orbit.css';
+import body from '../home/home.body.html?raw';
+import '../styles/home.css';
 import '../styles/page.css';
 import '../styles/transitions.css';
 import MakerMark from '../components/MakerMark.astro';
@@ -68,7 +70,7 @@ const jsonLd = {
     <meta name="keywords" content="give Claude web access, free web search MCP server, MCP server no API key, AI web browsing, read any website with AI, AI price tracker, summarize video with AI, local web scraping MCP, Firecrawl alternative, Tavily alternative" />
     <link rel="canonical" href={`${site}/`} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preload" href="/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/urbanist-variable.woff2" as="font" type="font/woff2" crossorigin />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Svipall" />
     <meta property="og:title" content={title} />
@@ -81,7 +83,8 @@ const jsonLd = {
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={`${site}/og.png`} />
-    <meta name="theme-color" content="#0B1A2B" />
+    <meta name="theme-color" content="#050506" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F3F1EF" media="(prefers-color-scheme: light)" />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <script is:inline>
       (() => {
@@ -214,6 +217,8 @@ const jsonLd = {
     <script>
       /* Moving to the docs and back without a reload; also the theme switch. */
       import '../scripts/site-router';
+      /* The heat field, the gate player and the before/after. */
+      import '../scripts/home';
     </script>
   </body>
 </html>
